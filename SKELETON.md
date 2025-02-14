@@ -1,7 +1,7 @@
-## Walking Skeleton Outline
+# Walking Skeleton Outline
 This document contains our plan for setting up a minimal version of our tech stack. It requires that we have a front end that interacts with the user and can communicate to a backend application, and can fetch and store information into a database.
 
-# Requirements
+## Requirements
 Here is a list of the required components of the Walking Skeleton and their specifications. These may be subject to change.
 - A Front End application written in Javascript/React
     - This front end will be run in a docker container on an Ubuntu Image located locally on the User's PC
