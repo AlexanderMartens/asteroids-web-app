@@ -24,6 +24,8 @@ There will be a database stored locally which will primarily keep track of infor
 At some point it will probably be useful to include a couple more UML diagrams. Perhaps an ERD for the database(s) and a sequence diagram to show how interactions occur between the database, backend and frontend.
 -->
 
+#### Technology Stack
+
 ```mermaid
 flowchart RL
 subgraph Front End
@@ -40,6 +42,37 @@ end
 
 A <-->|REST API| B
 B <--> C
+```
+
+#### Database
+
+To be fleshed out whenever database design decisions are more concrete.
+
+```mermaid
+---
+title: Sample Database ERD
+---
+erDiagram
+    Player }o--o{ Unlockable : "unlocked by"
+	Player ||--o{ Profile : "owns"
+
+    Player {
+        int player_id PK
+        float playtime
+    }
+	
+	Profile {
+		int profile_id PK
+		int player_id FK
+		int high_score
+	}
+
+    Unlockable {
+        int unlockable_id PK
+        int player_id FK
+        date unlock_date
+        string perk
+    }
 ```
 
 ### Standards & Conventions
