@@ -33,7 +33,7 @@ subgraph Front End
 end
 	
 subgraph Back End
-	B(Java: (SpringBoot?))
+	B(Java: SpringBoot?)
 end
 	
 subgraph Database
@@ -50,14 +50,15 @@ To be fleshed out whenever database design decisions are more concrete.
 
 ```mermaid
 ---
-title: Sample Database ERD
+title: Sample ERD for Player Profile Database
 ---
 erDiagram
-    Player }o--o{ Unlockable : "unlocked by"
-	Player ||--o{ Profile : "owns"
+	Player ||--o{ Profile : "owned by"
+    Profile }o--o{ Unlockable : "unlocked in"
 
     Player {
         int player_id PK
+        string username
         float playtime
     }
 	
@@ -69,7 +70,7 @@ erDiagram
 
     Unlockable {
         int unlockable_id PK
-        int player_id FK
+        int profile_id FK
         date unlock_date
         string perk
     }
