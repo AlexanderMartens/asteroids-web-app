@@ -12,12 +12,19 @@ My team needed a way for the various components (Front end, Back end, and Sever)
 ### Time Spent
 <!--Explain how your time was spent-->
 ~ 30 minutes writing a demo.proto file, reading Protoc/Java documentation and installing protoc tools for Java
+
 ~ 30 minutes figuring out dependencies for Java grpc libraries, reading java grpc github pages, downloading required jar files from the Maven repository, and compiling the demo.proto file into separate java classes
+
 ~ 60 minutes writing the Java service implementation, Java server, a Dockerfile for the server, and following parts of tutorials
+
 ~ 30 minutes writing a client in Java for testing
+
 ~ 30 minutes installing protoc tools for Javascript, reading Web grpc documentation and compiling demo.proto into javascript classes
+
 ~ 30 minutes troubleshooting npm and npx webpack to deal with javascript dependencies
+
 ~ 60 minutes following github tutorial to create a javascript web client that sends grpc requests
+
 ~ 120 minutes reading into envoy proxy in a docker container, docker networks, configuring envoy, writing a docker compose to get the proxy container and server container on same network and communicating. 
 
 ### Results
@@ -113,7 +120,47 @@ I compiled the demo.proto (without the java related options) to obtain
 - demo_pb.js: class for working with AddTwoRequest and AddTwoResponse objects
 - demo_grpc_web_pb.js: class for making service calls
 
+Using this tutorial[^9] (be warned this is outdated) I created the code for a javascript client.
+```Java
 
+const { AddTwoRequest, AddTwoResponse } = require("./demo_pb.js");
+const { AddTwoServiceClient } = require("./demo_grpc_web_pb.js");
+
+var client = new AddTwoServiceClient("http://localhost:5050");
+var request = new AddTwoRequest();
+request.setX(5);
+
+client.addTwo(request, {}, (err, response) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(response.getY());
+  }
+});
+```
+This client program creates a request object, setting the x value to 5 and sends it to the Java gRPC server. The response is then sent to the console log in the browser. Notice that the Java Server is listening on port 5000, while the Client is set up on localhost:5050. This is because we cannot directly send the request to the server. We must send it through Envoy proxy at port 5050, which will then forward it to the server at port 5000.
+
+I used the commands detailed in[^9] to handle my dependencies. I first created a list of needed packages in package.json:
+```json
+{
+  "devDependencies": {
+    "@grpc/grpc-js": "~1.8.21",
+    "@grpc/proto-loader": "~0.5.4",
+    "async": "~1.5.2",
+    "google-protobuf": "~3.21.4",
+    "grpc-web": "~1.5.0",
+    "lodash": "~4.17.0",
+    "webpack": "~5.98.0",
+    "webpack-cli": "~5.1.1"
+  }
+}
+```
+Then I used these commands to compile it in the same directory. Note that the above packages differ from the tutorial.
+```bash
+npm install
+npx webpack ./client.js
+```
+This created a nodes directory with the needed dependencies, and a 
 
 
 ### Sources
@@ -122,10 +169,11 @@ I compiled the demo.proto (without the java related options) to obtain
 - Protocol Buffer Basics: Java[^2]
 - gRPC-Java[^3]
 - gRPC in Java[^4]
-- GRPC Service in Java[^5]
+- gRPC Service in Java[^5]
 - io.grpc.stub Docs[^6]
-- GRPC Client in Java[^7]
-- gRPC Web
+- gRPC Client in Java[^7]
+- gRPC Web[^8]
+- gRPC Web Hello World[^9]
 [^1]: https://protobuf.dev/programming-guides/proto3/
 [^2]: https://protobuf.dev/getting-started/javatutorial/
 [^3]: https://github.com/grpc/grpc-java
@@ -134,3 +182,4 @@ I compiled the demo.proto (without the java related options) to obtain
 [^6]: https://grpc.github.io/grpc-java/javadoc/io/grpc/stub/StreamObserver.html
 [^7]: https://www.youtube.com/watch?v=eUu29SrGYTA
 [^8]: https://github.com/grpc/grpc-web
+[^9]: https://github.com/grpc/grpc-web/tree/master/net/grpc/gateway/examples/helloworld
