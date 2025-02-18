@@ -64,6 +64,56 @@ I obtained several Java classes:
 - AddTwoServiceGrpc.java: A class containing the base code for a grpc service
 - Two more java interfaces that aren't that important
 
+Referencing here[^4] and a youtube tutorial[^5], I implemented the AddTwoServiceImpl.java and DemoServer.java for my specific services.
+
+```Java
+import io.grpc.ServerBuilder;
+import io.grpc.ServerBuilder;
+import io.grpc.stub.StreamObserver;
+
+public class AddTwoServiceImpl extends AddTwoServiceGrpc.AddTwoServiceImplBase {
+
+    @Override
+    public void addTwo(AddTwoRequest request, StreamObserver<AddTwoResponse> responseObserver) {
+        int x = request.getX();
+        AddTwoResponse response = AddTwoResponse.newBuilder().setY(x + 2).build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+}
+```
+This first file is the implementation of my service I defined in the demo.proto file. I extend the ImplBase class and implement the addTwo service function. It takes a request and gets the x value I defined in the demo.proto file. Then it creates a response object, setting the y value to y = x + 2. The StreamObserver class can be found here[^7] for the remaining method calls. The response value is then sent back to the client.
+
+```Java
+import java.io.IOException;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+
+public class DemoServer {
+    public static void main(String[] args) throws IOException, InterruptedException {
+        Server server = ServerBuilder.forPort(5000).addService(new AddTwoServiceImpl()).build();
+        server.start();
+        System.out.println("Server started on port 5000");
+        server.awaitTermination();
+    }    
+}
+```
+Next I implemented the server that handles requests on port 5000 and add the new service I implemented above. I also used[^7] as a reference for creating a Java client, which can be found in the repository. Once the server is coded, many services and messages may be added in the same manner.
+
+Next I wrote a docker file to host my server in Ubuntu with portforwarding on port 5000. I also made a hacky start script since I can't run java code in the container that I compiled locally (newer open-jdk). 
+
+I next learned about grpc web[^8] for Javascript web clients. I installed 
+- protoc-gen-js: protoc javascript extension
+- protoc-gen-grpc-web: protoc plugin
+and using a command
+```bash
+protoc -I=. demo.proto --js_out=import_style=commonjs:. --grpc-web_out=import_style=commonjs,mode=grpcwebtext:.
+```
+I compiled the demo.proto (without the java related options) to obtain
+- demo_pb.js: class for working with AddTwoRequest and AddTwoResponse objects
+- demo_grpc_web_pb.js: class for making service calls
+
+
 
 
 ### Sources
@@ -71,9 +121,16 @@ I obtained several Java classes:
 - Language Guide (proto3)[^1]
 - Protocol Buffer Basics: Java[^2]
 - gRPC-Java[^3]
-- Placeholder4[^4]
-- And so on...
+- gRPC in Java[^4]
+- GRPC Service in Java[^5]
+- io.grpc.stub Docs[^6]
+- GRPC Client in Java[^7]
+- gRPC Web
 [^1]: https://protobuf.dev/programming-guides/proto3/
 [^2]: https://protobuf.dev/getting-started/javatutorial/
 [^3]: https://github.com/grpc/grpc-java
-[^4]: www.google.com
+[^4]: https://grpc.io/docs/languages/java/basics/
+[^5]: https://www.youtube.com/watch?v=2hjIn3kKXuo
+[^6]: https://grpc.github.io/grpc-java/javadoc/io/grpc/stub/StreamObserver.html
+[^7]: https://www.youtube.com/watch?v=eUu29SrGYTA
+[^8]: https://github.com/grpc/grpc-web
