@@ -66,7 +66,7 @@ I obtained several Java classes:
 
 Referencing here[^4] and a youtube tutorial[^5], I implemented the AddTwoServiceImpl.java and DemoServer.java for my specific services.
 
-```Java
+```java
 import io.grpc.ServerBuilder;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
@@ -84,7 +84,7 @@ public class AddTwoServiceImpl extends AddTwoServiceGrpc.AddTwoServiceImplBase {
 ```
 This first file is the implementation of my service I defined in the demo.proto file. I extend the ImplBase class and implement the addTwo service function. It takes a request and gets the x value I defined in the demo.proto file. Then it creates a response object, setting the y value to y = x + 2. The StreamObserver class can be found here[^7] for the remaining method calls. The response value is then sent back to the client.
 
-```Java
+```java
 import java.io.IOException;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -114,7 +114,7 @@ I compiled the demo.proto (without the java related options) to obtain
 - demo_grpc_web_pb.js: class for making service calls
 
 Using this tutorial[^9] (be warned this is outdated) I created the code for a javascript client.
-```Javascript
+```javascript
 const { AddTwoRequest, AddTwoResponse } = require("./demo_pb.js");
 const { AddTwoServiceClient } = require("./demo_grpc_web_pb.js");
 
