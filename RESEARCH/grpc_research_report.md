@@ -47,7 +47,7 @@ service AddTwoService {
 
 The syntax option lets the compiler know what proto language I'm using. A message is defined by using the message keyword followed by the name. In it you can include as many arguments as you want. Note that the equals sign is not an assignment statement. It numbers the arguments sequentially, in case different versions of your message have a different number of arguments. These are language independent; a correspondence between different types can be found here[^1].
 
-The service keyword defines the service, which will take a AddTwoRequest to the server and return an AddTwoResponse to the client. By convention, clients send requests and servers sent reponses. The messages and services define an API between the front end and back end. Messages are stored in a wire format,seirialized/encoded efficiently in a binary format which makes it fast.
+The service keyword defines the service, which will take a AddTwoRequest to the server and return an AddTwoResponse to the client. By convention, clients send requests and servers sent reponses. The messages and services define an API between the front end and back end. Messages are stored in a wire format, serialized/encoded efficiently in a binary format which makes it fast.
 
 Next I looked at language specific options here[^2] and found tools to compile demo.proto into Java code here[^3]. Here I found a link to the Maven repository for Jar dependencies and downloaded them. They can be found here: https://git.doit.wisc.edu/cdis/cs/courses/cs506/sp2025/team/T_07/research-grpc/-/tree/master/server_demo/lib?ref_type=heads. 
 I then installed the following for compiling:
