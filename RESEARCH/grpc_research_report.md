@@ -68,7 +68,6 @@ Referencing here[^4] and a youtube tutorial[^5], I implemented the AddTwoService
 
 ```java
 import io.grpc.ServerBuilder;
-import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 
 public class AddTwoServiceImpl extends AddTwoServiceGrpc.AddTwoServiceImplBase {
@@ -105,6 +104,7 @@ Next I wrote a docker file to host my server in Ubuntu with portforwarding on po
 I next learned about grpc web[^8] for Javascript web clients. I installed 
 - protoc-gen-js: protoc javascript extension
 - protoc-gen-grpc-web: protoc plugin
+
 and using a command
 ```bash
 protoc -I=. demo.proto --js_out=import_style=commonjs:. --grpc-web_out=import_style=commonjs,mode=grpcwebtext:.
