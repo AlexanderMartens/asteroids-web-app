@@ -3,7 +3,7 @@
 
 ### Summary of Work
 <!--One paragraph summary of the research being performed-->
-I researched into how gRPC worked in Java and Javascript. From this sprouted additional topics to research into, including how to handle Java package dependencies, how to handle Javascript dependencies, the Envoy Proxy, and how to compile proto files into Java/Javascript classes using the protoc compiler. I read many github pages and documentation, followed youtube tutorials, and read documentation on different APIs. During this process I created a Java gRPC server running in a docker container that listens to incomming requests from another Docker container running the Envoy proxy, which in turn listens to Client requests on the Browser. The client is a web server written in Javascript. My work may be found here: 
+I researched into how gRPC worked in Java and Javascript. From this sprouted additional topics to research into, including how to handle Java package dependencies, how to handle Javascript dependencies, the Envoy Proxy, and how to compile proto files into Java/Javascript classes using the protoc compiler. I read many github pages and documentation, followed youtube tutorials, and read documentation on different APIs. During this process I created a Java gRPC server running in a docker container that listens to incomming requests from another Docker container running the Envoy proxy, which in turn listens to Client requests on the Browser. The client is a web server written in Javascript. My work may be found here: https://git.doit.wisc.edu/cdis/cs/courses/cs506/sp2025/team/T_07/research-grpc/-/tree/master?ref_type=heads.
 
 ### Motivation
 <!--Explain why you felt the need to perform this research-->
@@ -49,7 +49,7 @@ The syntax option lets the compiler know what proto language I'm using. A messag
 
 The service keyword defines the service, which will take a AddTwoRequest to the server and return an AddTwoResponse to the client. By convention, clients send requests and servers sent reponses. The messages and services define an API between the front end and back end. Messages are stored in a wire format,seirialized/encoded efficiently in a binary format which makes it fast.
 
-Next I looked at language specific options here[^2] and found tools to compile demo.proto into Java code here[^3]. Here I found a link to the Maven repository for Jar dependencies and downloaded them. They can be found here: 
+Next I looked at language specific options here[^2] and found tools to compile demo.proto into Java code here[^3]. Here I found a link to the Maven repository for Jar dependencies and downloaded them. They can be found here: https://git.doit.wisc.edu/cdis/cs/courses/cs506/sp2025/team/T_07/research-grpc/-/tree/master/server_demo/lib?ref_type=heads. 
 I then installed the following for compiling:
 - protobuf: the protoc gen compiler
 - protoc-gen-grpc-java: a protoc java extension
