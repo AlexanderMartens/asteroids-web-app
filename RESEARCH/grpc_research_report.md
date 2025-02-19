@@ -3,7 +3,7 @@
 
 ### Summary of Work
 <!--One paragraph summary of the research being performed-->
-I researched into how gRPC worked in Java and Javascript. From this sprouted additional topics to research into, including how to handle Java package dependencies, how to handle Javascript dependencies, the Envoy Proxy, and how to compile proto files into Java/Javascript classes using the protoc compiler. I read many github pages and documentation, followed youtube tutorials, and read documentation on different APIs. During this process I created a Java gRPC server running in a docker container that listens to incomming requests from another Docker container running the Envoy proxy, which in turn listens to Client requests on the Browser. The client is a web server written in Javascript.
+I researched into how gRPC worked in Java and Javascript. From this sprouted additional topics to research into, including how to handle Java package dependencies, how to handle Javascript dependencies, the Envoy Proxy, and how to compile proto files into Java/Javascript classes using the protoc compiler. I read many github pages and documentation, followed youtube tutorials, and read documentation on different APIs. During this process I created a Java gRPC server running in a docker container that listens to incomming requests from another Docker container running the Envoy proxy, which in turn listens to Client requests on the Browser. The client is a web server written in Javascript. My work may be found here: 
 
 ### Motivation
 <!--Explain why you felt the need to perform this research-->
@@ -11,21 +11,14 @@ My team needed a way for the various components (Front end, Back end, and Sever)
 
 ### Time Spent
 <!--Explain how your time was spent-->
-~ 30 minutes writing a demo.proto file, reading Protoc/Java documentation and installing protoc tools for Java
-
-~ 30 minutes figuring out dependencies for Java grpc libraries, reading java grpc github pages, downloading required jar files from the Maven repository, and compiling the demo.proto file into separate java classes
-
-~ 60 minutes writing the Java service implementation, Java server, a Dockerfile for the server, and following parts of tutorials
-
-~ 30 minutes writing a client in Java for testing
-
-~ 30 minutes installing protoc tools for Javascript, reading Web grpc documentation and compiling demo.proto into javascript classes
-
-~ 30 minutes troubleshooting npm and npx webpack to deal with javascript dependencies
-
-~ 60 minutes following github tutorial to create a javascript web client that sends grpc requests
-
-~ 120 minutes reading into envoy proxy in a docker container, docker networks, configuring envoy, writing a docker compose to get the proxy container and server container on same network and communicating. 
+- 30 minutes writing a demo.proto file, reading Protoc/Java documentation and installing protoc tools for Java
+- 30 minutes figuring out dependencies for Java grpc libraries, reading java grpc github pages, downloading required jar files from the Maven repository, and compiling the demo.proto file into separate java classes
+- 60 minutes writing the Java service implementation, Java server, a Dockerfile for the server, and following parts of tutorials
+- 30 minutes writing a client in Java for testing
+- 30 minutes installing protoc tools for Javascript, reading Web grpc documentation and compiling demo.proto into javascript classes
+- 30 minutes troubleshooting npm and npx webpack to deal with javascript dependencies
+- 60 minutes following github tutorial to create a javascript web client that sends grpc requests
+- 120 minutes reading into envoy proxy in a docker container, docker networks, configuring envoy, writing a docker compose to get the proxy container and server container on same network and communicating. 
 
 ### Results
 <!--Explain what you learned/produced/etc. This section should explain the
@@ -121,8 +114,7 @@ I compiled the demo.proto (without the java related options) to obtain
 - demo_grpc_web_pb.js: class for making service calls
 
 Using this tutorial[^9] (be warned this is outdated) I created the code for a javascript client.
-```Java
-
+```Javascript
 const { AddTwoRequest, AddTwoResponse } = require("./demo_pb.js");
 const { AddTwoServiceClient } = require("./demo_grpc_web_pb.js");
 
@@ -160,9 +152,131 @@ Then I used these commands to compile it in the same directory. Note that the ab
 npm install
 npx webpack ./client.js
 ```
-This created a nodes directory with the needed dependencies, and a 
+This created a nodes directory with the needed dependencies, and a dist/main.js program which is what the web server will run. To set up the web server I used the same index.html as in the tutorial:
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>gRPC-Web Example</title>
+    <script src="./dist/main.js"></script>
+  </head>
+  <body>
+    <p>Open up the developer console and see the logs for the output.</p>
+  </body>
+</html>
+```
+Again, it runs the generated ./dist/main.js file.
 
+Lastly, to set up the Envoy proxy I edited the tutorial envoy.yaml file, while referencing the Envoy docs[^10]. The details do not matter too much. All it does is listens on port 5050 where the client sends requests, and forwards it to the docker container containing the server on port 5000. Envoy proxy itself will be run in a docker container.
+```yaml
+static_resources:
+  listeners:
+    - name: listener_0
+      address:
+        # We listen for requests on port 5050
+        socket_address: { address: 0.0.0.0, port_value: 5050 }
+      filter_chains:
+        - filters:
+          - name: envoy.filters.network.http_connection_manager
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+              codec_type: auto
+              stat_prefix: ingress_http
+              route_config:
+                name: local_route
+                virtual_hosts:
+                  - name: local_service
+                    domains: ["*"]
+                    routes:
+                      - match: { prefix: "/" }
+                        route:
+                          cluster: demo_service
+                          max_stream_duration:
+                            grpc_timeout_header_max: 0s
+                    cors:
+                      allow_origin_string_match:
+                        - prefix: "*"
+                      allow_methods: GET, PUT, DELETE, POST, OPTIONS
+                      allow_headers: keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,custom-header-1,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout
+                      max_age: "1728000"
+                      expose_headers: custom-header-1,grpc-status,grpc-message
+              http_filters:
+                - name: envoy.filters.http.grpc_web
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.grpc_web.v3.GrpcWeb
+                - name: envoy.filters.http.cors
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
+                - name: envoy.filters.http.router
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+  clusters:
+    - name: demo_service
+      connect_timeout: 0.25s
+      type: logical_dns
+      # HTTP/2 support
+      typed_extension_protocol_options:
+        envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+          "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+          explicit_http_config:
+            http2_protocol_options: {}
+      lb_policy: round_robin
+      load_assignment:
+        cluster_name: demo_service 
+        endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    # We forward requests to the demo_server on port 5000. 
+                    # It's important that the Proxy container and server container are on the same network
+                    address: "demo_server"
+                    port_value: 5000
+```
+To set up the server and proxy smoothly, I created a docker-compose.yml file:
+```yml
+services:
+  demo_server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      # gRPC server listens on port 5000 
+      - "5000:5000"
+    networks:
+      - demo_network
+    
+  # Here we start our Envoy Proxy container to listen on port 5050
+  envoy_proxy:
+    image: envoyproxy/envoy:v1.22.0
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    # Make sure demo_server starts first
+    depends_on:
+      - demo_server
+    networks:
+      - demo_network
+      
+# Having docker containers on the same network means they can communicate by name
+networks:
+  demo_network:
+```
+What this does is first builds the demo_server image and runs it in a container on port 5000. Then it uses the envoy proxy image to launch a container that listens to client requests on port 5050. It forwards the requests to the sever. To achieve this, I make sure the sever container and proxy container are on the same docker network called demo_network. This was a fix I found in a forum to help the docker containers communicate. 
 
+Running the setup should only require docker. Navigating to the grpc_demo/server_demo folder we can run
+```Bash
+docker compose up --build -d
+```
+which will build the pull/build the images if need be and then run the sever and proxy containers. Navigating to the grpc_demo/client_demo folder and running
+```Bash
+python3 -m http.server 8000
+```
+should start the client web server. We can see it by opening a browser and typing in localhost:8000. Recall that the client program has hardcoded sending a request of AddTwo(5). This is sent to port 5050 to the proxy container. The proxy container forwards it to the server container at port 5000. The server sends a response of 7 through the proxy and back to the client. It can be seen by right clicking the browser, inspecting it, and navigating to the console. 
+
+In conclusion, now that the server and proxy are coded, adding new services involves editing the demo.proto file, compiling it to the language of choice, and working with the compiled Java and Javascript classes.
 ### Sources
 <!--list your sources and link them to a footnote with the source url-->
 - Language Guide (proto3)[^1]
@@ -174,6 +288,7 @@ This created a nodes directory with the needed dependencies, and a
 - gRPC Client in Java[^7]
 - gRPC Web[^8]
 - gRPC Web Hello World[^9]
+- Envoy Proxy Docs[^10]
 [^1]: https://protobuf.dev/programming-guides/proto3/
 [^2]: https://protobuf.dev/getting-started/javatutorial/
 [^3]: https://github.com/grpc/grpc-java
@@ -183,3 +298,4 @@ This created a nodes directory with the needed dependencies, and a
 [^7]: https://www.youtube.com/watch?v=eUu29SrGYTA
 [^8]: https://github.com/grpc/grpc-web
 [^9]: https://github.com/grpc/grpc-web/tree/master/net/grpc/gateway/examples/helloworld
+[^10]: https://www.envoyproxy.io/docs/envoy/v1.33.0/configuration/configuration
