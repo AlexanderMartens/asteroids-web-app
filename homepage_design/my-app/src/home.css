@@ -42,3 +42,26 @@
     border-width: 2px;
     color: white;
 }
+
+.login-pass-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    justify-content: left;
+}
+
+.input-container input {
+
+}
+
+.input-container label {
+    text-align: left;
+}
