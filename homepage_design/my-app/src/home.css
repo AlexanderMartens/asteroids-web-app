@@ -1,0 +1,44 @@
+.home-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.home-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space between;
+    width: 800px;
+}
+
+.login-logo {
+    height: 30vh;
+    width: 30vh;
+    align-self: center;
+}
+
+.title-container {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+}
+
+.title-padding {
+    width: 20px;
+}
+
+@font-face {
+    font-family: 'SpaceMission';
+    src: url('./SpaceMission-rgyw9.otf') format('opentype');
+}
+
+.title {
+    font-size: 8rem;
+    font-family: 'SpaceMission';
+    -webkit-text-fill-color: black;
+    -webkit-text-stroke: 2px;
+    text-align: center;
+    border-color: white;
+    border-width: 2px;
+    color: white;
+}
