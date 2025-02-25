@@ -5,7 +5,17 @@ import logo from './asteroid-logo-bgless.png'
 function Home() {
 
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('')
+    const [password, setPassword] = useState('');
+
+    // TODO: Check if login in database, access game if valid
+    const handleLogin = () => {
+        console.log("Log in clicked");
+    }
+
+    //TODO: Check if username in database, add to database and access game if it doesn't exist
+    const handleRegister = () => {
+        console.log("Register clicked");
+    }
 
     return (
         <div className='home-container'>
@@ -24,6 +34,10 @@ function Home() {
                         <label>Password:</label>
                         <input type='password' value={password} onChange={(e) => setPassword(e.target.value)}/>
                     </div>
+                </div>
+                <div className='login-register-container'>
+                    <button className='login-register' onClick={handleLogin}>Log in</button>
+                    <button className='login-register' onClick={handleRegister}>Register</button>
                 </div>
             </div>
         </div>
