@@ -36,7 +36,7 @@ function Home() {
                     </div>
                 </div>
                 <div className='login-register-container'>
-                    <button className='login-register' onClick={handleLogin}>Log in</button>
+                    <button className='login-register' onClick={handleLogin}>Log In</button>
                     <button className='login-register' onClick={handleRegister}>Register</button>
                 </div>
             </div>

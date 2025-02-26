@@ -13,14 +13,15 @@
 .home-content {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     width: 800px;
+    padding-bottom: 20px;
 }
 
 .login-logo {
-    height: 30vh;
-    width: 30vh;
+    height: 200px;
+    width: 200px;
     align-self: center;
 }
 
@@ -66,8 +67,14 @@
 
 }
 
+@font-face {
+    font-family: 'FuturyLight';
+    src: url('./FuturyLight-MAOLv.ttf') format('opentype');
+}
+
 .input-container input {
     padding: 4px;
+    font-family: 'FuturyLight';
 }
 
 .input-container label {
