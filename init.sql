@@ -21,20 +21,5 @@ CREATE TABLE IF NOT EXISTS GameSettings (
     setting_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     sound BOOLEAN DEFAULT TRUE,
-    difficulty ENUM('Easy', 'Medium', 'Hard') DEFAULT 'Medium',
-    controls VARCHAR(50) DEFAULT 'ArrowKeys',
     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
 );
-
-INSERT INTO Users (username, password) VALUES
-('player1', 'hashed_password1'),
-('player2', 'hashed_password2');
-
-INSERT INTO Scores (user_id, score, level_reached) VALUES
-(1, 1000, 5),
-(1, 2000, 8),
-(2, 1500, 6);
-
-INSERT INTO GameSettings (user_id, sound, difficulty, controls) VALUES
-(1, TRUE, 'Hard', 'WASD'),
-(2, FALSE, 'Medium', 'ArrowKeys');
