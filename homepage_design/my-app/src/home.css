@@ -73,8 +73,12 @@
 }
 
 .input-container input {
-    padding: 4px;
+    padding: 6px;
     font-family: 'FuturyLight';
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 6px;
+    background-color: #111;
 }
 
 .input-container label {

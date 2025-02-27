@@ -7,7 +7,7 @@ function Home() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    // TODO: Check if login in database, access game if valid
+    // TODO: Have backend check if login in database, access game if valid
     const handleLogin = () => {
         console.log("Log in clicked");
     }
