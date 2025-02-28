@@ -1,19 +1,23 @@
 package com.pluto.app;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.*;
 
+/**
+ * This class contains code for starting the Spring Boot Framework and 
+ * Application Web Server for the local backend. It handles the configuration
+ * of Spring Beans, manages command-line arguments, and launches the 
+ * application.
+ */
 @SpringBootApplication
-@RestController
-@RequestMapping("/api")
 public class LocalSpringBootApp {
+    /**
+     * Starts the Spring Boot Framework and Web Server for the local backend on
+     * localhost:8080. 
+     *
+     * @param args - unused
+     */
     public static void main(String[] args) {
-      SpringApplication.run(LocalSpringBootApp.class, args);
-    }
-    @GetMapping("/login")
-    public String login(@RequestParam(value = "name", defaultValue = "John Doe") String name, 
-                        @RequestParam(value = "pass", defaultValue = "123") String pass) {
-      return "{\"name\": \"" + name + "\"},"
-           + "{\"pass\": \"" + pass + "\"}";
+        SpringApplication.run(LocalSpringBootApp.class, args);
     }
 }
