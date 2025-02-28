@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.pluto.app;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,10 +10,10 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Tests DemoApplication
+ * Tests LocalController
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT) // May customize port here
-class DemoApplicationTests {
+class LocalControllerTest {
 
 	/**
 	 * IDK what autowired annotation does. supposed to do dependency injection or something?
