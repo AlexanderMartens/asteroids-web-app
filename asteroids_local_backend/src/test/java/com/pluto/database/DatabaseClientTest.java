@@ -1,4 +1,4 @@
-package com.pluto.app;
+package com.pluto.database;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
