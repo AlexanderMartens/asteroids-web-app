@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.pluto.app;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.*;
@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.*;
 @SpringBootApplication
 @RestController
 @RequestMapping("/api")
-public class DemoApplication {
+public class LocalSpringBootApp {
     public static void main(String[] args) {
-      SpringApplication.run(DemoApplication.class, args);
+      SpringApplication.run(LocalSpringBootApp.class, args);
     }
     @GetMapping("/login")
     public String login(@RequestParam(value = "name", defaultValue = "John Doe") String name, 
