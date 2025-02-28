@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class LocalController {
-
     /**
      * This method handles user login requests on localhost:8080/api/login.
      * Response messages are sent in a json format.
