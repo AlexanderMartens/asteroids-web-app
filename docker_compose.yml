@@ -1,0 +1,26 @@
+services:
+  user_database:
+    image: mysql/mysql-server:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: Users
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - database:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "53346:3306"
+  phpmyadmin1:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    depends_on:
+      - user_database
+    environment:
+      PMA_HOST: user_database
+      PMA_USER: root
+      PMA_PASSWORD: password
+    ports:
+      - "50084:80"
+volumes:
+  database:
