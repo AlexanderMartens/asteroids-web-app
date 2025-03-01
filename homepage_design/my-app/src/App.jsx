@@ -3,10 +3,9 @@ import './App.css'
 import Home from './home'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
+    {/** Pages to render here */}
       <Home/>
     </>
   )
