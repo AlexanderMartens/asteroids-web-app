@@ -1,3 +1,9 @@
+/** IMPORTANT
+ * As of current implementation, you need to run the following commands in the my-app directory:
+ * npm install
+ * npm run dev
+ */
+
 import React, {useState} from 'react'
 import './home.css'
 import logo from './images/asteroid-logo-bgless.png'
