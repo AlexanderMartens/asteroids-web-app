@@ -1,6 +1,7 @@
 package com.pluto.app;
 
 import org.springframework.web.bind.annotation.*;
+import com.pluto.database.DatabaseClient;
 
 /**
  * A controller class for the local backend. It handles HTTP requests from the 
@@ -23,8 +24,36 @@ public class LocalController {
             @RequestParam(value = "name", defaultValue = "John Doe") String name, 
             @RequestParam(value = "pass", defaultValue = "123") String pass
             ) {
+        DatabaseClient dbClient = new DatabaseClient();
+        if (dbClient.loginUser(name, pass)) {
+            return "{\"success\": \"" + true + "\"},"
+                    + "{\"error\": \"" + "\"}";
+        } else {
+            return "{\"success\": \"" + false + "\"},"
+                    + "{\"error\": \"" + "Invalid login credentials" + "\"}";
+        }
+    }
 
-        return "{\"name\": \"" + name + "\"},"
-                + "{\"pass\": \"" + pass + "\"}";
+    /** 
+     * This method handles user registration requests on localhost:8080/api/register.
+     * Response messages are sent in a json format.
+     * 
+     * @param name - the login name of the user
+     * @param pass - the password of the user
+     * @return - a json formatted confirmation or error of the registration request
+     */
+    @GetMapping("/register")
+    public String register(
+            @RequestParam(value = "name", defaultValue = "John Doe") String name, 
+            @RequestParam(value = "pass", defaultValue = "123") String pass
+            ) {
+        DatabaseClient dbClient = new DatabaseClient();
+        if (dbClient.createUser(name, pass)) {
+            return "{\"success\": \"" + true + "\"},"
+                    + "{\"error\": \"" + "\"}";
+        } else {
+            return "{\"success\": \"" + false + "\"},"
+                    + "{\"error\": \"" + "User already exists" + "\"}";
+        }
     }
 }

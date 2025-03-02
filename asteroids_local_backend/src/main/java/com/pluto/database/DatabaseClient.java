@@ -51,6 +51,60 @@ public class DatabaseClient {
             );
         ) {
             // Here we create the user
+            // Check if the user already exists
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "SELECT * FROM Users WHERE User_name = ?"
+            );
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return false;
+            }
+
+            // If the user does not exist, create the user
+            stmt = dbConn.prepareStatement(
+                "INSERT INTO Users (User_name, User_password) VALUES (?, ?)"
+            );
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            stmt.executeUpdate();
+            return true;
+            
+        } catch (SQLException e) {
+            System.out.println(
+                "Could not establish connection to MySQL database."
+            );
+            return false;
+        } 
+    }
+
+    /**
+     * Method to log in a user into the database.
+     * 
+     * @param username - username of the User
+     * @param password - password of the User
+     * @return - true if logged in, false otherwise
+     */
+    public boolean loginUser(String username, String password) {
+        // Try with resources making a connection to the MySql database
+        // If not, close the database connection
+        try (
+            // Append Database /Users to the end of the url
+            Connection dbConn = DriverManager.getConnection(
+                url + "/Users", dbUser, dbPass
+            );
+        ) {
+            // Here we log in the user
+            // Check if the user exists and the password is correct
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "SELECT * FROM Users WHERE User_name = ? AND User_password = ?"
+            );
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return true;
+            }
             
         } catch (SQLException e) {
             System.out.println(
