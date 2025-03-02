@@ -1,6 +1,7 @@
 package com.pluto.app;
 
 import org.springframework.web.bind.annotation.*;
+import com.pluto.database.*;
 
 /**
  * A controller class for the local backend. It handles HTTP requests from the 
@@ -20,11 +21,26 @@ public class LocalController {
      */
     @GetMapping("/login")
     public String login(
-            @RequestParam(value = "name", defaultValue = "John Doe") String name, 
-            @RequestParam(value = "pass", defaultValue = "123") String pass
+            @RequestParam(value = "name") String name, 
+            @RequestParam(value = "pass") String pass
             ) {
+
+        
 
         return "{\"name\": \"" + name + "\"},"
                 + "{\"pass\": \"" + pass + "\"}";
     }
+
+    /**
+     * This method handles user registration requests on localhost:8080/api/register.
+     * Reponse messages are sent in a json format.
+     */
+    public String register(
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "pass") String pass
+            ) {
+      
+         
+        return "";
+            } 
 }

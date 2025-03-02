@@ -32,6 +32,33 @@ public class DatabaseClient {
     public DatabaseClient() {
         this("jdbc:mysql://localhost:53346", "root", "password");
     }
+
+    /**
+     * Method to create a connection to the database. The connection must be 
+     * closed afterwords.
+     *
+     * @param database - string with the name to the desired database
+     * @return - a Connection object to the desired database
+     */
+    private Connection getConnection(String database) {
+        // Try with resources making a connection to the MySql database
+        try (
+            // Append Database /Users to the end of the url
+            Connection dbConn = DriverManager.getConnection(
+                url + "/" + database, dbUser, dbPass
+            );
+        ) {
+            // Successful connection. Return the Connection object
+            return dbConn;
+        } catch (SQLException e) {
+            System.out.println(
+                "Could not establish connection to MySQL database."
+            );
+            return null;
+        } 
+    }
+        
+     
     
     /**
      * Method to create a user into the database.
@@ -42,22 +69,32 @@ public class DatabaseClient {
      * 
      */
     public boolean createUser(String username, String password) {
-        // Try with resources making a connection to the MySql database
-        // If not, close the database connection
-        try (
-            // Append Database /Users to the end of the url
-            Connection dbConn = DriverManager.getConnection(
-                url + "/Users", dbUser, dbPass
-            );
-        ) {
-            // Here we create the user
-            
-        } catch (SQLException e) {
-            System.out.println(
-                "Could not establish connection to MySQL database."
-            );
+        // Get connection to database Users
+        // Need to free dbConn
+        Connection dbConn = getConnection("Users");
+        if (dbConn == null) {
             return false;
-        } 
+        }
+        // code to create user here
+
+        return false;
+    }
+
+    /**
+     * Method to login a user into the database.
+     *
+     * @param username - username of the User
+     * @param password - password of the User
+     * @return - true if user in database, false otherwise
+     */
+    public boolean userLogin(String username, String password) {
+        // Get connection to database Users
+        // need to free dbConn
+        Connection dbConn = getConnection("Users");
+        if (dbConn == null) {
+            return false;
+        }
+        // code to login user here
 
         return false;
     }
