@@ -1,8 +1,7 @@
 FROM ubuntu:latest
 RUN apt-get update && apt-get install npm -y
 COPY frontend ./frontend
-COPY fix.sh ./fix.sh
+COPY start_frontend.sh ./start_frontend.sh
 WORKDIR /frontend/my-app
-EXPOSE 5173
 
-CMD ["/fix.sh"]
+CMD ["/start_frontend.sh"]
