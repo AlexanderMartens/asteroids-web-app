@@ -11,6 +11,8 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "53346:3306"
+    networks:
+      - pluto_network
   phpmyadmin1:
     image: phpmyadmin/phpmyadmin:latest
     restart: always
@@ -22,17 +24,26 @@ services:
       PMA_PASSWORD: password
     ports:
       - "50084:80"
+    networks:
+      - pluto_network
   local_backend:
     build: 
       dockerfile: localbackend.Dockerfile
       context: .
     ports:
       - "8080:8080"
+    networks:
+      - pluto_network
   frontend:
     build:
       dockerfile: frontend.Dockerfile
       context: .
     ports:
       - "5173:5173"
+    networks:
+      - pluto_network
 volumes:
   database:
+
+networks:
+  pluto_network:

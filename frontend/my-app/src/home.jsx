@@ -34,6 +34,7 @@ function Home() {
         const startTime = performance.now(); // Start timer
 
         const response = await fetch(`http://localhost:8080/api/login?name=${username}&pass=${password}`);
+        // const response = await fetch(`http://project_07-local_backend-1:8080/api/login?name=${username}&pass=${password}`);
         const data = await response.json();
 
         const endTime = performance.now(); // End timer
@@ -56,6 +57,7 @@ function Home() {
         const startTime = performance.now(); // Start timer
 
         const response = await fetch(`http://localhost:8080/api/register?name=${username}&pass=${password}`);
+        // const response = await fetch(`http://project_07-local_backend-1:8080/api/register?name=${username}&pass=${password}`);
         const data = await response.json();
 
         const endTime = performance.now(); // End timer

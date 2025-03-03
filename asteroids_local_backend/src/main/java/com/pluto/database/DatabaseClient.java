@@ -30,7 +30,7 @@ public class DatabaseClient {
      * Default constructor for the DatabaseClient.
      */
     public DatabaseClient() {
-        this("jdbc:mysql://localhost:53346", "root", "password");
+        this("jdbc:mysql://project_07-user_database-1:3306", "root", "password");
     }
     
     /**
