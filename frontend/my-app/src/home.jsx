@@ -22,8 +22,6 @@ function Home() {
     const [password, setPassword] = useState('');
     const [timeTaken, setTimeTaken] = useState("");
 
-    // TODO: Have backend check if login in database, access game if valid
-    // TODO: add error code handling for if username + password is invalid
     /**
      * This method sends user login requests to the backend at localhost:8080/api/login
      * 
@@ -46,8 +44,6 @@ function Home() {
         console.log(`Success: ${data.success}, Error: ${data.error}`);
     }
 
-    // TODO: Have backend if username in database, add to database and access game if it doesn't exist
-    // TODO: add error code handling for if username + password already exists
     /**
      * This method sends user registration requests to the backend at localhost:8080/api/register
      * 
