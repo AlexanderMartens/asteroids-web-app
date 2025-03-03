@@ -20,6 +20,9 @@ function Home() {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    /* 
+    Change "" to ''
+    */
     const [timeTaken, setTimeTaken] = useState("");
 
     /**
