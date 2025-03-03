@@ -41,7 +41,9 @@ function Home() {
         const endTime = performance.now(); // End timer
         setTimeTaken((endTime - startTime).toFixed(2)); // Calculate time in ms
 
+        // Log success and error messages
         console.log(`Log in clicked. Username: ${username} Password: ${password}`);
+        console.log(`Success: ${data.success}, Error: ${data.error}`);
     }
 
     // TODO: Have backend if username in database, add to database and access game if it doesn't exist
@@ -63,7 +65,9 @@ function Home() {
         const endTime = performance.now(); // End timer
         setTimeTaken((endTime - startTime).toFixed(2)); // Calculate time in ms
 
+        // Log success and error messages
         console.log(`Register clicked. Username: ${username} Password: ${password}`);
+        console.log(`Success: ${data.success}, Error: ${data.error}`);
     }
 
     return (
