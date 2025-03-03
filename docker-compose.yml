@@ -22,5 +22,16 @@ services:
       PMA_PASSWORD: password
     ports:
       - "50084:80"
+  react-app:
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/my-app:/app/frontend/my-app
+      - /app/frontend/myapp/node_modules
+    working_dir: /app/frontend/my-app
+    command: npm run dev
 volumes:
   database:
