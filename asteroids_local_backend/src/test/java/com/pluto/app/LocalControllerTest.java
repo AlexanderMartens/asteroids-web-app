@@ -38,7 +38,7 @@ class LocalControllerTest {
 	@Test
 	void testDefaultLoginResponse() {
 		ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/login", String.class);
-		String expected = "{\"name\": \"John Doe\"},{\"pass\": \"123\"}";
+		String expected = "{\"success\": \"false\"},{\"error\": \"Invalid login credentials\"}";
 		assertEquals(expected, response.getBody());
 	}
 
@@ -48,7 +48,27 @@ class LocalControllerTest {
 	@Test
 	void testLoginResponse() {
 		ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/login?name=steve boss&pass=456", String.class);
-		String expected = "{\"name\": \"steve boss\"},{\"pass\": \"456\"}";
+		String expected = "{\"success\": \"false\"},{\"error\": \"Invalid login credentials\"}";
+		assertEquals(expected, response.getBody());
+	}
+
+	/**
+	 * Verifies response for register call with default arguments
+	 */
+	@Test
+	void testDefaultRegisterResponse() {
+		ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/register", String.class);
+		String expected = "{\"success\": \"false\"},{\"error\": \"User already exists\"}";
+		assertEquals(expected, response.getBody());
+	}
+
+	/**
+	 * Verifies response for register call with specified arguments
+	 */
+	@Test
+	void testRegisterResponse() {
+		ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/register?name=steve boss&pass=456", String.class);
+		String expected = "{\"success\": \"false\"},{\"error\": \"User already exists\"}";
 		assertEquals(expected, response.getBody());
 	}
 
