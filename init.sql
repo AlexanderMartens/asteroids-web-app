@@ -1,25 +1,7 @@
-CREATE DATABASE IF NOT EXISTS Users;
-USE Users;
-
-CREATE TABLE IF NOT EXISTS Users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS `Users`.`Login` (
+    `User_id` INT NOT NULL auto_increment,
+    `User_name` VARCHAR(16) NOT NULL UNIQUE,
+    `User_password` VARCHAR(32) NOT NULL,
+    PRIMARY KEY (`User_id`)
 );
-
-CREATE TABLE IF NOT EXISTS Scores (
-    score_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    score INT NOT NULL,
-    level_reached INT NOT NULL,
-    time_played TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS GameSettings (
-    setting_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    sound BOOLEAN DEFAULT TRUE,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
-);
+ALTER TABLE Login auto_increment = 10001;
