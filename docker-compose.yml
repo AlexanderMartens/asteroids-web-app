@@ -22,5 +22,11 @@ services:
       PMA_PASSWORD: password
     ports:
       - "50084:80"
+  local_backend:
+    build: 
+      dockerfile: localbackend.Dockerfile
+      context: .
+    ports:
+      - "8080:8080"
 volumes:
   database:
