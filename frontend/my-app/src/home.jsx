@@ -20,23 +20,50 @@ function Home() {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [timeTaken, setTimeTaken] = useState("");
 
-    // TODO: Javadoc comments for handleLogin
-    // TODO: Have backend check if login in database, access game if valid
     /**
+     * This method sends user login requests to the backend at localhost:8080/api/login
+     * 
+     * @param username - The username entered by the user
+     * @param password - The password entered by the user
+     * @returns {Promise<void>}
      * 
      */
-    const handleLogin = () => {
+    const handleLogin = async () => {
+        const startTime = performance.now(); // Start timer
+
+        const response = await fetch(`http://localhost:8080/api/login?name=${username}&pass=${password}`);
+        const data = await response.json();
+
+        const endTime = performance.now(); // End timer
+        setTimeTaken((endTime - startTime).toFixed(2)); // Calculate time in ms
+
+        // Log success and error messages
         console.log(`Log in clicked. Username: ${username} Password: ${password}`);
+        console.log(`Success: ${data.success}, Error: ${data.error}`);
     }
 
-    // TODO: Javadoc comments for handleRegister
-    //TODO: Have backend if username in database, add to database and access game if it doesn't exist
     /**
+     * This method sends user registration requests to the backend at localhost:8080/api/register
+     * 
+     * @param username - The username entered by the user
+     * @param password - The password entered by the user
+     * @returns {Promise<void>}
      * 
      */
-    const handleRegister = () => {
+    const handleRegister = async () => {
+        const startTime = performance.now(); // Start timer
+
+        const response = await fetch(`http://localhost:8080/api/register?name=${username}&pass=${password}`);
+        const data = await response.json();
+
+        const endTime = performance.now(); // End timer
+        setTimeTaken((endTime - startTime).toFixed(2)); // Calculate time in ms
+
+        // Log success and error messages
         console.log(`Register clicked. Username: ${username} Password: ${password}`);
+        console.log(`Success: ${data.success}, Error: ${data.error}`);
     }
 
     return (
