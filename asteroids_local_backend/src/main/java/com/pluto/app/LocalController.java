@@ -58,17 +58,4 @@ public class LocalController {
                     + "\"error\":\"" + "User already exists" + "\"}";
         }
     }
-
-    // /**
-    //  * This method handles user registration requests on localhost:8080/api/register.
-    //  * Reponse messages are sent in a json format.
-    //  */
-    // public String register(
-    //         @RequestParam(value = "name") String name,
-    //         @RequestParam(value = "pass") String pass
-    //         ) {
-      
-         
-    //     return "";
-    //         } 
 }
