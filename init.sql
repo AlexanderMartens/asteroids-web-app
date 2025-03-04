@@ -50,8 +50,6 @@ SELECT
     `Scores`.`Score`, 
     `Scores`.`Level_reached`, 
     `Scores`.`Duration_seconds`, 
-    `Scores`.`Accuracy`, 
-    `Scores`.`Game_mode`, 
     `Scores`.`Time_played`
 FROM `Scores`
 JOIN `UserProfiles` ON `Scores`.`Profile_id` = `UserProfiles`.`Profile_id`
