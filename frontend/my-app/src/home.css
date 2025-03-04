@@ -87,6 +87,7 @@
     border-width: 2px;
     border-radius: 6px;
     background-color: #111;
+    color: white;
 }
 
 .input-container label {
@@ -104,4 +105,5 @@
 
 .login-register {
     background-color: #333;
+    color: white;
 }
