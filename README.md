@@ -16,9 +16,9 @@ The customer-base for our game would be those who are enthusiastic for older-sty
 
 ### Specification
 
-The front end will be constructed with HTML and JavaScript and the main program will be hosted as an application run from a browser. We will utilize REST API to establish communication between the front end and the back end, which will be programmed in Java. The back end will directly communicate with the database, which will use MySQL.
+The front end will be constructed with HTML and JavaScript using React and the main program will be hosted as an application run from a browser. We will utilize REST API to establish communication between the front end and the back end, which will be programmed in Java. The back end will directly communicate with the database, which will use MySQL.
 
-There will be a database stored locally which will primarily keep track of information regarding the state of the user's profile. There may also be a database hosted remotely on a server that can keep track of game statistics that will help us make informed decisions about the gameplay and balancing. The remote database may also keep track of user profile data to allow the user to play between multiple devices while retaining progress.
+There will be a database hosted remotely on a server that will store user and profile information, game settings, and leaderboards.
 
 <!--
 At some point it will probably be useful to include a couple more UML diagrams. Perhaps an ERD for the database(s) and a sequence diagram to show how interactions occur between the database, backend and frontend.
@@ -29,11 +29,11 @@ At some point it will probably be useful to include a couple more UML diagrams. 
 ```mermaid
 flowchart RL
 subgraph Front End
-	A(JS, HTML)
+	A(React JS)
 end
 	
 subgraph Back End
-	B(Java: SpringBoot?)
+	B(Java: SpringBoot)
 end
 	
 subgraph Database
@@ -41,38 +41,48 @@ subgraph Database
 end
 
 A <-->|REST API| B
-B <--> C
+B <-->|JDBC| C
 ```
 
 #### Database
 
-To be fleshed out whenever database design decisions are more concrete.
+May be modified if needed.
 
 ```mermaid
 ---
-title: Sample ERD for Player Profile Database
+title: ERD for Player Profile Database
 ---
 erDiagram
-	Player ||--o{ Profile : "owned by"
-    Profile }o--o{ Unlockable : "unlocked in"
+    Login ||--o{ Profile : "has"
+    Profile ||--o{ Scores : "records"
+    Profile ||--o{ GameSettings : "has"
 
-    Player {
-        int player_id PK
-        string username
-        float playtime
+    Login {
+        int user_id PK
+        varchar user_name
+        varchar user_password
     }
 	
 	Profile {
 		int profile_id PK
-		int player_id FK
-		int high_score
+		int user_id FK
+		varchar profile_name
 	}
 
-    Unlockable {
-        int unlockable_id PK
+    Scores {
+        int Score_id PK
+        int Profile_id FK
+        int Score
+        int Level_reached
+        int Duration_seconds
+        timestamp Time_played
+    }
+
+    GameSettings {
+        int setting_id PK
         int profile_id FK
-        date unlock_date
-        string perk
+        boolean SFX
+        boolean Music
     }
 ```
 
