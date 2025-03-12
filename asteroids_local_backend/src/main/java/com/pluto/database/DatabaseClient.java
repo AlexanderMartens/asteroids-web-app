@@ -30,35 +30,8 @@ public class DatabaseClient {
      * Default constructor for the DatabaseClient.
      */
     public DatabaseClient() {
-        this("jdbc:mysql://localhost:53346", "root", "password");
+        this("jdbc:mysql://project_07-user_database-1:3306", "root", "password");
     }
-
-    /**
-     * Method to create a connection to the database. The connection must be 
-     * closed afterwords.
-     *
-     * @param database - string with the name to the desired database
-     * @return - a Connection object to the desired database
-     */
-    private Connection getConnection(String database) {
-        // Try with resources making a connection to the MySql database
-        try (
-            // Append Database /Users to the end of the url
-            Connection dbConn = DriverManager.getConnection(
-                url + "/" + database, dbUser, dbPass
-            );
-        ) {
-            // Successful connection. Return the Connection object
-            return dbConn;
-        } catch (SQLException e) {
-            System.out.println(
-                "Could not establish connection to MySQL database."
-            );
-            return null;
-        } 
-    }
-        
-     
     
     /**
      * Method to create a user into the database.
@@ -80,7 +53,7 @@ public class DatabaseClient {
             // Here we create the user
             // Check if the user already exists
             PreparedStatement stmt = dbConn.prepareStatement(
-                "SELECT * FROM Users WHERE User_name = ?"
+                "SELECT * FROM Login WHERE User_name = ?"
             );
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -90,7 +63,7 @@ public class DatabaseClient {
 
             // If the user does not exist, create the user
             stmt = dbConn.prepareStatement(
-                "INSERT INTO Users (User_name, User_password) VALUES (?, ?)"
+                "INSERT INTO Login (User_name, User_password) VALUES (?, ?)"
             );
             stmt.setString(1, username);
             stmt.setString(2, password);
@@ -124,7 +97,7 @@ public class DatabaseClient {
             // Here we log in the user
             // Check if the user exists and the password is correct
             PreparedStatement stmt = dbConn.prepareStatement(
-                "SELECT * FROM Users WHERE User_name = ? AND User_password = ?"
+                "SELECT * FROM Login WHERE User_name = ? AND User_password = ?"
             );
             stmt.setString(1, username);
             stmt.setString(2, password);
@@ -137,28 +110,9 @@ public class DatabaseClient {
             System.out.println(
                 "Could not establish connection to MySQL database."
             );
+            e.printStackTrace();
             return false;
         }
-        // code to create user here
-
-        return false;
-    }
-
-    /**
-     * Method to login a user into the database.
-     *
-     * @param username - username of the User
-     * @param password - password of the User
-     * @return - true if user in database, false otherwise
-     */
-    public boolean userLogin(String username, String password) {
-        // Get connection to database Users
-        // need to free dbConn
-        Connection dbConn = getConnection("Users");
-        if (dbConn == null) {
-            return false;
-        }
-        // code to login user here
 
         return false;
     }

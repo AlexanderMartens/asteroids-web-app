@@ -19,6 +19,7 @@ public class LocalController {
      * @param pass - the password of the user
      * @return - a json formatted confirmation or error of the login request
      */
+    @CrossOrigin(origins="*")
     @GetMapping("/login")
     public String login(
             @RequestParam(value = "name") String name, 
@@ -26,11 +27,11 @@ public class LocalController {
             ) {
         DatabaseClient dbClient = new DatabaseClient();
         if (dbClient.loginUser(name, pass)) {
-            return "{\"success\": \"" + true + "\"},"
-                    + "{\"error\": \"" + "\"}";
+            return "{\"success\":\"" + true + "\","
+                    + "\"error\":\"" + "\"}";
         } else {
-            return "{\"success\": \"" + false + "\"},"
-                    + "{\"error\": \"" + "Invalid login credentials" + "\"}";
+            return "{\"success\":\"" + false + "\","
+                    + "\"error\":\"" + "Invalid login credentials" + "\"}";
         }
     }
 
@@ -42,6 +43,7 @@ public class LocalController {
      * @param pass - the password of the user
      * @return - a json formatted confirmation or error of the registration request
      */
+    @CrossOrigin(origins="*")
     @GetMapping("/register")
     public String register(
             @RequestParam(value = "name", defaultValue = "John Doe") String name, 
@@ -49,11 +51,11 @@ public class LocalController {
             ) {
         DatabaseClient dbClient = new DatabaseClient();
         if (dbClient.createUser(name, pass)) {
-            return "{\"success\": \"" + true + "\"},"
-                    + "{\"error\": \"" + "\"}";
+            return "{\"success\":\"" + true + "\","
+                    + "\"error\":\"" + "\"}";
         } else {
-            return "{\"success\": \"" + false + "\"},"
-                    + "{\"error\": \"" + "User already exists" + "\"}";
+            return "{\"success\":\"" + false + "\","
+                    + "\"error\":\"" + "User already exists" + "\"}";
         }
     }
 }
