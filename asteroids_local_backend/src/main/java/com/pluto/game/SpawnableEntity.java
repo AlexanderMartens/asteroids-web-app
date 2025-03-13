@@ -13,7 +13,7 @@ public abstract class SpawnableEntity {
      * An object's location on the screen. It must be within a predetermined
      * range.
      */
-    private int[] objLocation;
+    private int[] objLocation; // maybe flaot? \\change to float
 
     /*
      * This object's hitbox for determining collisions. It contains a list of
@@ -21,7 +21,7 @@ public abstract class SpawnableEntity {
      * represented by a 3-tuple, where the first two coordinates is the global
      * location of the circle, and the third coordinate is the circle's radius.
      */
-    private int[][] hitbox;
+    private int[][] hitbox; // more classes
 
     /*
      * The orientation of this spawnable entity for drawing on screen. It is
@@ -34,7 +34,7 @@ public abstract class SpawnableEntity {
      * The velocity of this spawnable entity. It is represented by a vector.
      * Note that the velocity is independent from the object's orientation.
      */
-    private int[] objVelocity;
+    private int[] objVelocity; // coordinate class or two variables?
 
     /**
      * When called, this method moves the SpawnableEntity by one timestep.
@@ -54,15 +54,15 @@ public abstract class SpawnableEntity {
 
         int localX;
         int localY;
-        int rotX;
+        int rotX; // more comments on what these are
         int rotY;
         for (int[] circle : hitbox) {
             // Convert the circle location to local object coordinates
             localX = circle[0] - objLocation[0];
-            localY = circle[1] - objLocation[1];
+            localY = circle[1] - objLocation[1]; // vector/circle class
 
             // Rotate local coordinates by radians
-            rotX = (int) Math.round(
+            rotX = (int) Math.round( 
                     localX * Math.cos(radians) - localY * Math.sin(radians));
             rotY = (int) Math.round(
                     localX * Math.sin(radians) + localY * Math.cos(radians));
