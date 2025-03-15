@@ -153,12 +153,15 @@ public class DatabaseClient {
      * Score must be one of the following: "Score", "Level_reached", "Duration_seconds".
      * Caller must close the ResultSet and Statement.
      * 
-     * @param n - number of scores to fetch
+     * @param n - number of scores to fetch, must be a positive integer
      * @param score - which score to fetch
      * @return - a ResultSet of the top n scores or null if score is invalid or an error occurred
      */
     public ResultSet fetchTopScores(int n, String score) {
         if (!score.equals("Score") && !score.equals("Level_reached") && !score.equals("Duration_seconds")) {
+            return null;
+        }
+        if (n <= 0) {
             return null;
         }
             
