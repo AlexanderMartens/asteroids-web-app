@@ -116,4 +116,55 @@ public class DatabaseClient {
 
         return false;
     }
+
+    /**
+     * Creates a user profile in the database. User cannot have more than four profiles.
+     * 
+     * @param username - username of the User
+     * @param profile_name - name of the profile
+     * @return - true if created profile, false otherwise
+     */
+    public boolean createProfile(String username, String profile_name) {
+        // Connect to database
+        // Check if user already has 4 profiles
+        // Check if profile name already exists for that user
+        // Create profile
+        // Check for SQL exceptions
+
+        return false;
+    }
+
+    /**
+     * Edits a user profile's name in the database.
+     * 
+     * @param username - username of the User
+     * @param profile_name - name of the profile
+     * @param new_profile_name - new name of the profile
+     * @return - true if edited profile, false otherwise
+     */
+    public boolean editProfile(String username, String profile_name, String new_profile_name) {
+        // Connect to database
+        // Check if profile name exists for that user
+        // Check if new profile name already exists for that user
+        // Edit profile
+        // Check for SQL exceptions
+
+        return false;
+    }
+
+    /**
+     * Deletes a user profile in the database. Cascades to delete all data associated with the profile.
+     * 
+     * @param username - username of the User
+     * @param profile_name - name of the profile
+     * @return - true if deleted profile, false otherwise
+     */
+    public boolean deleteProfile(String username, String profile_name) {
+        // Connect to database
+        // Check if profile name exists for that user
+        // Delete profile
+        // Check for SQL exceptions
+
+        return false;
+    }
 }
