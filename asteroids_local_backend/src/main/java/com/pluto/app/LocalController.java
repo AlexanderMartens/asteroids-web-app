@@ -11,9 +11,28 @@ import com.pluto.database.DatabaseClient;
 @RestController
 @RequestMapping("/api")
 public class LocalController {
+
+    /**
+     * Regex pattern for matching usernames that must have 3-16 characters
+     * (inclusive) and contain only letters (lowercase and uppercase), numbers,
+     * and underscores (_).
+     * 
+     */
+    private static final String USERNAME_FORMAT = "^[a-zA-Z0-9_]{3,16}$";
+
+    /**
+     * Regex pattern for matching passwords that must have 4-32 characters
+     * (inclusive) and contain only letters (lowercase and uppercase) and numbers
+     * 
+     * TODO: Add support for various symbols such as some of the following: !@#$%^&*()_+
+     */
+    private static final String PASSWORD_FORMAT = "^[a-zA-Z0-9]{4,32}$";
+
     /**
      * This method handles user login requests on localhost:8080/api/login.
      * Response messages are sent in a json format.
+     * 
+     * @see generateResponse - for json response format
      *
      * @param name - the login name of the user
      * @param pass - the password of the user
@@ -22,22 +41,30 @@ public class LocalController {
     @CrossOrigin(origins="*")
     @GetMapping("/login")
     public String login(
-            @RequestParam(value = "name") String name, 
-            @RequestParam(value = "pass") String pass
+            @RequestParam(value = "name", defaultValue = "") String name, 
+            @RequestParam(value = "pass", defaultValue = "") String pass
             ) {
+        
+        // Check that name and pass are of valid format
+        if (!name.matches(USERNAME_FORMAT))
+            return generateResponse(false, "Username is invalid");
+        if (!pass.matches(PASSWORD_FORMAT))
+            return generateResponse(false, "Password is invalid");
+
+        // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
         DatabaseClient dbClient = new DatabaseClient();
         if (dbClient.loginUser(name, pass)) {
-            return "{\"success\":\"" + true + "\","
-                    + "\"error\":\"" + "\"}";
+            return generateResponse(true);
         } else {
-            return "{\"success\":\"" + false + "\","
-                    + "\"error\":\"" + "Invalid login credentials" + "\"}";
+            return generateResponse(false, "Unable to login");
         }
     }
 
     /** 
      * This method handles user registration requests on localhost:8080/api/register.
      * Response messages are sent in a json format.
+     * 
+     * @see generateResponse - for json response format
      * 
      * @param name - the login name of the user
      * @param pass - the password of the user
@@ -46,16 +73,49 @@ public class LocalController {
     @CrossOrigin(origins="*")
     @GetMapping("/register")
     public String register(
-            @RequestParam(value = "name", defaultValue = "John Doe") String name, 
-            @RequestParam(value = "pass", defaultValue = "123") String pass
+            @RequestParam(value = "name", defaultValue = "") String name, 
+            @RequestParam(value = "pass", defaultValue = "") String pass
             ) {
+        
+        // Check that name and pass are of valid format
+        if (!name.matches(USERNAME_FORMAT))
+            return generateResponse(false, "Username is invalid");
+        if (!pass.matches(PASSWORD_FORMAT))
+            return generateResponse(false, "Password is invalid");
+
+        // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
         DatabaseClient dbClient = new DatabaseClient();
         if (dbClient.createUser(name, pass)) {
-            return "{\"success\":\"" + true + "\","
-                    + "\"error\":\"" + "\"}";
+            return generateResponse(true);
         } else {
-            return "{\"success\":\"" + false + "\","
-                    + "\"error\":\"" + "User already exists" + "\"}";
+            return generateResponse(false, "Unable to create user");
         }
+    }
+
+    /**
+     * Generates a JSON formatted string representing a response message.
+     * 
+     * Overloaded method for no error message
+     * 
+     * @param result - Whether the response sucessfully retrieved data or not
+     */
+    private String generateResponse(boolean status) {
+        return "{\"success\":\"" + status + "\","
+                + "\"error\":\"" + "\"}";
+    }
+
+    /**
+     * Generates a JSON formatted string representing a response message.
+     * 
+     * Overloaded method providing an error message
+     * 
+     * TODO: check error message is NOT empty
+     * 
+     * @param result - Whether the response sucessfully retrieved data or not
+     * @param errorMsg - A detailed description of any errors, or blank if none
+     */
+    private String generateResponse(boolean status, String errorMsg) {
+        return "{\"success\":\"" + status + "\","
+                + "\"error\":\"" + errorMsg + "\"}";
     }
 }
