@@ -116,4 +116,69 @@ public class DatabaseClient {
 
         return false;
     }
+
+    /**
+     * Uploads a score to the database.
+     * 
+     * @param profile_id - id of the profile
+     * @param score - score to upload
+     * @param level - level reached
+     * @param duration - duration of the game
+     * @return - true if uploaded score, false otherwise
+     */
+    public boolean uploadScore(int profile_id, int score, int level, int duration) {
+        try (
+            Connection dbConn = DriverManager.getConnection(
+                url + "/Users", dbUser, dbPass
+            );
+        ) {
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "INSERT INTO Scores (Profile_id, Score, Level_reached, Duration_seconds) VALUES (?, ?, ?, ?)"
+            );
+            stmt.setInt(1, profile_id);
+            stmt.setInt(2, score);
+            stmt.setInt(3, level);
+            stmt.setInt(4, duration);
+            stmt.executeUpdate();
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Fetches the top n scores from the database. 
+     * Score must be one of the following: "Score", "Level_reached", "Duration_seconds".
+     * Caller must close the ResultSet and Statement.
+     * 
+     * @param n - number of scores to fetch
+     * @param score - which score to fetch
+     * @return - a ResultSet of the top n scores or null if score is invalid or an error occurred
+     */
+    public ResultSet fetchTopScores(int n, String score) {
+        if (!score.equals("Score") && !score.equals("Level_reached") && !score.equals("Duration_seconds")) {
+            return null;
+        }
+            
+        try {
+            Connection dbConn = DriverManager.getConnection(url + "/Users", dbUser, dbPass);
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "SELECT Users.User_name, UserProfiles.Profile_name, Scores." + score + ", Scores.Time_played " +
+                "FROM Scores " +
+                "JOIN UserProfiles ON Scores.Profile_id = UserProfiles.Profile_id " +
+                "JOIN Users ON UserProfiles.User_id = Users.User_id " +
+                "ORDER BY Scores." + score + " DESC " +
+                "LIMIT ?"
+            );
+            stmt.setInt(1, n);
+
+            return stmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+        
 }
