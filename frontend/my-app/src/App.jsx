@@ -1,14 +1,19 @@
-import { useState } from 'react'
-import './App.css'
-import Home from './home'
+import { useState } from 'react';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import './App.css';
+import Home from './home';
+import MainMenu from './main_menu';
 
 function App() {
   return (
-    <>
+    <BrowserRouter>
     {/** Pages to render here */}
-      <Home/>
-    </>
+      <Routes>
+        <Route path='/' element={<Home/>}/>
+        <Route path='/main_menu' element={<MainMenu/>}/>
+      </Routes>
+    </BrowserRouter>
   )
-}
+};
 
-export default App
+export default App;
