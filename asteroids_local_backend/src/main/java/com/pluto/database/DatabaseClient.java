@@ -125,13 +125,58 @@ public class DatabaseClient {
      * @return - true if created profile, false otherwise
      */
     public boolean createProfile(String username, String profile_name) {
-        // Connect to database
-        // Check if user already has 4 profiles
-        // Check if profile name already exists for that user
-        // Create profile
-        // Check for SQL exceptions
+        try (
+            Connection dbConn = DriverManager.getConnection(
+                url + "/Users", dbUser, dbPass
+            );
+        ) {
+            // Get the User_id from the Login table
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "SELECT User_id FROM Login WHERE User_name = ?"
+            );
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) {
+                return false;
+            }
+            int userId = rs.getInt("User_id");
 
-        return false;
+            // Check if user already has 4 profiles
+            stmt = dbConn.prepareStatement(
+                "SELECT COUNT(*) FROM UserProfiles " + 
+                "WHERE User_id = ?"
+            );
+            stmt.setInt(1, userId);
+            rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) >= 4) {
+                return false;
+            }
+
+            // Check if profile name already exists for that user
+            stmt = dbConn.prepareStatement(
+                "SELECT * FROM UserProfiles " + 
+                "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
+            );
+            stmt.setInt(1, userId);
+            stmt.setString(2, profile_name);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                return false;
+            }
+
+            // Create profile
+            stmt = dbConn.prepareStatement(
+                "INSERT INTO UserProfiles (User_id, Profile_name) VALUES (?, ?)"
+            );
+            stmt.setInt(1, userId);
+            stmt.setString(2, profile_name);
+            stmt.executeUpdate();
+            return true;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -143,13 +188,61 @@ public class DatabaseClient {
      * @return - true if edited profile, false otherwise
      */
     public boolean editProfile(String username, String profile_name, String new_profile_name) {
-        // Connect to database
-        // Check if profile name exists for that user
-        // Check if new profile name already exists for that user
-        // Edit profile
-        // Check for SQL exceptions
+        try (
+            Connection dbConn = DriverManager.getConnection(
+                url + "/Users", dbUser, dbPass
+            );
+        ) {
+            // Get the User_id from the Login table
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "SELECT User_id FROM Login WHERE User_name = ?"
+            );
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) {
+                return false;
+            }
+            int userId = rs.getInt("User_id");
 
-        return false;
+            // Check if profile name exists for that user
+            stmt = dbConn.prepareStatement(
+                "SELECT * FROM UserProfiles " + 
+                "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
+            );
+            stmt.setInt(1, userId);
+            stmt.setString(2, profile_name);
+            rs = stmt.executeQuery();
+            if (!rs.next()) {
+                return false;
+            }
+
+            // Check if new profile name already exists for that user
+            stmt = dbConn.prepareStatement(
+                "SELECT * FROM UserProfiles " + 
+                "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
+            );
+            stmt.setInt(1, userId);
+            stmt.setString(2, new_profile_name);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                return false;
+            }
+
+            // Edit profile
+            stmt = dbConn.prepareStatement(
+                "UPDATE UserProfiles SET Profile_name = ? " + 
+                "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
+            );
+            stmt.setString(1, new_profile_name);
+            stmt.setInt(2, userId);
+            stmt.setString(3, profile_name);
+            int rowsUpdated = stmt.executeUpdate();
+
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -160,11 +253,47 @@ public class DatabaseClient {
      * @return - true if deleted profile, false otherwise
      */
     public boolean deleteProfile(String username, String profile_name) {
-        // Connect to database
-        // Check if profile name exists for that user
-        // Delete profile
-        // Check for SQL exceptions
+        try (
+            Connection dbConn = DriverManager.getConnection(
+                url + "/Users", dbUser, dbPass
+            );
+        ) {
+            // Get the User_id from the Login table
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "SELECT User_id FROM Login WHERE User_name = ?"
+            );
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) {
+                return false;
+            }
+            int userId = rs.getInt("User_id");
 
-        return false;
+            // Check if profile name exists for that user
+            stmt = dbConn.prepareStatement(
+                "SELECT * FROM UserProfiles " + 
+                "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
+            );
+            stmt.setInt(1, userId);
+            stmt.setString(2, profile_name);
+            rs = stmt.executeQuery();
+            if (!rs.next()) {
+                return false;
+            }
+
+            // Delete profile
+            stmt = dbConn.prepareStatement(
+                "DELETE FROM UserProfiles " +
+                "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
+            );
+            stmt.setInt(1, userId);
+            stmt.setString(2, profile_name);
+            int rowsDeleted = stmt.executeUpdate();
+
+            return rowsDeleted > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
