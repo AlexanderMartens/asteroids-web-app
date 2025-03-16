@@ -27,7 +27,7 @@ public class LocalController {
      * Note: the frontend must encode all symbols in form %XX with hex digit XX
      * in order for it to not be interpreted as a special character in the URL
      */
-    private static final String PASSWORD_FORMAT = "^[a-zA-Z0-9-=\\[\\]\\\\;',.\\/!@#$%^&*()_+{}|:\"<>`~]{4,32}$";
+    private static final String PASSWORD_FORMAT = "^[a-zA-Z0-9-=\\[\\]\\\\;',.\\/!@#$%^&*()_+{}|:\"<>?`~]{4,32}$";
 
     /**
      * This method handles user login requests on localhost:8080/api/login.
