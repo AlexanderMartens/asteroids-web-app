@@ -17,7 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class LocalControllerTest {
 
 	/**
-	 * IDK what autowired annotation does. supposed to do dependency injection or something?
+	 * Synchronous client for performing HTTP requests to mock the frontend
+	 * 
+	 * Autowired annotation allows Spring to automatically inject dependencies
+	 * (beans) at runtime 
 	 */
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -28,6 +31,11 @@ class LocalControllerTest {
 	@LocalServerPort
 	private int port;
 
+	/**
+	 * Included by Spring Boot
+	 * 
+	 * Verifies the application is able to load the Spring context
+	 */
 	@Test
 	void contextLoads() {
 	}
