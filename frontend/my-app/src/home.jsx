@@ -18,12 +18,22 @@ import logo from './images/asteroid-logo-bgless.png'
  */
 function Home() {
 
+    /**
+     * username input by the user
+     * 
+     * see src/main/java/com/pluto/app/LocalController.java for format specifications
+     */
     const [username, setUsername] = useState('');
+    /**
+     * password input by the user
+     * 
+     * may include special characters which must be encoded in order for them to
+     * not be treated as such within the URI of the HTTP request
+     * 
+     * see src/main/java/com/pluto/app/LocalController.java for format specifications
+     */
     const [password, setPassword] = useState('');
-    /* 
-    Change "" to ''
-    */
-    const [timeTaken, setTimeTaken] = useState("");
+    const [timeTaken, setTimeTaken] = useState('');
 
     /**
      * This method sends user login requests to the backend at localhost:8080/api/login
@@ -36,14 +46,14 @@ function Home() {
     const handleLogin = async () => {
         const startTime = performance.now(); // Start timer
 
-        const response = await fetch(`http://localhost:8080/api/login?name=${username}&pass=${password}`);
+        const response = await fetch(`http://localhost:8080/api/login?name=${encodeURIComponent(username)}&pass=${encodeURIComponent(password)}`);
         const data = await response.json();
 
         const endTime = performance.now(); // End timer
         setTimeTaken((endTime - startTime).toFixed(2)); // Calculate time in ms
 
         // Log success and error messages
-        console.log(`Log in clicked. Username: ${username} Password: ${password}`);
+        console.log(`Log in clicked. Username: ${encodeURIComponent(username)} Password: ${encodeURIComponent(password)}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
     }
 
@@ -58,14 +68,14 @@ function Home() {
     const handleRegister = async () => {
         const startTime = performance.now(); // Start timer
 
-        const response = await fetch(`http://localhost:8080/api/register?name=${username}&pass=${password}`);
+        const response = await fetch(`http://localhost:8080/api/register?name=${encodeURIComponent(username)}&pass=${encodeURIComponent(password)}`);
         const data = await response.json();
 
         const endTime = performance.now(); // End timer
         setTimeTaken((endTime - startTime).toFixed(2)); // Calculate time in ms
 
         // Log success and error messages
-        console.log(`Register clicked. Username: ${username} Password: ${password}`);
+        console.log(`Register clicked. Username: ${encodeURIComponent(username)} Password: ${encodeURIComponent(password)}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
     }
 
