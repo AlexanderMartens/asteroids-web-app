@@ -95,27 +95,25 @@ public class LocalController {
     /**
      * Generates a JSON formatted string representing a response message.
      * 
-     * Overloaded method for no error message
+     * Overloaded method allowing error message to be specified
      * 
-     * @param result - Whether the response sucessfully retrieved data or not
-     */
-    private String generateResponse(boolean status) {
-        return "{\"success\":\"" + status + "\","
-                + "\"error\":\"" + "\"}";
-    }
-
-    /**
-     * Generates a JSON formatted string representing a response message.
-     * 
-     * Overloaded method providing an error message
-     * 
-     * TODO: check error message is NOT empty
-     * 
-     * @param result - Whether the response sucessfully retrieved data or not
+     * @param result - True if the response was sucessful, false otherwise
      * @param errorMsg - A detailed description of any errors, or blank if none
      */
     private String generateResponse(boolean status, String errorMsg) {
         return "{\"success\":\"" + status + "\","
                 + "\"error\":\"" + errorMsg + "\"}";
     }
+
+    /**
+     * Generates a JSON formatted string representing a response message.
+     * 
+     * Overloaded method for no error message
+     * 
+     * @param result - True if the response was sucessful, false otherwise
+     */
+    private String generateResponse(boolean status) {
+        return generateResponse(status, "");
+    }
+
 }
