@@ -16,17 +16,18 @@ public class LocalController {
      * Regex pattern for matching usernames that must have 3-16 characters
      * (inclusive) and contain only letters (lowercase and uppercase), numbers,
      * and underscores (_).
-     * 
      */
     private static final String USERNAME_FORMAT = "^[a-zA-Z0-9_]{3,16}$";
 
     /**
      * Regex pattern for matching passwords that must have 4-32 characters
-     * (inclusive) and contain only letters (lowercase and uppercase) and numbers
+     * (inclusive) and contain only letters (lowercase and uppercase), numbers,
+     * and the following symbols: -=[]\;',./!@#$%^&*()_+{}|:"<>?`~
      * 
-     * TODO: Add support for various symbols such as some of the following: !@#$%^&*()_+
+     * Note: the frontend must encode all symbols in form %XX with hex digit XX
+     * in order for it to not be interpreted as a special character in the URL
      */
-    private static final String PASSWORD_FORMAT = "^[a-zA-Z0-9]{4,32}$";
+    private static final String PASSWORD_FORMAT = "^[a-zA-Z0-9-=\\[\\]\\\\;',.\\/!@#$%^&*()_+{}|:\"<>`~]{4,32}$";
 
     /**
      * This method handles user login requests on localhost:8080/api/login.
@@ -88,7 +89,7 @@ public class LocalController {
         if (dbClient.createUser(name, pass)) {
             return generateResponse(true);
         } else {
-            return generateResponse(false, "Unable to create user");
+            return generateResponse(false, "Unable to register");
         }
     }
 
