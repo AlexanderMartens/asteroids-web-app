@@ -36,14 +36,16 @@ function Home() {
     const handleLogin = async () => {
         const startTime = performance.now(); // Start timer
 
-        const response = await fetch(`http://localhost:8080/api/login?name=${username}&pass=${password}`);
+        // password may include special characters which must be encoded in order
+        // for them to not be treated as such within the URI of the HTTP request
+        const response = await fetch(`http://localhost:8080/api/login?name=${username}&pass=${encodeURIComponent(password)}`);
         const data = await response.json();
 
         const endTime = performance.now(); // End timer
         setTimeTaken((endTime - startTime).toFixed(2)); // Calculate time in ms
 
         // Log success and error messages
-        console.log(`Log in clicked. Username: ${username} Password: ${password}`);
+        console.log(`Log in clicked. Username: ${username} Password: ${encodeURIComponent(password)}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
     }
 
