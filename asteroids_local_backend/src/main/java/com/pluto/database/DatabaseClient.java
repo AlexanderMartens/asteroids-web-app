@@ -122,9 +122,9 @@ public class DatabaseClient {
      * 
      * @param username - username of the User
      * @param profile_name - name of the profile
-     * @return - true if created profile, false otherwise
+     * @return - Empty string if profile created, error message otherwise
      */
-    public boolean createProfile(String username, String profile_name) {
+    public String createProfile(String username, String profile_name) {
         try (
             Connection dbConn = DriverManager.getConnection(
                 url + "/Users", dbUser, dbPass
@@ -137,7 +137,7 @@ public class DatabaseClient {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             if (!rs.next()) {
-                return false;
+                return "Invalid User";
             }
             int userId = rs.getInt("User_id");
 
@@ -149,7 +149,7 @@ public class DatabaseClient {
             stmt.setInt(1, userId);
             rs = stmt.executeQuery();
             if (rs.next() && rs.getInt(1) >= 4) {
-                return false;
+                return "Max profiles reached";
             }
 
             // Check if profile name already exists for that user
@@ -161,7 +161,7 @@ public class DatabaseClient {
             stmt.setString(2, profile_name);
             rs = stmt.executeQuery();
             if (rs.next()) {
-                return false;
+                return "Profile already exists";
             }
 
             // Create profile
@@ -171,11 +171,11 @@ public class DatabaseClient {
             stmt.setInt(1, userId);
             stmt.setString(2, profile_name);
             stmt.executeUpdate();
-            return true;
+            return "";
             
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return "Error creating profile";
         }
     }
 
@@ -185,9 +185,9 @@ public class DatabaseClient {
      * @param username - username of the User
      * @param profile_name - name of the profile
      * @param new_profile_name - new name of the profile
-     * @return - true if edited profile, false otherwise
+     * @return - Empty string if profile edited, error message otherwise
      */
-    public boolean editProfile(String username, String profile_name, String new_profile_name) {
+    public String editProfile(String username, String profile_name, String new_profile_name) {
         try (
             Connection dbConn = DriverManager.getConnection(
                 url + "/Users", dbUser, dbPass
@@ -200,7 +200,7 @@ public class DatabaseClient {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             if (!rs.next()) {
-                return false;
+                return "Invalid User";
             }
             int userId = rs.getInt("User_id");
 
@@ -213,7 +213,7 @@ public class DatabaseClient {
             stmt.setString(2, profile_name);
             rs = stmt.executeQuery();
             if (!rs.next()) {
-                return false;
+                return "Profile does not exist";
             }
 
             // Check if new profile name already exists for that user
@@ -225,7 +225,7 @@ public class DatabaseClient {
             stmt.setString(2, new_profile_name);
             rs = stmt.executeQuery();
             if (rs.next()) {
-                return false;
+                return "Profile already exists";
             }
 
             // Edit profile
@@ -237,11 +237,14 @@ public class DatabaseClient {
             stmt.setInt(2, userId);
             stmt.setString(3, profile_name);
             int rowsUpdated = stmt.executeUpdate();
-
-            return rowsUpdated > 0;
+            if (rowsUpdated > 0) {
+                return "";
+            } else {
+                return "Error editing profile";
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return "Error editing profile";
         }
     }
 
@@ -250,9 +253,9 @@ public class DatabaseClient {
      * 
      * @param username - username of the User
      * @param profile_name - name of the profile
-     * @return - true if deleted profile, false otherwise
+     * @return - Empty string if profile deleted, error message otherwise
      */
-    public boolean deleteProfile(String username, String profile_name) {
+    public String deleteProfile(String username, String profile_name) {
         try (
             Connection dbConn = DriverManager.getConnection(
                 url + "/Users", dbUser, dbPass
@@ -265,7 +268,7 @@ public class DatabaseClient {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             if (!rs.next()) {
-                return false;
+                return "Invalid User";
             }
             int userId = rs.getInt("User_id");
 
@@ -278,7 +281,7 @@ public class DatabaseClient {
             stmt.setString(2, profile_name);
             rs = stmt.executeQuery();
             if (!rs.next()) {
-                return false;
+                return "Profile does not exist";
             }
 
             // Delete profile
@@ -289,11 +292,14 @@ public class DatabaseClient {
             stmt.setInt(1, userId);
             stmt.setString(2, profile_name);
             int rowsDeleted = stmt.executeUpdate();
-
-            return rowsDeleted > 0;
+            if (rowsDeleted > 0) {
+                return "";
+            } else {
+                return "Error deleting profile";
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return "Error deleting profile";
         }
     }
 }

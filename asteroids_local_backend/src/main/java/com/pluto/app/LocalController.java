@@ -58,4 +58,82 @@ public class LocalController {
                     + "\"error\":\"" + "User already exists" + "\"}";
         }
     }
+
+    /**
+     * This method handles user profile creation requests on localhost:8080/api/createProfile.
+     * Response messages are sent in a json format.
+     * 
+     * @param username - the login name of the user
+     * @param profile_name - the name of the profile
+     * @return - a json formatted confirmation or error of the profile creation request
+     */
+    @CrossOrigin(origins="*")
+    @GetMapping("/createProfile")
+    public String createProfile(
+            @RequestParam(value = "username", defaultValue = "") String username, 
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name
+            ) {
+        DatabaseClient dbClient = new DatabaseClient();
+        String error = dbClient.createProfile(username, profile_name);
+        if (error.equals("")) {
+            return "{\"success\":\"" + true + "\","
+                    + "\"error\":\"" + "\"}";
+        } else {
+            return "{\"success\":\"" + false + "\","
+                    + "\"error\":\"" + error + "\"}";
+        }
+    }
+
+    /**
+     * This method handles user profile editing requests on localhost:8080/api/editProfile.
+     * Response messages are sent in a json format.
+     * TODO: Check if new profile name has valid format
+     * 
+     * @param username - the login name of the user
+     * @param profile_name - the name of the profile
+     * @param new_profile_name - the new name of the profile
+     * @return - a json formatted confirmation or error of the profile editing request
+     */
+    @CrossOrigin(origins="*")
+    @GetMapping("/editProfile")
+    public String editProfile(
+            @RequestParam(value = "username", defaultValue = "") String username, 
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name,
+            @RequestParam(value = "new_profile_name", defaultValue = "") String new_profile_name
+            ) {
+        DatabaseClient dbClient = new DatabaseClient();
+        String error = dbClient.editProfile(username, profile_name, new_profile_name);
+        if (error.equals("")) {
+            return "{\"success\":\"" + true + "\","
+                    + "\"error\":\"" + "\"}";
+        } else {
+            return "{\"success\":\"" + false + "\","
+                    + "\"error\":\"" + error + "\"}";
+        }
+    }
+
+    /**
+     * This method handles user profile deletion requests on localhost:8080/api/deleteProfile.
+     * Response messages are sent in a json format.
+     * 
+     * @param username - the login name of the user
+     * @param profile_name - the name of the profile
+     * @return - a json formatted confirmation or error of the profile deletion request
+     */
+    @CrossOrigin(origins="*")
+    @GetMapping("/deleteProfile")
+    public String deleteProfile(
+            @RequestParam(value = "username", defaultValue = "") String username, 
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name
+            ) {
+        DatabaseClient dbClient = new DatabaseClient();
+        String error = dbClient.deleteProfile(username, profile_name);
+        if (error.equals("")) {
+            return "{\"success\":\"" + true + "\","
+                    + "\"error\":\"" + "\"}";
+        } else {
+            return "{\"success\":\"" + false + "\","
+                    + "\"error\":\"" + error + "\"}";
+        }
+    }
 }
