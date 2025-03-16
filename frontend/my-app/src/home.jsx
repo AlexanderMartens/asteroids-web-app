@@ -46,14 +46,14 @@ function Home() {
     const handleLogin = async () => {
         const startTime = performance.now(); // Start timer
 
-        const response = await fetch(`http://localhost:8080/api/login?name=${username}&pass=${encodeURIComponent(password)}`);
+        const response = await fetch(`http://localhost:8080/api/login?name=${encodeURIComponent(username)}&pass=${encodeURIComponent(password)}`);
         const data = await response.json();
 
         const endTime = performance.now(); // End timer
         setTimeTaken((endTime - startTime).toFixed(2)); // Calculate time in ms
 
         // Log success and error messages
-        console.log(`Log in clicked. Username: ${username} Password: ${encodeURIComponent(password)}`);
+        console.log(`Log in clicked. Username: ${encodeURIComponent(username)} Password: ${encodeURIComponent(password)}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
     }
 
@@ -68,14 +68,14 @@ function Home() {
     const handleRegister = async () => {
         const startTime = performance.now(); // Start timer
 
-        const response = await fetch(`http://localhost:8080/api/register?name=${username}&pass=${encodeURIComponent(password)}`);
+        const response = await fetch(`http://localhost:8080/api/register?name=${encodeURIComponent(username)}&pass=${encodeURIComponent(password)}`);
         const data = await response.json();
 
         const endTime = performance.now(); // End timer
         setTimeTaken((endTime - startTime).toFixed(2)); // Calculate time in ms
 
         // Log success and error messages
-        console.log(`Register clicked. Username: ${username} Password: ${encodeURIComponent(password)}`);
+        console.log(`Register clicked. Username: ${encodeURIComponent(username)} Password: ${encodeURIComponent(password)}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
     }
 
