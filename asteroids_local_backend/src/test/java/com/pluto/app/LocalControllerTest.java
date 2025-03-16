@@ -1,14 +1,19 @@
 package com.pluto.app;
 
+// Testing utilities
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+// Spring utilties
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+// For parsing responses as JSON object
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Verifies correctness of HTTP responses from local backend for user logins
@@ -23,7 +28,7 @@ class LocalControllerTest {
 	 * (beans) at runtime 
 	 */
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private TestRestTemplate restTemplate; // TODO: rename to something more useful
 
 	/**
 	 * Injects the HTTP server port allocated at runtime
