@@ -19,6 +19,8 @@ function MainMenu() {
         // Main container for the menu
         <div className='main-menu-container'>
 
+            {/* TODO: Add a profiles selector. Top left? */}
+
             {/* Exit button section */}
             <div className='exit-set'>
                 <div className='placeholder-exit-icon'/> {/* Placeholder for exit icon */}
@@ -45,6 +47,7 @@ function MainMenu() {
 
                     {/* Individual icon sets */}
                     <div className='icon-set'>
+                        {/* TODO: Link components that route to a Route component to a page component */}
                         {/* Placeholder for Stats icon.
                         * All of these icons will be converted
                         * into Route components that direct
