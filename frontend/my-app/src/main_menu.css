@@ -1,4 +1,4 @@
-/* Page layout organized vertically. */
+/* Main container for the menu, taking up the full viewport */
 .main-menu-container {
     height: 100vh;
     width: 100vw;
@@ -6,12 +6,12 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    background-color: #000;
+    background-color: #000; /* Black background */
     padding: 0;
     margin: 0;
 }
 
-/* Content organized vertically in an 800 pixel wide container */
+/* Content section of the menu, centered both vertically and horizontally */
 .main-menu-content {
     display: flex;
     flex-direction: column;
@@ -21,42 +21,46 @@
     height: 95%;
 }
 
+/* Logo styling with fixed dimensions and centered alignment */
 .main-menu-logo {
     height: 200px;
     width: 200px;
     align-self: center;
 }
 
+/* Title container for centering the title */
 .title-container {
     display: flex;
     justify-content: center;
 }
 
-/* Padding to adjust for the font pushing letters to the left
-* Increasing the width pushes the letters more to the right */
+/* Padding adjustment for the title to fix alignment issues */
 .title-padding {
     width: 20px;
 }
 
-/* Imported font specifically for the Asteroids title. */
+/* Custom font for the Asteroids title */
 @font-face {
     font-family: 'SpaceMission';
     src: url('./fonts/SpaceMission-rgyw9.otf') format('opentype');
 }
 
+/* Styling for the Asteroids title */
 .title {
     align-self: center;
     font-size: 8rem;
     font-family: 'SpaceMission';
-    -webkit-text-fill-color: #222;
-    -webkit-text-stroke: 2px;
+    -webkit-text-fill-color: #222; /* Inner text color */
+    -webkit-text-stroke: 2px; /* Outline stroke */
     text-align: center;
-    color: white;
+    color: white; /* Fallback color */
     height: 10.2rem;
 }
 
+/* Styling for the Play button.
+* Adds onto app-wide button styles
+* to be tailored to Play button. */
 .play-button {
-
     padding-left: 80px;
     padding-right: 80px;
     padding-top: 20px;
@@ -67,44 +71,48 @@
 
     font-size: 2.3rem;
 
-    border-radius: 20px;
-    border: 2px solid transparent;
-
+    border-radius: 20px; /* Rounded corners */
+    border: 2px solid transparent; /* Transparent border */
 }
 
+/* Container for the menu icons, spaced evenly */
 .icon-container {
     display: flex;
     justify-content: space-between;
     width: 60%;
 }
 
+/* Individual icon set container, aligned vertically */
 .icon-set {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
+/* Placeholder styling for menu icons */
 .placeholder-menu-icon {
-    border: 1px solid white;
+    border: 1px solid white; /* White border */
     width: 60px;
     height: 60px;
     margin-left: 40px;
     margin-right: 40px;
 }
 
+/* Exit button container, aligned to the top-right */
 .exit-set {
     display: flex;
     flex-direction: column;
     width: 100%;
     justify-content: flex-start;
     align-items: flex-end;
-    margin-bottom: -80px;
+    margin-bottom: -80px; /* Adjust positioning */
     margin-top: 20px;
     margin-right: 40px;
 }
 
+/* Placeholder styling for the exit icon */
 .placeholder-exit-icon {
-    border: 1px solid white;
+    border: 1px solid white; /* White border */
     width: 40px;
     height: 40px;
 }
