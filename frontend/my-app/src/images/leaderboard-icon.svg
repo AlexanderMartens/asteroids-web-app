@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 880">
+  <g id="Layer_1-2" data-name="Layer 1">
+    <rect x="380" width="320" height="880" style="fill: #fff;"/>
+    <text transform="translate(456 732.4)" style="fill: #73b6ff; font-family: Futury-Light, Futury; font-size: 380px; font-weight: 300;"><tspan x="0" y="0">1</tspan></text>
+    <rect y="200" width="317.6" height="680" style="fill: #fff;"/>
+    <text transform="translate(15.8 732.4)" style="fill: #73b6ff; font-family: Futury-Light, Futury; font-size: 380px; font-weight: 300;"><tspan x="0" y="0">2</tspan></text>
+    <rect x="761.6" y="320" width="318.4" height="560" style="fill: #fff;"/>
+    <text transform="translate(790.4 732.4)" style="fill: #73b6ff; font-family: Futury-Light, Futury; font-size: 380px; font-weight: 300;"><tspan x="0" y="0">3</tspan></text>
+  </g>
+</svg>

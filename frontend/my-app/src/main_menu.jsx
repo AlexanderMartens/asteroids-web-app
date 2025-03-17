@@ -6,6 +6,8 @@ import './main_menu.css';
 import logo from './images/asteroid-logo-bgless.png';
 import React, {useState} from 'react';
 import StatIcon from './images/stat-icon.svg?react';
+import LeaderboardIcon from './images/leaderboard-icon.svg?react';
+
 
 /**
  * MainMenu component renders the main menu of the Asteroids game after logging in.
@@ -53,14 +55,14 @@ function MainMenu() {
                         * All of these icons will be converted
                         * into Route components that direct
                         * the user to its appropriate page. */}
-                        <StatIcon/>
+                        <StatIcon className='menu-icon' />
                         {/* Label for Stats */}
                         <div className='icon-label'>Stats</div>
                     </div>
 
                     <div className='icon-set'>
                         {/* Placeholder for Leaderboard icon */}
-                        <div className='placeholder-menu-icon'/>
+                        <LeaderboardIcon className='menu-icon' />
                         {/* Label for Leaderboard */}
                         <div className='icon-label'>Leaderboard</div>
                     </div>
