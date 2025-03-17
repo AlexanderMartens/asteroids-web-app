@@ -26,12 +26,13 @@ public class LocalController {
             @RequestParam(value = "pass") String pass
             ) {
         DatabaseClient dbClient = new DatabaseClient();
-        if (dbClient.loginUser(name, pass)) {
+        String error = dbClient.loginUser(name, pass);
+        if (error.equals("")) {
             return "{\"success\":\"" + true + "\","
                     + "\"error\":\"" + "\"}";
         } else {
             return "{\"success\":\"" + false + "\","
-                    + "\"error\":\"" + "Invalid login credentials" + "\"}";
+                    + "\"error\":\"" + error + "\"}";
         }
     }
 
@@ -50,12 +51,13 @@ public class LocalController {
             @RequestParam(value = "pass", defaultValue = "123") String pass
             ) {
         DatabaseClient dbClient = new DatabaseClient();
-        if (dbClient.createUser(name, pass)) {
+        String error = dbClient.createUser(name, pass);
+        if (error.equals("")) {
             return "{\"success\":\"" + true + "\","
                     + "\"error\":\"" + "\"}";
         } else {
             return "{\"success\":\"" + false + "\","
-                    + "\"error\":\"" + "User already exists" + "\"}";
+                    + "\"error\":\"" + error + "\"}";
         }
     }
 

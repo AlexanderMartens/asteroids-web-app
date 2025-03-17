@@ -38,10 +38,10 @@ public class DatabaseClient {
      *
      * @param username - username of the new User
      * @param password - password of the new User
-     * @return - true if created user, false otherwise
+     * @return - String error message, is empty if method is successful
      * 
      */
-    public boolean createUser(String username, String password) {
+    public String createUser(String username, String password) {
         // Try with resources making a connection to the MySql database
         // If not, close the database connection
         try (
@@ -58,7 +58,7 @@ public class DatabaseClient {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return false;
+                return "User already exists";
             }
 
             // If the user does not exist, create the user
@@ -68,13 +68,14 @@ public class DatabaseClient {
             stmt.setString(1, username);
             stmt.setString(2, password);
             stmt.executeUpdate();
-            return true;
+            return "";
             
         } catch (SQLException e) {
             System.out.println(
                 "Could not establish connection to MySQL database."
             );
-            return false;
+            e.printStackTrace();
+            return "Error creating user";
         } 
     }
 
@@ -83,9 +84,9 @@ public class DatabaseClient {
      * 
      * @param username - username of the User
      * @param password - password of the User
-     * @return - true if logged in, false otherwise
+     * @return - String error message, is empty if method is successful
      */
-    public boolean loginUser(String username, String password) {
+    public String loginUser(String username, String password) {
         // Try with resources making a connection to the MySql database
         // If not, close the database connection
         try (
@@ -103,7 +104,7 @@ public class DatabaseClient {
             stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return true;
+                return "";
             }
             
         } catch (SQLException e) {
@@ -111,10 +112,10 @@ public class DatabaseClient {
                 "Could not establish connection to MySQL database."
             );
             e.printStackTrace();
-            return false;
+            return "Error logging in";
         }
 
-        return false;
+        return "Username or password is incorrect";
     }
 
     /**
