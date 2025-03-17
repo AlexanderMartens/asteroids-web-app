@@ -136,4 +136,36 @@ public class LocalController {
                     + "\"error\":\"" + error + "\"}";
         }
     }
+
+    /**
+     * This method handles user profile retrieval requests on localhost:8080/api/getProfiles.
+     * Response messages are sent in a json format.
+     * 
+     * @param username - the login name of the user
+     * @return - a json formatted list of profiles or an error message
+     */
+    @CrossOrigin(origins="*")
+    @GetMapping("/getProfiles")
+    public String getProfiles(
+            @RequestParam(value = "username", defaultValue = "") String username
+            ) {
+        DatabaseClient dbClient = new DatabaseClient();
+        String[] profiles = dbClient.getProfiles(username);
+        if (profiles != null) {
+            String profilesJson = "[";
+            for (int i = 0; i < profiles.length; i++) {
+                profilesJson += "\"" + profiles[i] + "\"";
+                if (i != profiles.length - 1) {
+                    profilesJson += ",";
+                }
+            }
+            profilesJson += "]";
+            return "{\"success\":\"" + true + "\","
+                    + "\"error\":\"" + "\","
+                    + "\"profiles\":" + profilesJson + "}";
+        } else {
+            return "{\"success\":\"" + false + "\","
+                    + "\"error\":\"" + "No profiles found" + "\"}";
+        }
+    }
 }

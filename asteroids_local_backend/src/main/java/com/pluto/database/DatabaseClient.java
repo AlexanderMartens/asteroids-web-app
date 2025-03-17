@@ -302,4 +302,52 @@ public class DatabaseClient {
             return "Error deleting profile";
         }
     }
+
+    /**
+     * Fetches all profiles for a user from the database.
+     * 
+     * @param username - username of the User
+     * @return - A string array of all profiles for the user, returns null if an error occurs
+     */
+    public String[] getProfiles(String username) {
+        try (
+            // Append Database /Users to the end of the url
+            Connection dbConn = DriverManager.getConnection(
+                url + "/Users", dbUser, dbPass
+            );
+        ) {
+            // Get the User_id from the Login table
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "SELECT User_id FROM Login WHERE User_name = ?"
+            );
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) {
+                return new String[0];
+            }
+            int userId = rs.getInt("User_id");
+
+            // Get all profiles for that user
+            stmt = dbConn.prepareStatement(
+                "SELECT Profile_name FROM UserProfiles " + 
+                "WHERE User_id = ?"
+            );
+            stmt.setInt(1, userId);
+            rs = stmt.executeQuery();
+            rs.last();
+            int numRows = rs.getRow();
+            rs.beforeFirst();
+            String[] profiles = new String[numRows];
+            int i = 0;
+            while (rs.next()) {
+                profiles[i] = rs.getString("Profile_name");
+                i++;
+            }
+
+            return profiles;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }   
 }
