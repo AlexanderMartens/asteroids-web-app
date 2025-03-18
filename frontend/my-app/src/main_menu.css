@@ -32,6 +32,8 @@
 .title-container {
     display: flex;
     justify-content: center;
+    height: 20%;
+    padding-bottom: 16px;
 }
 
 /* Padding adjustment for the title to fix alignment issues */
@@ -108,7 +110,7 @@
     align-items: flex-end;
     margin-bottom: -80px; /* Adjust positioning */
     margin-top: 20px;
-    margin-right: 40px;
+    margin-right: 80px;
     gap: 8px;
 }
 
@@ -122,4 +124,9 @@
 .menu-icon {
     width: 80px;
     height: 80px;
+}
+
+.exit-icon {
+    width: 40px;
+    height: 40px;
 }
