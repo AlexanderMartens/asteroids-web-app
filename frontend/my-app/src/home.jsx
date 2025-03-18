@@ -20,10 +20,9 @@ function Home() {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    /* 
-    Change "" to ''
-    */
-    const [timeTaken, setTimeTaken] = useState("");
+    const [timeTaken, setTimeTaken] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
 
     /**
      * This method sends user login requests to the backend at localhost:8080/api/login
@@ -43,8 +42,16 @@ function Home() {
         setTimeTaken((endTime - startTime).toFixed(2)); // Calculate time in ms
 
         // Log success and error messages
-        console.log(`Log in clicked. Username: ${username} Password: ${password}`);
+        console.log(`Login clicked. Username: ${username} Password: ${password}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
+
+        console.log(typeof data.success); // Logs the type of data.success
+        console.log(data.success); // Logs the value of data.success
+
+        if (!data.success) {
+            setErrorMessage(() => data.error);
+        }
+        console.log(errorMessage);
     }
 
     /**
@@ -67,6 +74,11 @@ function Home() {
         // Log success and error messages
         console.log(`Register clicked. Username: ${username} Password: ${password}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
+
+        if (!data.success) {
+            setErrorMessage(() => data.error);
+        }
+        console.log(errorMessage);
     }
 
     return (
@@ -111,6 +123,11 @@ function Home() {
                 <div className='login-register-container'>
                     <button className='login-register' onClick={handleLogin}>Log In</button>
                     <button className='login-register' onClick={handleRegister}>Register</button>
+                </div>
+                
+                <div>
+                    {/** Displays error message if login or registration fails */}
+                    <p className='error-message'>{errorMessage}</p>
                 </div>
 
             </div>
