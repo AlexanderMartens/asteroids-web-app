@@ -87,6 +87,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 8px;
 }
 
 /* Placeholder styling for menu icons */
@@ -108,6 +109,7 @@
     margin-bottom: -80px; /* Adjust positioning */
     margin-top: 20px;
     margin-right: 40px;
+    gap: 8px;
 }
 
 /* Placeholder styling for the exit icon */
