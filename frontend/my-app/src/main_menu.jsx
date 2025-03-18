@@ -7,6 +7,7 @@ import logo from './images/asteroid-logo-bgless.png';
 import React, {useState} from 'react';
 import StatIcon from './images/stat-icon.svg?react';
 import LeaderboardIcon from './images/leaderboard-icon.svg?react';
+import CosmeticsIcon from './images/cosmetics-icon.svg?react';
 
 
 /**
@@ -69,7 +70,7 @@ function MainMenu() {
 
                     <div className='icon-set'>
                         {/* Placeholder for Cosmetics icon */}
-                        <div className='placeholder-menu-icon'/>
+                        <CosmeticsIcon className='menu-icon' />
                         {/* Label for Cosmetics */}
                         <div className='icon-label'>Cosmetics</div>
                     </div>
