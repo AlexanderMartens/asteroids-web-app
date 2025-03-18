@@ -9,6 +9,7 @@ import StatIcon from './images/stat-icon.svg?react';
 import LeaderboardIcon from './images/leaderboard-icon.svg?react';
 import CosmeticsIcon from './images/cosmetics-icon.svg?react';
 import SettingsIcon from './images/settings-icon.svg?react';
+import ExitIcon from './images/exit-icon.svg?react';
 
 
 /**
@@ -28,7 +29,7 @@ function MainMenu() {
 
             {/* Exit button section */}
             <div className='exit-set'>
-                <div className='placeholder-exit-icon'/> {/* Placeholder for exit icon */}
+                <ExitIcon className='exit-icon' />
                 <div className='exit-label'>Exit</div> {/* Label for the exit button */}
             </div>
 
