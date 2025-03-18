@@ -8,6 +8,7 @@ import React, {useState} from 'react';
 import StatIcon from './images/stat-icon.svg?react';
 import LeaderboardIcon from './images/leaderboard-icon.svg?react';
 import CosmeticsIcon from './images/cosmetics-icon.svg?react';
+import SettingsIcon from './images/settings-icon.svg?react';
 
 
 /**
@@ -77,7 +78,7 @@ function MainMenu() {
 
                     <div className='icon-set'>
                         {/* Placeholder for Settings icon */}
-                        <div className='placeholder-menu-icon'/>
+                        <SettingsIcon className='menu-icon'/>
                         {/* Label for Settings */}
                         <div className='icon-label'>Settings</div>
                     </div>
