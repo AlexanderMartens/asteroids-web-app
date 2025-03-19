@@ -45,13 +45,10 @@ function Home() {
         console.log(`Login clicked. Username: ${username} Password: ${password}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
 
-        console.log(typeof data.success); // Logs the type of data.success
-        console.log(data.success); // Logs the value of data.success
-
-        if (!data.success) {
-            setErrorMessage(() => data.error);
-        }
-        console.log(errorMessage);
+        setErrorMessage(prev => {
+            console.log("Updated Error:", data.error);
+            return data.error;
+        });
     }
 
     /**
@@ -75,10 +72,10 @@ function Home() {
         console.log(`Register clicked. Username: ${username} Password: ${password}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
 
-        if (!data.success) {
-            setErrorMessage(() => data.error);
-        }
-        console.log(errorMessage);
+        setErrorMessage(prev => {
+            console.log("Updated Error:", data.error);
+            return data.error;
+        });
     }
 
     return (
