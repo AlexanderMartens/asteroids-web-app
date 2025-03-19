@@ -10,6 +10,7 @@ import LeaderboardIcon from './images/leaderboard-icon.svg?react';
 import CosmeticsIcon from './images/cosmetics-icon.svg?react';
 import SettingsIcon from './images/settings-icon.svg?react';
 import ExitIcon from './images/exit-icon.svg?react';
+import profileicon from './images/profile-icon.png'
 
 
 /**
@@ -27,10 +28,23 @@ function MainMenu() {
 
             {/* TODO: Add a profiles selector. Top left? */}
 
+            <div className='top'>
+
+            <div className='exit-set'>
+                {/* Placeholder for Settings icon */}
+                <div className='circular-container'>
+                    <img src={profileicon} className='profile-icon'/>
+                </div>
+                {/* Label for Settings */}
+                <div className='exit-label'>Profiles</div>
+            </div>
+
             {/* Exit button section */}
             <div className='exit-set'>
                 <ExitIcon className='exit-icon' />
                 <div className='exit-label'>Exit</div> {/* Label for the exit button */}
+            </div>
+
             </div>
 
             {/* Main content of the menu */}
