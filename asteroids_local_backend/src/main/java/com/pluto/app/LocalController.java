@@ -254,5 +254,4 @@ public class LocalController {
         return generateResponse(status, "");
     }
 
-    
 }
