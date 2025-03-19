@@ -83,6 +83,16 @@
 
     border-radius: 20px; /* Rounded corners */
     border: 2px solid transparent; /* Transparent border */
+
+    transition: transform 0.2s ease;
+}
+
+.play-button:hover {
+    transform: scale(1.04);
+}
+
+.play-button:active {
+    transform: scale(0.98);
 }
 
 /* Container for the menu icons, spaced evenly */
