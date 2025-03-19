@@ -7,18 +7,21 @@ import logo from './images/asteroid-logo-bgless.png';
 import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 
+// Pascal case for React Components
 import StatIcon from './images/stat-icon.svg?react';
 import LeaderboardIcon from './images/leaderboard-icon.svg?react';
 import CosmeticsIcon from './images/cosmetics-icon.svg?react';
 import SettingsIcon from './images/settings-icon.svg?react';
 import ExitIcon from './images/exit-icon.svg?react';
-import profileicon from './images/profile-icon.png';
 
+// Snake case for variable
+import profile_icon from './images/profile-icon.png';
 
 /**
  * MainMenu component renders the main menu of the Asteroids game after logging in.
  * It includes the game title, logo, play button, and navigation icons
- * for Stats, Leaderboard, Cosmetics, and Settings.
+ * for Stats, Leaderboard, Cosmetics, and Settings. It also includes
+ * links to the Profiles page and an Exit button.
  *
  * @returns {JSX.Element} The JSX structure for the main menu.
  */
@@ -28,23 +31,18 @@ function MainMenu() {
         // Main container for the menu
         <div className='main-menu-container'>
 
-            {/* TODO: Add a profiles selector. Top left? */}
-
+            {/* Left side of the menu, containing the Profiles link */}
             <div className='side'>
-
                 <div className='exit-set'>
-                        {/* Placeholder for Settings icon */}
-                        <Link to='/profiles' className='icon-link'>
-                            <div className='circular-container'>
-                                <img src={profileicon} className='profile-icon'/>
-                            </div>
-                        </Link>
-                        {/* Label for Settings */}
-                        <div className='exit-label'>Profiles</div>
+                    {/* Link to the Profiles page */}
+                    <Link to='/profiles' className='icon-link'>
+                        <div className='circular-container'>
+                            <img src={profile_icon} className='profile-icon'/>
+                        </div>
+                    </Link>
+                    <div className='exit-label'>Profiles</div> {/* Label for Profiles */}
                 </div>
             </div>
-
-            
 
             {/* Main content of the menu */}
             <div className='main-menu-content'>
@@ -60,7 +58,7 @@ function MainMenu() {
 
                 {/* Play button */}
                 <Link to='/play'>
-                    <button className='play-button'>Play</button>
+                    <button className='play-button'>Play</button> {/* Link to the Play page */}
                 </Link>
 
                 {/* Icon section for additional menu options */}
@@ -68,56 +66,49 @@ function MainMenu() {
 
                     {/* Individual icon sets */}
                     <div className='icon-set'>
-                        {/* TODO: Link components that route to a Route component to a page component */}
-                        {/* Placeholder for Stats icon.
-                        * All of these icons will be converted
-                        * into Route components that direct
-                        * the user to its appropriate page. */}
+                        {/* Link to the Stats page */}
                         <Link to='/stats'>
                             <StatIcon className='menu-icon' />
                         </Link>
-                        {/* Label for Stats */}
-                        <div className='icon-label'>Stats</div>
+                        <div className='icon-label'>Stats</div> {/* Label for Stats */}
                     </div>
 
                     <div className='icon-set'>
-                        {/* Placeholder for Leaderboard icon */}
+                        {/* Link to the Leaderboard page */}
                         <Link to='/leaderboard'>
                             <LeaderboardIcon className='menu-icon' />
                         </Link>
-                        {/* Label for Leaderboard */}
-                        <div className='icon-label'>Leaderboard</div>
+                        <div className='icon-label'>Leaderboard</div> {/* Label for Leaderboard */}
                     </div>
 
                     <div className='icon-set'>
-                        {/* Placeholder for Cosmetics icon */}
+                        {/* Link to the Cosmetics page */}
                         <Link to='/cosmetics'>
                             <CosmeticsIcon className='menu-icon' />
                         </Link>
-                        {/* Label for Cosmetics */}
-                        <div className='icon-label'>Cosmetics</div>
+                        <div className='icon-label'>Cosmetics</div> {/* Label for Cosmetics */}
                     </div>
 
                     <div className='icon-set'>
-                        {/* Placeholder for Settings icon */}
+                        {/* Link to the Settings page */}
                         <Link to='/settings'>
                             <SettingsIcon className='menu-icon'/>
                         </Link>
-                        {/* Label for Settings */}
-                        <div className='icon-label'>Settings</div>
+                        <div className='icon-label'>Settings</div> {/* Label for Settings */}
                     </div>
 
                 </div>
             </div>
 
+            {/* Right side of the menu, containing the Exit button */}
             <div className='side'>
 
-                {/* Exit button section */}
                 <div className='exit-set'>
+                    {/* Link to exit the menu */}
                     <Link to='/'>
                         <ExitIcon className='exit-icon' />
                     </Link>
-                    <div className='exit-label'>Exit</div> {/* Label for the exit button */}
+                    <div className='exit-label'>Exit</div> {/* Label for Exit */}
                 </div>
 
             </div>
