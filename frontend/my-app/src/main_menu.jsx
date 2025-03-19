@@ -59,7 +59,9 @@ function MainMenu() {
                 <img src={logo} className='main-menu-logo' alt='Asteroids logo'/>
 
                 {/* Play button */}
-                <button className='play-button'>Play</button>
+                <Link to='/play'>
+                    <button className='play-button'>Play</button>
+                </Link>
 
                 {/* Icon section for additional menu options */}
                 <div className='icon-container'>
@@ -71,28 +73,36 @@ function MainMenu() {
                         * All of these icons will be converted
                         * into Route components that direct
                         * the user to its appropriate page. */}
-                        <StatIcon className='menu-icon' />
+                        <Link to='/stats'>
+                            <StatIcon className='menu-icon' />
+                        </Link>
                         {/* Label for Stats */}
                         <div className='icon-label'>Stats</div>
                     </div>
 
                     <div className='icon-set'>
                         {/* Placeholder for Leaderboard icon */}
-                        <LeaderboardIcon className='menu-icon' />
+                        <Link to='/leaderboard'>
+                            <LeaderboardIcon className='menu-icon' />
+                        </Link>
                         {/* Label for Leaderboard */}
                         <div className='icon-label'>Leaderboard</div>
                     </div>
 
                     <div className='icon-set'>
                         {/* Placeholder for Cosmetics icon */}
-                        <CosmeticsIcon className='menu-icon' />
+                        <Link to='/cosmetics'>
+                            <CosmeticsIcon className='menu-icon' />
+                        </Link>
                         {/* Label for Cosmetics */}
                         <div className='icon-label'>Cosmetics</div>
                     </div>
 
                     <div className='icon-set'>
                         {/* Placeholder for Settings icon */}
-                        <SettingsIcon className='menu-icon'/>
+                        <Link to='/settings'>
+                            <SettingsIcon className='menu-icon'/>
+                        </Link>
                         {/* Label for Settings */}
                         <div className='icon-label'>Settings</div>
                     </div>
@@ -104,7 +114,9 @@ function MainMenu() {
 
                 {/* Exit button section */}
                 <div className='exit-set'>
-                    <ExitIcon className='exit-icon' />
+                    <Link to='/'>
+                        <ExitIcon className='exit-icon' />
+                    </Link>
                     <div className='exit-label'>Exit</div> {/* Label for the exit button */}
                 </div>
 
