@@ -11,6 +11,15 @@
     margin: 0;
 }
 
+@keyframes bobbing {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
 /* Content section of the menu, centered both vertically and horizontally */
 .main-menu-content {
     display: flex;
@@ -19,6 +28,7 @@
     align-items: center;
     width: 100%;
     height: auto;
+    
 }
 
 /* Logo styling with fixed dimensions and centered alignment */
@@ -26,6 +36,9 @@
     height: 200px;
     width: 200px;
     align-self: center;
+    position: relative;
+    overflow: hidden;
+    animation: bobbing 2.5s infinite cubic-bezier(0.35, 0, 0.65, 1); /* Adjust from default ease-in-out (0.42, 0, 0.58, 1) */
 }
 
 /* Title container for centering the title */
