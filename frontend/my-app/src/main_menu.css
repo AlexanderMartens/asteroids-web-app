@@ -129,12 +129,21 @@
     height: 50px;
     border: 2px solid white;
     border-radius: 50%;
+    transition: 0.2s ease;
 }
 
 .profile-icon {
     height: 60%;
     width: 60%;
     image-rendering: pixelated;
+}
+
+.circular-container:hover {
+    transform: scale(1.07);
+}
+
+.circular-container:active {
+    transform: scale(0.95);
 }
 
 /* Exit button container, aligned to the top-right */
@@ -157,9 +166,28 @@
 .menu-icon {
     width: 80px;
     height: 80px;
+    transition: 0.2s ease;
 }
+
+.menu-icon:hover {
+    transform: scale(1.07);
+}
+
+.menu-icon:active {
+    transform: scale(0.95);
+}
+
 
 .exit-icon {
     width: 40px;
     height: 40px;
+    transition: 0.2s ease;
+}
+
+.exit-icon:hover {
+    transform: scale(1.07);
+}
+
+.exit-icon:active {
+    transform: scale(0.95);
 }
