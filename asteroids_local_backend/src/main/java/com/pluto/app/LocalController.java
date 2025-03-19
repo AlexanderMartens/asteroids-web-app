@@ -104,7 +104,7 @@ public class LocalController {
             @RequestParam(value = "new_profile_name", defaultValue = "") String new_profile_name
             ) {
         DatabaseClient dbClient = new DatabaseClient();
-        String error = dbClient.editProfile(username, profile_name, new_profile_name);
+        String error = dbClient.renameProfile(username, profile_name, new_profile_name);
         if (error.equals("")) {
             return "{\"success\":\"" + true + "\","
                     + "\"error\":\"" + "\"}";

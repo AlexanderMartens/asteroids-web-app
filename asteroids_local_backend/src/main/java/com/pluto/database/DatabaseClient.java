@@ -132,23 +132,18 @@ public class DatabaseClient {
             );
         ) {
             // Get the User_id from the Login table
-            PreparedStatement stmt = dbConn.prepareStatement(
-                "SELECT User_id FROM Login WHERE User_name = ?"
-            );
-            stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
-            if (!rs.next()) {
-                return "Invalid User";
+            int userId = getUserId(dbConn, username);
+            if (userId == -1) {
+                return "User does not exist";
             }
-            int userId = rs.getInt("User_id");
 
             // Check if user already has 4 profiles
-            stmt = dbConn.prepareStatement(
+            PreparedStatement stmt = dbConn.prepareStatement(
                 "SELECT COUNT(*) FROM UserProfiles " + 
                 "WHERE User_id = ?"
             );
             stmt.setInt(1, userId);
-            rs = stmt.executeQuery();
+            ResultSet rs = stmt.executeQuery();
             if (rs.next() && rs.getInt(1) >= 4) {
                 return "Max profiles reached";
             }
@@ -181,38 +176,33 @@ public class DatabaseClient {
     }
 
     /**
-     * Edits a user profile's name in the database.
+     * Renames a user profile in the database.
      * 
      * @param username - username of the User
      * @param profile_name - name of the profile
      * @param new_profile_name - new name of the profile
      * @return - Empty string if profile edited, error message otherwise
      */
-    public String editProfile(String username, String profile_name, String new_profile_name) {
+    public String renameProfile(String username, String profile_name, String new_profile_name) {
         try (
             Connection dbConn = DriverManager.getConnection(
                 url + "/Users", dbUser, dbPass
             );
         ) {
             // Get the User_id from the Login table
-            PreparedStatement stmt = dbConn.prepareStatement(
-                "SELECT User_id FROM Login WHERE User_name = ?"
-            );
-            stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
-            if (!rs.next()) {
-                return "Invalid User";
+            int userId = getUserId(dbConn, username);
+            if (userId == -1) {
+                return "User does not exist";
             }
-            int userId = rs.getInt("User_id");
 
             // Check if profile name exists for that user
-            stmt = dbConn.prepareStatement(
+            PreparedStatement stmt = dbConn.prepareStatement(
                 "SELECT * FROM UserProfiles " + 
                 "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
             );
             stmt.setInt(1, userId);
             stmt.setString(2, profile_name);
-            rs = stmt.executeQuery();
+            ResultSet rs = stmt.executeQuery();
             if (!rs.next()) {
                 return "Profile does not exist";
             }
@@ -263,24 +253,19 @@ public class DatabaseClient {
             );
         ) {
             // Get the User_id from the Login table
-            PreparedStatement stmt = dbConn.prepareStatement(
-                "SELECT User_id FROM Login WHERE User_name = ?"
-            );
-            stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
-            if (!rs.next()) {
-                return "Invalid User";
+            int userId = getUserId(dbConn, username);
+            if (userId == -1) {
+                return "User does not exist";
             }
-            int userId = rs.getInt("User_id");
 
             // Check if profile name exists for that user
-            stmt = dbConn.prepareStatement(
+            PreparedStatement stmt = dbConn.prepareStatement(
                 "SELECT * FROM UserProfiles " + 
                 "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
             );
             stmt.setInt(1, userId);
             stmt.setString(2, profile_name);
-            rs = stmt.executeQuery();
+            ResultSet rs = stmt.executeQuery();
             if (!rs.next()) {
                 return "Profile does not exist";
             }
@@ -318,23 +303,18 @@ public class DatabaseClient {
             );
         ) {
             // Get the User_id from the Login table
-            PreparedStatement stmt = dbConn.prepareStatement(
-                "SELECT User_id FROM Login WHERE User_name = ?"
-            );
-            stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
-            if (!rs.next()) {
-                return new String[0];
+            int userId = getUserId(dbConn, username);
+            if (userId == -1) {
+                return null;
             }
-            int userId = rs.getInt("User_id");
 
             // Get all profiles for that user
-            stmt = dbConn.prepareStatement(
+            PreparedStatement stmt = dbConn.prepareStatement(
                 "SELECT Profile_name FROM UserProfiles " + 
                 "WHERE User_id = ?"
             );
             stmt.setInt(1, userId);
-            rs = stmt.executeQuery();
+            ResultSet rs = stmt.executeQuery();
             rs.last();
             int numRows = rs.getRow();
             rs.beforeFirst();
@@ -351,4 +331,28 @@ public class DatabaseClient {
             return null;
         }
     }   
+
+    /**
+     * Fetches the user id from the database.
+     * 
+     * @param dbConn - Connection to the database
+     * @param username - username of the User
+     * @return - The user id, returns -1 if user does not exist or an error occurs
+     */
+    private int getUserId(Connection dbConn, String username) {
+        // Use try with resources to close the statement and result set
+        try (PreparedStatement stmt = dbConn.prepareStatement("SELECT User_id FROM Login WHERE User_name = ?")) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("User_id");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching user ID for " + username + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return -1;
+    }
 }
