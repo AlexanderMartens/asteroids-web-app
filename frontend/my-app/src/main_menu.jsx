@@ -33,32 +33,34 @@ function MainMenu() {
 
             {/* Left side of the menu, containing the Profiles link */}
             <div className='side'>
+
                 <div className='exit-set'>
                     {/* Link to the Profiles page */}
                     <Link to='/profiles' className='icon-link'>
                         <div className='circular-container'>
-                            <img src={profile_icon} className='profile-icon'/>
+                            <img src={profile_icon} className='profile-icon' alt='Profile Icon' />
                         </div>
                     </Link>
-                    <div className='exit-label'>Profiles</div> {/* Label for Profiles */}
+                    <div className='exit-label'>Profiles</div>
                 </div>
+                
             </div>
 
-            {/* Main content of the menu */}
+            {/* Center content of the menu */}
             <div className='main-menu-content'>
 
                 {/* Title section */}
                 <div className='title-container'>
-                    <div className='title-padding'/> {/* Padding for spacing */}
-                    <div className='title'>Asteroids</div> {/* Game title */}
+                    <div className='title-padding'/> {/* Padding to adjust for font offset */}
+                    <div className='title'>Asteroids</div>
                 </div>
 
                 {/* Logo image */}
-                <img src={logo} className='main-menu-logo' alt='Asteroids logo'/>
+                <img src={logo} className='main-menu-logo' alt='Asteroids logo' />
 
                 {/* Play button */}
                 <Link to='/play'>
-                    <button className='play-button'>Play</button> {/* Link to the Play page */}
+                    <button className='play-button'>Play</button> {/* Link to the gameplay page */}
                 </Link>
 
                 {/* Icon section for additional menu options */}
@@ -70,7 +72,7 @@ function MainMenu() {
                         <Link to='/stats'>
                             <StatIcon className='menu-icon' />
                         </Link>
-                        <div className='icon-label'>Stats</div> {/* Label for Stats */}
+                        <div className='icon-label'>Stats</div>
                     </div>
 
                     <div className='icon-set'>
@@ -78,7 +80,7 @@ function MainMenu() {
                         <Link to='/leaderboard'>
                             <LeaderboardIcon className='menu-icon' />
                         </Link>
-                        <div className='icon-label'>Leaderboard</div> {/* Label for Leaderboard */}
+                        <div className='icon-label'>Leaderboard</div>
                     </div>
 
                     <div className='icon-set'>
@@ -86,15 +88,15 @@ function MainMenu() {
                         <Link to='/cosmetics'>
                             <CosmeticsIcon className='menu-icon' />
                         </Link>
-                        <div className='icon-label'>Cosmetics</div> {/* Label for Cosmetics */}
+                        <div className='icon-label'>Cosmetics</div>
                     </div>
 
                     <div className='icon-set'>
                         {/* Link to the Settings page */}
                         <Link to='/settings'>
-                            <SettingsIcon className='menu-icon'/>
+                            <SettingsIcon className='menu-icon' />
                         </Link>
-                        <div className='icon-label'>Settings</div> {/* Label for Settings */}
+                        <div className='icon-label'>Settings</div>
                     </div>
 
                 </div>
@@ -108,7 +110,7 @@ function MainMenu() {
                     <Link to='/'>
                         <ExitIcon className='exit-icon' />
                     </Link>
-                    <div className='exit-label'>Exit</div> {/* Label for Exit */}
+                    <div className='exit-label'>Exit</div>
                 </div>
 
             </div>
