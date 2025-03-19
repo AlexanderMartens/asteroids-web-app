@@ -5,12 +5,14 @@ import './main_menu.css';
 // Backgroundless png of logo
 import logo from './images/asteroid-logo-bgless.png';
 import React, {useState} from 'react';
+import { Link } from 'react-router-dom';
+
 import StatIcon from './images/stat-icon.svg?react';
 import LeaderboardIcon from './images/leaderboard-icon.svg?react';
 import CosmeticsIcon from './images/cosmetics-icon.svg?react';
 import SettingsIcon from './images/settings-icon.svg?react';
 import ExitIcon from './images/exit-icon.svg?react';
-import profileicon from './images/profile-icon.png'
+import profileicon from './images/profile-icon.png';
 
 
 /**
@@ -28,24 +30,21 @@ function MainMenu() {
 
             {/* TODO: Add a profiles selector. Top left? */}
 
-            <div className='top'>
+            <div className='side'>
 
-            <div className='exit-set'>
-                {/* Placeholder for Settings icon */}
-                <div className='circular-container'>
-                    <img src={profileicon} className='profile-icon'/>
+                <div className='exit-set'>
+                        {/* Placeholder for Settings icon */}
+                        <Link to='/profiles' className='icon-link'>
+                            <div className='circular-container'>
+                                <img src={profileicon} className='profile-icon'/>
+                            </div>
+                        </Link>
+                        {/* Label for Settings */}
+                        <div className='exit-label'>Profiles</div>
                 </div>
-                {/* Label for Settings */}
-                <div className='exit-label'>Profiles</div>
             </div>
 
-            {/* Exit button section */}
-            <div className='exit-set'>
-                <ExitIcon className='exit-icon' />
-                <div className='exit-label'>Exit</div> {/* Label for the exit button */}
-            </div>
-
-            </div>
+            
 
             {/* Main content of the menu */}
             <div className='main-menu-content'>
@@ -101,8 +100,16 @@ function MainMenu() {
                 </div>
             </div>
 
-            {/* Bottom section for spacing or additional content */}
-            <div className='bottom'></div>
+            <div className='side'>
+
+                {/* Exit button section */}
+                <div className='exit-set'>
+                    <ExitIcon className='exit-icon' />
+                    <div className='exit-label'>Exit</div> {/* Label for the exit button */}
+                </div>
+
+            </div>
+
         </div>
     )
 }

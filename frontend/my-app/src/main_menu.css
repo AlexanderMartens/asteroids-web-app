@@ -3,9 +3,9 @@
     height: 100vh;
     width: 100vw;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch;
     background-color: #000; /* Black background */
     padding: 0;
     margin: 0;
@@ -17,8 +17,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 95%;
-    height: 95%;
+    width: 100%;
+    height: auto;
 }
 
 /* Logo styling with fixed dimensions and centered alignment */
@@ -59,6 +59,14 @@
     height: 10.2rem;
 }
 
+.icon-link {
+    margin: 0;
+    display: inline-flex; /* Makes the Link behave like a container */
+    text-decoration: none; /* Remove underline */
+    width: fit-content; /* Ensure the size matches its child */
+    height: fit-content;
+}
+
 /* Styling for the Play button.
 * Adds onto app-wide button styles
 * to be tailored to Play button. */
@@ -81,7 +89,7 @@
 .icon-container {
     display: flex;
     justify-content: space-between;
-    width: 60%;
+    width: 70%;
 }
 
 /* Individual icon set container, aligned vertically */
@@ -101,9 +109,13 @@
     margin-right: 40px;
 }
 
-.top {
+.side {
     display: flex;
-    width: 100%;
+    flex-direction: column;
+    height: auto;
+    padding-top: 20px;
+    padding-right: 40px;
+    padding-left: 40px;
     justify-content: space-between;
     align-items: center;
 }
@@ -128,12 +140,9 @@
 .exit-set {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    height: 90px;
+    justify-content: flex-end;
     align-items: center;
-    margin-bottom: -80px; /* Adjust positioning */
-    margin-top: 20px;
-    margin-right: 40px;
-    margin-left: 40px;
     gap: 8px;
 }
 
