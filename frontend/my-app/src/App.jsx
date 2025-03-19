@@ -1,6 +1,12 @@
-import { useState } from 'react'; // TODO: remove unused import
+// Import React to export xml
+import React from 'react'
+// Browser Router enables setting up page routes
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
+
+// Highest specificity stylesheet
 import './App.css';
+
+// Files we will use as page Routes
 import Home from './home';
 import MainMenu from './main_menu';
 import Profiles from './profiles';
@@ -10,6 +16,12 @@ import Cosmetics from './cosmetics';
 import Settings from './settings';
 import Play from './play';
 
+/**
+ * App component sets up the routing for the application using React Router.
+ * It defines the routes for various pages.
+ *
+ * @returns {JSX.Element} The JSX structure for the application's routing.
+ */
 function App() {
   return (
     <BrowserRouter>
@@ -28,4 +40,7 @@ function App() {
   )
 };
 
+// Exporting the App component, so that
+// it can be imported and rendered as the root
+// of the DOM in main
 export default App;

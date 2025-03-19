@@ -1,6 +1,6 @@
 // Importing required CSS and assets
 
-// Lowest specificity stylesheet
+// Highest specificity stylesheet
 import './main_menu.css';
 // Backgroundless png of logo
 import logo from './images/asteroid-logo-bgless.png';
@@ -43,7 +43,7 @@ function MainMenu() {
                     </Link>
                     <div className='exit-label'>Profiles</div>
                 </div>
-                
+
             </div>
 
             {/* Center content of the menu */}
