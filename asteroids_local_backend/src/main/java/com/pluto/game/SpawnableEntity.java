@@ -10,18 +10,25 @@ import java.lang.Math;
 public abstract class SpawnableEntity {
 
     /*
+     * The width and height of the screen. This is used to wrap the object's
+     * position around the screen if it goes out of bounds.
+     */
+    private static final int SCREEN_WIDTH = 1000;
+    private static final int SCREEN_HEIGHT = 1000;
+    
+    /*
      * An object's location on the screen. It must be within a predetermined
      * range.
      */
-    private int[] objLocation; // maybe flaot? \\change to float
+    private Vector2D<Float> position;
 
     /*
      * This object's hitbox for determining collisions. It contains a list of
      * circles that collectively form the object's hitbox. Each circle is
-     * represented by a 3-tuple, where the first two coordinates is the global
-     * location of the circle, and the third coordinate is the circle's radius.
+     * represented by the hibox class, which contains the circle's position and
+     * radius.
      */
-    private int[][] hitbox; // more classes
+    protected HitBox[] hitbox;
 
     /*
      * The orientation of this spawnable entity for drawing on screen. It is
@@ -34,12 +41,7 @@ public abstract class SpawnableEntity {
      * The velocity of this spawnable entity. It is represented by a vector.
      * Note that the velocity is independent from the object's orientation.
      */
-    private int[] objVelocity; // coordinate class or two variables?
-
-    /**
-     * When called, this method moves the SpawnableEntity by one timestep.
-     */
-    public abstract void moveObj();
+    private Vector2D<Float> velocity;
 
     /**
      * This method rotates the spawnable entity by an angle in radians. It
@@ -49,17 +51,16 @@ public abstract class SpawnableEntity {
      */
     public void rotate(float radians) {
         // First update the orientation
-        orientation += radians;
-        orientation %= 2 * Math.PI;
+        setOrientation(radians + getOrientation());
 
-        int localX;
-        int localY;
-        int rotX; // more comments on what these are
-        int rotY;
-        for (int[] circle : hitbox) {
+        float localX;
+        float localY;
+        float rotX; // more comments on what these are
+        float rotY;
+        for (HitBox circle : hitbox) {
             // Convert the circle location to local object coordinates
-            localX = circle[0] - objLocation[0];
-            localY = circle[1] - objLocation[1]; // vector/circle class
+            localX = circle.position.x - position.x;
+            localY = circle.position.y - position.y; // vector/circle class
 
             // Rotate local coordinates by radians
             rotX = (int) Math.round( 
@@ -68,9 +69,28 @@ public abstract class SpawnableEntity {
                     localX * Math.sin(radians) + localY * Math.cos(radians));
 
             // Convert back to global coordinates
-            circle[0] = rotX + objLocation[0];
-            circle[1] = rotY + objLocation[1];
+            circle.position.x = rotX + position.x;
+            circle.position.y = rotY + position.y;
         }
+    }
+
+    /**
+     * This method checks if this spawnable entity has collided with another
+     * spawnable entity.
+     * @return - true if this object has collided with another object, false
+     * otherwise
+     */
+    public boolean collidesWith(SpawnableEntity other) {
+        for (HitBox circle : hitbox) {
+            for (HitBox otherCircle : other.hitbox) {
+                if (Math.pow(circle.position.x - otherCircle.position.x, 2)
+                        + Math.pow(circle.position.y - otherCircle.position.y, 2)
+                        < Math.pow(circle.radius + otherCircle.radius, 2)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -81,21 +101,33 @@ public abstract class SpawnableEntity {
     public abstract String toJson();
 
     /**
-     * This method gets the object's location.
+     * This method gets the object's position.
      *
-     * @return - the objLocation of this SpawnableEntity
+     * @return - the position of this SpawnableEntity
      */
-    public int[] getLocation() {
-        return objLocation;
+    public Vector2D<Float> getPosition() {
+        return position;
+    }
+
+    /**
+     * This method sets the SpawnableEntity's position. Wraps the position
+     * around the screen if it goes out of bounds.
+     *
+     * @param position - the position to set this object to
+     */
+    public void setPosition(Vector2D<Float> position) {
+        this.position = position;
+        this.position.x = (this.position.x + SCREEN_WIDTH) % SCREEN_WIDTH;
+        this.position.y = (this.position.y + SCREEN_HEIGHT) % SCREEN_HEIGHT;
     }
 
     /**
      * This method gets the spawnable entity's velocity.
      *
-     * @return - the objVelocity of this SpawnableEntity
+     * @return - the velocity of this SpawnableEntity
      */
-    protected int[] getVelocity() {
-        return objVelocity;
+    protected Vector2D<Float> getVelocity() {
+        return velocity;
     }
 
     /**
@@ -103,7 +135,8 @@ public abstract class SpawnableEntity {
      *
      * @param velocity - 
      */
-    protected void setVelocity() {
+    protected void setVelocity(Vector2D<Float> velocity) {
+        this.velocity = velocity;
     }
 
     /**
