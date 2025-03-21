@@ -63,9 +63,9 @@ public abstract class SpawnableEntity {
             localY = circle.position.y - position.y; // vector/circle class
 
             // Rotate local coordinates by radians
-            rotX = (int) Math.round( 
+            rotX = Math.round( 
                     localX * Math.cos(radians) - localY * Math.sin(radians));
-            rotY = (int) Math.round(
+            rotY = Math.round(
                     localX * Math.sin(radians) + localY * Math.cos(radians));
 
             // Convert back to global coordinates

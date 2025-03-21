@@ -24,6 +24,9 @@ public class Spaceship extends SpawnableEntity {
     /* How much the velocity decreases each second */
     private static final float drag = 0.1f; // Needs playtesting
 
+    /* How fast the player rotates */
+    private static final float rotSpeed = 0.1f; // Needs playtesting
+
     /**
      * Constructor for the Spaceship class. Player spawns at the center of the screen
      * with 3 lives. Hitbox will be a circle with radius 25 for now.
@@ -53,10 +56,10 @@ public class Spaceship extends SpawnableEntity {
                     this.setVelocity(newVel);
                     break;
                 case LEFT:
-                    this.rotate(-0.1f);
+                    this.rotate(-rotSpeed);
                     break;
                 case RIGHT:
-                    this.rotate(0.1f);
+                    this.rotate(rotSpeed);
                     break;
                 case SHOOT: // Game manager handles shooting
                     break;
