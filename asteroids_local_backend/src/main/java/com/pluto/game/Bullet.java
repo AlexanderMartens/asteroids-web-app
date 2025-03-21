@@ -57,7 +57,7 @@ public class Bullet extends SpawnableEntity{
      */
     @Override
     public String toJson() {
-        return "TODO";
+        return "{\"position\": " + this.getPosition().toJson() + ", \"orientation\": " + this.getOrientation() + "}";
     }
     
 }

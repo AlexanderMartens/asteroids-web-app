@@ -20,4 +20,13 @@ public class Vector2D<E extends Number> {
         this.x = x;
         this.y = y;
     }
+
+    /**
+     * Converts the Vector2D object to a JSON string.
+     * 
+     * @return the JSON string representation of the Vector2D object
+     */
+    public String toJson() {
+        return "{\"x\": " + this.x + ", \"y\": " + this.y + "}";
+    }
 }

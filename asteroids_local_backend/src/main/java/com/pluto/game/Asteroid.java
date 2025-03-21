@@ -62,6 +62,6 @@ public class Asteroid extends SpawnableEntity {
      */
     @Override
     public String toJson() {
-        return "TODO";
+        return "{\"position\": " + this.getPosition().toJson() + ", \"orientation\": " + this.getOrientation() + ", \"size\": \"" + this.size + "\"}";
     }
 }
