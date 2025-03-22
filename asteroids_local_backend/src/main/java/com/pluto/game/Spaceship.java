@@ -9,7 +9,7 @@ import java.lang.Math;
  */
 public class Spaceship extends SpawnableEntity {
     /* These enums are the different player inputs */
-    static enum Input {
+    public static enum Input {
         UP, LEFT, RIGHT, SHOOT
     }
 
@@ -19,13 +19,13 @@ public class Spaceship extends SpawnableEntity {
     private int lives;
 
     /* How much speed increases per second when moving forward */
-    private static final float accel = 10f; // Needs playtesting
+    private static final float accel = 500; // Needs playtesting
 
     /* How much the velocity decreases each second */
-    private static final float drag = 0.1f; // Needs playtesting
+    private static final float drag = 1f; // Needs playtesting
 
-    /* How fast the player rotates */
-    private static final float rotSpeed = 0.1f; // Needs playtesting
+    /* How fast the player rotates in radians per second*/
+    private static final float rotSpeed = 5f; // Needs playtesting
 
     /**
      * Constructor for the Spaceship class. Player spawns at the center of the screen
@@ -47,24 +47,28 @@ public class Spaceship extends SpawnableEntity {
      * @param input - the player inputs
      */
     public void moveObj(float dt, Input[] input) {
+        Vector2D<Float> newVel = new Vector2D<Float>(getVelocity().x, getVelocity().y);
         for (Input i : input) {
             switch (i) {
                 case UP:
-                    Vector2D<Float> newVel = new Vector2D<Float>(
-                        (getVelocity().x + accel * dt * (float) Math.cos(getOrientation())) * (1 - drag * dt), 
-                        (getVelocity().y + accel * dt * (float) Math.sin(getOrientation())) * (1 - drag * dt));
+                    newVel = new Vector2D<Float>(
+                        (newVel.x + accel * dt * (float) Math.cos(getOrientation())), 
+                        (newVel.y + accel * dt * (float) Math.sin(getOrientation())));
                     this.setVelocity(newVel);
                     break;
                 case LEFT:
-                    this.rotate(-rotSpeed);
+                    this.rotate(-rotSpeed * dt);
                     break;
                 case RIGHT:
-                    this.rotate(rotSpeed);
+                    this.rotate(rotSpeed * dt);
                     break;
                 case SHOOT: // Game manager handles shooting
                     break;
             }
         }
+        newVel.x = newVel.x * (1 - drag * dt);
+        newVel.y = newVel.y * (1 - drag * dt);
+        this.setVelocity(newVel);
         Vector2D<Float> newPos = new Vector2D<Float>(getPosition().x + getVelocity().x * dt, getPosition().y + getVelocity().y * dt);
         this.setPosition(newPos);
     }
@@ -88,13 +92,29 @@ public class Spaceship extends SpawnableEntity {
 
     /**
      * Converts the Spaceship object to a JSON string.
-     * Needs to include the position, orientation, and number of lives.
+     * Needs to include the position, orientation, hitboxes, and number of lives.
      * 
      * @return the JSON string representation of the Spaceship object
      */
     @Override
     public String toJson() {
-        return "{\"position\": " + this.getPosition().toJson() + ", \"orientation\": " + this.getOrientation() + ", \"lives\": " + this.lives + "}";
+        StringBuilder json = new StringBuilder();
+        json.append("{\"position\": ");
+        json.append(this.getPosition().toJson());
+        json.append(", \"orientation\": ");
+        json.append(this.getOrientation());
+        json.append(", \"hitbox\": ");
+        json.append("[");
+        for (int i = 0; i < hitbox.length; i++) {
+            json.append(hitbox[i].toJson());
+            if (i < hitbox.length - 1) {
+                json.append(",");
+            }
+        }
+        json.append("], \"lives\": ");
+        json.append(this.lives);
+        json.append("}");
+        return json.toString();
     }
     
 }

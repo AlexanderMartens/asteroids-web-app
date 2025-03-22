@@ -13,6 +13,13 @@ let username = "test";
 let profile_name = "test";
 let input = "";
 let last_time = 0;
+let hitboxes = false;
+
+// Set hitboxes based on checkbox state
+let hitboxCheckbox = /** @type {HTMLInputElement} */ (document.getElementById("hitboxes"));
+hitboxCheckbox.addEventListener("change", function () {
+    hitboxes = hitboxCheckbox.checked;
+});
 
 // Check player inputs
 let activeInputs = new Set();
@@ -42,7 +49,6 @@ document.addEventListener("keyup", function (event) {
     }
     input = Array.from(activeInputs).join(",");
 });
-
 async function animate(timestamp) {
     // Get dt
     let dt = (timestamp - last_time) / 1000;
@@ -52,14 +58,17 @@ async function animate(timestamp) {
         dt = 0;
     }
     // Get game data
-    const response = await fetch(`http://localhost:8080/api/updateGame?dt=${encodeURIComponent(dt)}&username=${encodeURIComponent(username)}&profile_name=${encodeURIComponent(profile_name)}&inputs=${encodeURIComponent(input)}`);
+    const response = await fetch(
+        `http://localhost:8080/api/updateGame?dt=${encodeURIComponent(dt)}&` +
+        `username=${encodeURIComponent(username)}&` +
+        `profile_name=${encodeURIComponent(profile_name)}&` +
+        `inputs=${encodeURIComponent(input)}`
+    );
     const data = await response.json();
-    console.log(input, dt);
-    console.log(data);
-    // clear the canvas
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    // draw the player
-    context.fillStyle = "red";
+    if (timestamp % 1000 < 16) {
+        console.log(data);
+    }
+    
     let player_x = data.player.position.x
     let player_y = data.player.position.y
     let player_orientation = data.player.orientation
@@ -67,9 +76,15 @@ async function animate(timestamp) {
     let score = data.score
     let time = data.time
     let is_running = data.is_running
+    let level = data.level
+
+    // clear the canvas
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    
 
     // Draw the player as a triangle
     context.save();
+    context.fillStyle = "red";
     context.translate(player_x, player_y);
     context.rotate(player_orientation);
     context.beginPath();
@@ -95,17 +110,42 @@ async function animate(timestamp) {
         context?.save();
         context.fillStyle = "green";
         context.beginPath();
-        let size;
-        if (asteroid.size = "SMALL") {
-            size = 25;
-        } else if (asteroid.size = "MEDIUM") {
-            size = 50;
-        } else {
-            size = 100;
-        }
+        let size = asteroid.hitbox[0].radius;
         context.arc(asteroid.position.x, asteroid.position.y, size, 0, 2 * Math.PI);
         context.fill();
         context.restore();
+    }
+
+    // Draw the hitboxes
+    if (hitboxes) {
+        for (let asteroid of data.asteroids) {
+            for (let asteroidHitbox of asteroid.hitbox) {
+                context?.save();
+                context.strokeStyle = "rgba(255, 0, 0, 0.5)";
+                context.beginPath();
+                context.arc(asteroidHitbox.position.x, asteroidHitbox.position.y, asteroidHitbox.radius, 0, 2 * Math.PI);
+                context.stroke();
+                context.restore();
+            }
+        }
+        for (let bullet of data.bullets) {
+            for (let bulletHitbox of bullet.hitbox) {
+                context?.save();
+                context.strokeStyle = "rgba(255, 0, 0, 0.5)";
+                context.beginPath();
+                context.arc(bulletHitbox.position.x, bulletHitbox.position.y, bulletHitbox.radius, 0, 2 * Math.PI);
+                context.stroke();
+                context.restore();
+            }
+        }
+        for (let playerHitbox of data.player.hitbox) {
+            context?.save();
+            context.strokeStyle = "rgba(255, 0, 0, 0.5)";
+            context.beginPath();
+            context.arc(playerHitbox.position.x, playerHitbox.position.y, playerHitbox.radius, 0, 2 * Math.PI);
+            context.stroke();
+            context.restore();
+        }
     }
 
     // Draw text of player data
@@ -114,11 +154,8 @@ async function animate(timestamp) {
     context.font = "20px Arial";
     context.fillText(`Lives: ${lives}`, 10, 20);
     context.fillText(`Score: ${score}`, 10, 40);
-    context.fillText(`Time: ${time}`, 10, 60);
-    context.fillText(`Running: ${is_running}`, 10, 80);
-    context?.fillText('Player x position: ' + player_x, 10, 100);
-    context?.fillText('Player y position: ' + player_y, 10, 120);
-    context?.fillText('Player orientation: ' + player_orientation, 10, 140);
+    context?.fillText(`Level: ${data.level}`, 10, 60);
+    context.fillText(`Time: ${time}`, 10, 80);
     context.restore();
     
     requestAnimationFrame(animate);

@@ -273,6 +273,9 @@ public class LocalController {
             inputStrings = inputs.split(",");
         }
         GameManager gameManager = gameManagers.get(key);
+        if (!gameManager.is_running) {
+            return gameManager.toJson();
+        }
         Spaceship.Input[] input = new Spaceship.Input[inputStrings.length];
         for (int i = 0; i < inputStrings.length; i++) {
             input[i] = Spaceship.Input.valueOf(inputStrings[i]);

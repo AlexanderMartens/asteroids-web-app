@@ -63,10 +63,8 @@ public abstract class SpawnableEntity {
             localY = circle.position.y - position.y; // vector/circle class
 
             // Rotate local coordinates by radians
-            rotX = Math.round( 
-                    localX * Math.cos(radians) - localY * Math.sin(radians));
-            rotY = Math.round(
-                    localX * Math.sin(radians) + localY * Math.cos(radians));
+            rotX = (float) (localX * Math.cos(radians) - localY * Math.sin(radians));
+            rotY = (float) (localX * Math.sin(radians) + localY * Math.cos(radians));
 
             // Convert back to global coordinates
             circle.position.x = rotX + position.x;
@@ -116,9 +114,21 @@ public abstract class SpawnableEntity {
      * @param position - the position to set this object to
      */
     public void setPosition(Vector2D<Float> position) {
+        if (this.position == null) {
+            this.position = position;
+            return;
+        }
+        float dx = position.x - this.position.x;
+        float dy = position.y - this.position.y;
         this.position = position;
         this.position.x = (this.position.x + SCREEN_WIDTH) % SCREEN_WIDTH;
         this.position.y = (this.position.y + SCREEN_HEIGHT) % SCREEN_HEIGHT;
+        for (HitBox circle : hitbox) {
+            circle.position.x += dx;
+            circle.position.y += dy;
+            circle.position.x = (circle.position.x + SCREEN_WIDTH) % SCREEN_WIDTH;
+            circle.position.y = (circle.position.y + SCREEN_HEIGHT) % SCREEN_HEIGHT;
+        }
     }
 
     /**
@@ -155,7 +165,7 @@ public abstract class SpawnableEntity {
      * @param orientation - the angle in radians to set this objects orientation
      */
     protected void setOrientation(float orientation) {
-        orientation %= 2 * Math.PI;
+        orientation = (orientation + (float) (2 * Math.PI)) % (float) (2 * Math.PI);
         this.orientation = orientation;
     }
 }
