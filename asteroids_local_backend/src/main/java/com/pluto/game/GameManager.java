@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * needed to render the game on the screen, and associated methods to
  * manipulate the objects during the game.
  */
-public class GameManger {
+public class GameManager {
     
     /* The player object */
     private Spaceship player;
@@ -33,7 +33,7 @@ public class GameManger {
     /**
      * Constructor for the GameManager class.
      */
-    public GameManger() {
+    public GameManager() {
         this.player = new Spaceship();
         this.asteroids = new ArrayList<Asteroid>();
         this.bullets = new ArrayList<Bullet>();
@@ -105,6 +105,31 @@ public class GameManger {
      * Also includes the current score, time, and whether the game is running.
      */
     public String toJson() {
-        return "TODO";
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"player\":");
+        json.append(player.toJson());
+        json.append(",\"asteroids\":[");
+        for (int i = 0; i < asteroids.size(); i++) {
+            json.append(asteroids.get(i).toJson());
+            if (i < asteroids.size() - 1) {
+                json.append(",");
+            }
+        }
+        json.append("],\"bullets\":[");
+        for (int i = 0; i < bullets.size(); i++) {
+            json.append(bullets.get(i).toJson());
+            if (i < bullets.size() - 1) {
+                json.append(",");
+            }
+        }
+        json.append("],\"score\":");
+        json.append(score);
+        json.append(",\"time\":");
+        json.append(time);
+        json.append(",\"is_running\":");
+        json.append(is_running);
+        json.append("}");
+        return json.toString();
     }
 }
