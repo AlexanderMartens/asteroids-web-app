@@ -10,7 +10,7 @@ let canvas = /** @type {HTMLCanvasElement} */ (document.getElementById("box1canv
 let context = canvas.getContext("2d");
 
 let username = "test";
-let profile_name = "test";
+let profile_name = "test1";
 let input = "";
 let last_time = 0;
 let hitboxes = false;
@@ -25,26 +25,26 @@ hitboxCheckbox.addEventListener("change", function () {
 let activeInputs = new Set();
 
 document.addEventListener("keydown", function (event) {
-    if (event.key === "ArrowUp") {
+    if (event.key === "w") {
         activeInputs.add("UP");
-    } else if (event.key === "ArrowDown") {
+    } else if (event.key === "s") {
         activeInputs.add("SHOOT");
-    } else if (event.key === "ArrowLeft") {
+    } else if (event.key === "a") {
         activeInputs.add("LEFT");
-    } else if (event.key === "ArrowRight") {
+    } else if (event.key === "d") {
         activeInputs.add("RIGHT");
     }
     input = Array.from(activeInputs).join(",");
 });
 
 document.addEventListener("keyup", function (event) {
-    if (event.key === "ArrowUp") {
+    if (event.key === "w") {
         activeInputs.delete("UP");
-    } else if (event.key === "ArrowDown") {
+    } else if (event.key === "s") {
         activeInputs.delete("SHOOT");
-    } else if (event.key === "ArrowLeft") {
+    } else if (event.key === "a") {
         activeInputs.delete("LEFT");
-    } else if (event.key === "ArrowRight") {
+    } else if (event.key === "d") {
         activeInputs.delete("RIGHT");
     }
     input = Array.from(activeInputs).join(",");
@@ -84,7 +84,11 @@ async function animate(timestamp) {
 
     // Draw the player as a triangle
     context.save();
-    context.fillStyle = "red";
+    if (data.player.is_invincible) {
+        context.fillStyle = "purple";
+    } else {
+        context.fillStyle = "red";
+    }
     context.translate(player_x, player_y);
     context.rotate(player_orientation);
     context.beginPath();

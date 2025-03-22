@@ -33,6 +33,10 @@ public class GameManager {
     /* Whether or not the game is running */
     public boolean is_running;
 
+    /* Width and height of the screen */
+    private static final int SCREEN_WIDTH = 1000;
+    private static final int SCREEN_HEIGHT = 1000;
+
     /* The maximum number of bullets allowed at a time */
     private static final int MAX_BULLETS = 5;
 
@@ -162,13 +166,13 @@ public class GameManager {
      * The asteroid will always spawn at least 300 units away from the player.
      */
     private void spawnAsteroid() {
-        float x = (float) (Math.random() * 1000);
-        float y = (float) (Math.random() * 1000);
+        float x = (float) (Math.random() * SCREEN_WIDTH);
+        float y = (float) (Math.random() * SCREEN_HEIGHT);
         int maxAttempts = 1000;
         int attempts = 0;
         while (attempts < maxAttempts) {
-            x = (float) (Math.random() * 1000);
-            y = (float) (Math.random() * 1000);
+            x = (float) (Math.random() * SCREEN_WIDTH);
+            y = (float) (Math.random() * SCREEN_HEIGHT);
             if (Math.sqrt(Math.pow(x - player.getPosition().x, 2) + Math.pow(y - player.getPosition().y, 2)) > PROTECTED_DISTANCE) {
                 break;
             }

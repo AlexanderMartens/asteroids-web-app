@@ -27,6 +27,9 @@ public class Spaceship extends SpawnableEntity {
     /* How fast the player rotates in radians per second*/
     private static final float rotSpeed = 5f; // Needs playtesting
 
+    /* Timer of invicibility when hit, 0 if not invincible */
+    private float invincibleTimer = 0.0f;
+
     /**
      * Constructor for the Spaceship class. Player spawns at the center of the screen
      * with 3 lives. Hitbox will be a circle with radius 25 for now.
@@ -71,6 +74,10 @@ public class Spaceship extends SpawnableEntity {
         this.setVelocity(newVel);
         Vector2D<Float> newPos = new Vector2D<Float>(getPosition().x + getVelocity().x * dt, getPosition().y + getVelocity().y * dt);
         this.setPosition(newPos);
+        invincibleTimer -= dt;
+        if (invincibleTimer < 0) {
+            invincibleTimer = 0;
+        }
     }
 
     /**
@@ -86,13 +93,18 @@ public class Spaceship extends SpawnableEntity {
      * by 1 and updates the player's position to the center of the screen.
      */
     public void hit() {
+        if (invincibleTimer > 0) {
+            return;
+        }
         lives--;
-        this.setPosition(new Vector2D<Float>(500.0f, 500.0f));
+        if (lives != 0) {
+            invincibleTimer = 3.0f;
+        }
     }
 
     /**
      * Converts the Spaceship object to a JSON string.
-     * Needs to include the position, orientation, hitboxes, and number of lives.
+     * Needs to include the position, orientation, hitboxes, number of lives, and if invincible.
      * 
      * @return the JSON string representation of the Spaceship object
      */
@@ -113,6 +125,8 @@ public class Spaceship extends SpawnableEntity {
         }
         json.append("], \"lives\": ");
         json.append(this.lives);
+        json.append(", \"is_invincible\": ");
+        json.append(this.invincibleTimer > 0);
         json.append("}");
         return json.toString();
     }
