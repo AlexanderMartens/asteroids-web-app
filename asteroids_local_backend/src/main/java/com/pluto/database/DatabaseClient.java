@@ -38,10 +38,10 @@ public class DatabaseClient {
      *
      * @param username - username of the new User
      * @param password - password of the new User
-     * @return - true if created user, false otherwise
+     * @return - String error message, is empty if method is successful
      * 
      */
-    public boolean createUser(String username, String password) {
+    public String createUser(String username, String password) {
         // Try with resources making a connection to the MySql database
         // If not, close the database connection
         try (
@@ -58,7 +58,7 @@ public class DatabaseClient {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return false;
+                return "User already exists";
             }
 
             // If the user does not exist, create the user
@@ -68,13 +68,14 @@ public class DatabaseClient {
             stmt.setString(1, username);
             stmt.setString(2, password);
             stmt.executeUpdate();
-            return true;
+            return "";
             
         } catch (SQLException e) {
             System.out.println(
                 "Could not establish connection to MySQL database."
             );
-            return false;
+            e.printStackTrace();
+            return "Error creating user";
         } 
     }
 
@@ -83,9 +84,9 @@ public class DatabaseClient {
      * 
      * @param username - username of the User
      * @param password - password of the User
-     * @return - true if logged in, false otherwise
+     * @return - String error message, is empty if method is successful
      */
-    public boolean loginUser(String username, String password) {
+    public String loginUser(String username, String password) {
         // Try with resources making a connection to the MySql database
         // If not, close the database connection
         try (
@@ -103,7 +104,7 @@ public class DatabaseClient {
             stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return true;
+                return "";
             }
             
         } catch (SQLException e) {
@@ -111,9 +112,247 @@ public class DatabaseClient {
                 "Could not establish connection to MySQL database."
             );
             e.printStackTrace();
-            return false;
+            return "Error logging in";
         }
 
-        return false;
+        return "Username or password is incorrect";
+    }
+
+    /**
+     * Creates a user profile in the database. User cannot have more than four profiles.
+     * 
+     * @param username - username of the User
+     * @param profile_name - name of the profile
+     * @return - Empty string if profile created, error message otherwise
+     */
+    public String createProfile(String username, String profile_name) {
+        try (
+            Connection dbConn = DriverManager.getConnection(
+                url + "/Users", dbUser, dbPass
+            );
+        ) {
+            // Get the User_id from the Login table
+            int userId = getUserId(dbConn, username);
+            if (userId == -1) {
+                return "User does not exist";
+            }
+
+            // Check if user already has 4 profiles
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "SELECT COUNT(*) FROM UserProfiles " + 
+                "WHERE User_id = ?"
+            );
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) >= 4) {
+                return "Max profiles reached";
+            }
+
+            // Check if profile name already exists for that user
+            stmt = dbConn.prepareStatement(
+                "SELECT * FROM UserProfiles " + 
+                "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
+            );
+            stmt.setInt(1, userId);
+            stmt.setString(2, profile_name);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                return "Profile already exists";
+            }
+
+            // Create profile
+            stmt = dbConn.prepareStatement(
+                "INSERT INTO UserProfiles (User_id, Profile_name) VALUES (?, ?)"
+            );
+            stmt.setInt(1, userId);
+            stmt.setString(2, profile_name);
+            stmt.executeUpdate();
+            return "";
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error creating profile";
+        }
+    }
+
+    /**
+     * Renames a user profile in the database.
+     * 
+     * @param username - username of the User
+     * @param profile_name - name of the profile
+     * @param new_profile_name - new name of the profile
+     * @return - Empty string if profile edited, error message otherwise
+     */
+    public String renameProfile(String username, String profile_name, String new_profile_name) {
+        try (
+            Connection dbConn = DriverManager.getConnection(
+                url + "/Users", dbUser, dbPass
+            );
+        ) {
+            // Get the User_id from the Login table
+            int userId = getUserId(dbConn, username);
+            if (userId == -1) {
+                return "User does not exist";
+            }
+
+            // Check if profile name exists for that user
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "SELECT * FROM UserProfiles " + 
+                "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
+            );
+            stmt.setInt(1, userId);
+            stmt.setString(2, profile_name);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) {
+                return "Profile does not exist";
+            }
+
+            // Check if new profile name already exists for that user
+            stmt = dbConn.prepareStatement(
+                "SELECT * FROM UserProfiles " + 
+                "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
+            );
+            stmt.setInt(1, userId);
+            stmt.setString(2, new_profile_name);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                return "Profile already exists";
+            }
+
+            // Edit profile
+            stmt = dbConn.prepareStatement(
+                "UPDATE UserProfiles SET Profile_name = ? " + 
+                "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
+            );
+            stmt.setString(1, new_profile_name);
+            stmt.setInt(2, userId);
+            stmt.setString(3, profile_name);
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                return "";
+            } else {
+                return "Error editing profile";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error editing profile";
+        }
+    }
+
+    /**
+     * Deletes a user profile in the database. Cascades to delete all data associated with the profile.
+     * 
+     * @param username - username of the User
+     * @param profile_name - name of the profile
+     * @return - Empty string if profile deleted, error message otherwise
+     */
+    public String deleteProfile(String username, String profile_name) {
+        try (
+            Connection dbConn = DriverManager.getConnection(
+                url + "/Users", dbUser, dbPass
+            );
+        ) {
+            // Get the User_id from the Login table
+            int userId = getUserId(dbConn, username);
+            if (userId == -1) {
+                return "User does not exist";
+            }
+
+            // Check if profile name exists for that user
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "SELECT * FROM UserProfiles " + 
+                "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
+            );
+            stmt.setInt(1, userId);
+            stmt.setString(2, profile_name);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) {
+                return "Profile does not exist";
+            }
+
+            // Delete profile
+            stmt = dbConn.prepareStatement(
+                "DELETE FROM UserProfiles " +
+                "WHERE User_id = ? AND UserProfiles.Profile_name = ?"
+            );
+            stmt.setInt(1, userId);
+            stmt.setString(2, profile_name);
+            int rowsDeleted = stmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                return "";
+            } else {
+                return "Error deleting profile";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error deleting profile";
+        }
+    }
+
+    /**
+     * Fetches all profiles for a user from the database.
+     * 
+     * @param username - username of the User
+     * @return - A string array of all profiles for the user, returns null if an error occurs
+     */
+    public String[] getProfiles(String username) {
+        try (
+            // Append Database /Users to the end of the url
+            Connection dbConn = DriverManager.getConnection(
+                url + "/Users", dbUser, dbPass
+            );
+        ) {
+            // Get the User_id from the Login table
+            int userId = getUserId(dbConn, username);
+            if (userId == -1) {
+                return null;
+            }
+
+            // Get all profiles for that user
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "SELECT Profile_name FROM UserProfiles " + 
+                "WHERE User_id = ?"
+            );
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            rs.last();
+            int numRows = rs.getRow();
+            rs.beforeFirst();
+            String[] profiles = new String[numRows];
+            int i = 0;
+            while (rs.next()) {
+                profiles[i] = rs.getString("Profile_name");
+                i++;
+            }
+
+            return profiles;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }   
+
+    /**
+     * Fetches the user id from the database.
+     * 
+     * @param dbConn - Connection to the database
+     * @param username - username of the User
+     * @return - The user id, returns -1 if user does not exist or an error occurs
+     */
+    private int getUserId(Connection dbConn, String username) {
+        // Use try with resources to close the statement and result set
+        try (PreparedStatement stmt = dbConn.prepareStatement("SELECT User_id FROM Login WHERE User_name = ?")) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("User_id");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching user ID for " + username + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return -1;
     }
 }
