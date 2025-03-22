@@ -165,7 +165,8 @@ public class LocalController {
     * Handles requests for uploading a new game score.
     * This method inserts a new score record into the `Scores` table.
     *
-    * @param profileId The ID of the user's profile.
+    * @param username The username of the player.
+    * @param profile_name The profile name of the player.
     * @param score The score achieved in the game.
     * @param level The level reached in the game.
     * @param duration The duration of the game session in seconds.
@@ -174,18 +175,19 @@ public class LocalController {
     @CrossOrigin(origins = "*")
     @PostMapping("/uploadScore")
     public String uploadScore(
-            @RequestParam("profile_id") int profileId,
+            @RequestParam("username") String username,
+            @RequestParam("profile_name") String profile_name,
             @RequestParam("score") int score,
             @RequestParam("level") int level,
             @RequestParam("duration") int duration
             ) {
         DatabaseClient dbClient = new DatabaseClient();
-        boolean success = dbClient.uploadScore(profileId, score, level, duration);
+        String error = dbClient.uploadScore(username, profile_name, score, level, duration);
 
-        if (success) {
+        if (error.equals("")) {
             return "{\"success\":true}";
         } else {
-            return "{\"success\":false, \"error\":\"Failed to upload score\"}";
+            return "{\"success\":false, \"error\":\"" + error + "\"}";
         }
     }
 

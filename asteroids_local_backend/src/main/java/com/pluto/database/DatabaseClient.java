@@ -120,18 +120,32 @@ public class DatabaseClient {
     /**
      * Uploads a score to the database.
      * 
-     * @param profile_id - id of the profile
+     * @param username - username of the user
+     * @param profile_name - profile name of the user
      * @param score - score to upload
      * @param level - level reached
      * @param duration - duration of the game
-     * @return - true if uploaded score, false otherwise
+     * @return - Empty string if successful, error message otherwise
      */
-    public boolean uploadScore(int profile_id, int score, int level, int duration) {
+    public String uploadScore(String username, String profile_name, int score, int level, int duration) {
         try (
             Connection dbConn = DriverManager.getConnection(
                 url + "/Users", dbUser, dbPass
             );
         ) {
+            // Get the User_id from the Login table
+            int userId = getUserId(dbConn, username);
+            if (userId == -1) {
+                return "User does not exist";
+            }
+
+            // Get the Profile_id from the UserProfiles table
+            int profile_id = getProfileId(dbConn, userId, profile_name);
+            if (profile_id == -1) {
+                return "Profile does not exist";
+            }
+
+            // Upload the score
             PreparedStatement stmt = dbConn.prepareStatement(
                 "INSERT INTO Scores (Profile_id, Score, Level_reached, Duration_seconds) VALUES (?, ?, ?, ?)"
             );
@@ -141,10 +155,10 @@ public class DatabaseClient {
             stmt.setInt(4, duration);
             stmt.executeUpdate();
 
-            return true;
+            return "";
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return "Error uploading score";
         }
     }
 
@@ -184,4 +198,53 @@ public class DatabaseClient {
         }
     }
         
+    /**
+     * Fetches the user id from the database.
+     * 
+     * @param dbConn - Connection to the database
+     * @param username - username of the User
+     * @return - The user id, returns -1 if user does not exist or an error occurs
+     */
+    private int getUserId(Connection dbConn, String username) {
+        // Use try with resources to close the statement and result set
+        try (PreparedStatement stmt = dbConn.prepareStatement("SELECT User_id FROM Login WHERE User_name = ?")) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("User_id");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching user ID for " + username + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return -1;
+    }
+
+    /**
+     * Fetches the profile id from the database.
+     * 
+     * @param dbConn - Connection to the database
+     * @param userId - user id of the User
+     * @param profile_name - profile name of the User
+     * @return - The profile id, returns -1 if profile does not exist or an error occurs
+     */
+    private int getProfileId(Connection dbConn, int userId, String profile_name) {
+        // Use try with resources to close the statement and result set
+        try (PreparedStatement stmt = dbConn.prepareStatement("SELECT Profile_id FROM UserProfiles WHERE User_id = ? AND Profile_name = ?")) {
+            stmt.setInt(1, userId);
+            stmt.setString(2, profile_name);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("Profile_id");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching profile ID for " + profile_name + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return -1;
+    }
 }
