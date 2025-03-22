@@ -1,7 +1,12 @@
 package com.pluto.app;
 
+import java.util.HashMap;
+
 import org.springframework.web.bind.annotation.*;
 import com.pluto.database.DatabaseClient;
+
+import com.pluto.game.GameManager;
+import com.pluto.game.Spaceship;
 
 /**
  * A controller class for the local backend. It handles HTTP requests from the 
@@ -28,6 +33,12 @@ public class LocalController {
      * in order for it to not be interpreted as a special character in the URL
      */
     private static final String PASSWORD_FORMAT = "^[a-zA-Z0-9-=\\[\\]\\\\;',.\\/!@#$%^&*()_+{}|:\"<>?`~]{4,32}$";
+
+    /**
+     * Stores all the game managers for each user. The key is "username profile_name"
+     * and the value is the GameManager object.
+     */
+    private HashMap<String, GameManager> gameManagers = new HashMap<String, GameManager>();
 
     /**
      * This method handles user login requests on localhost:8080/api/login.
@@ -228,6 +239,47 @@ public class LocalController {
             return "{\"success\":\"" + false + "\","
                     + "\"error\":\"" + "No profiles found" + "\"}";
         }
+    }
+
+    /**
+     * This method handles game update requests on localhost:8080/api/updateGame.
+     * Response messages are sent in a json format.
+     * 
+     * @param dt - the time since the last update
+     * @param username - the login name of the user
+     * @param profile_name - the name of the profile
+     * @param inputs - the player inputs
+     * @return - a json formatted game state
+     */
+    @CrossOrigin(origins="*")
+    @GetMapping("/updateGame")
+    public String updateGame(
+            @RequestParam(value = "dt", defaultValue = "0") float dt,
+            @RequestParam(value = "username", defaultValue = "") String username,
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name,
+            @RequestParam(value = "inputs", defaultValue = "") String inputs
+            ) {
+        // Check that the game manager exists
+        String key = username + " " + profile_name;
+        if (!gameManagers.containsKey(key)) {
+            gameManagers.put(key, new GameManager());
+            return gameManagers.get(key).toJson();
+        }
+        String[] inputStrings = inputs.trim().split(",");
+        System.out.println("inputs: " + inputs);
+        if (inputs.equals("")) {
+            inputStrings = new String[0];
+        } else {
+            inputStrings = inputs.split(",");
+        }
+        GameManager gameManager = gameManagers.get(key);
+        Spaceship.Input[] input = new Spaceship.Input[inputStrings.length];
+        for (int i = 0; i < inputStrings.length; i++) {
+            input[i] = Spaceship.Input.valueOf(inputStrings[i]);
+        }
+        gameManager.update(dt, input);
+
+        return gameManager.toJson();
     }
 
     /**
