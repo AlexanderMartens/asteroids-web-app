@@ -3,14 +3,18 @@
 export {}; // null export tells vscode to treat this as a module
 
 /**
- * Example 1 (Review the Basics) - just a simple square
+ * This is a fake frontend that sends requests to the backend and renders the game state.
+ * It is intended to be used for testing the backend.
+ * To open the frontend, Use the live server extension in vscode in index.html.
  */
 // use type information to make TypeScript happy
 let canvas = /** @type {HTMLCanvasElement} */ (document.getElementById("box1canvas"));
 let context = canvas.getContext("2d");
 
+// Create test username and password
 let username = "test";
-let profile_name = "test1";
+let profile_name = "test";
+
 let input = "";
 let last_time = 0;
 let hitboxes = false;
@@ -49,6 +53,8 @@ document.addEventListener("keyup", function (event) {
     }
     input = Array.from(activeInputs).join(",");
 });
+
+// Animation loop
 async function animate(timestamp) {
     // Get dt
     let dt = (timestamp - last_time) / 1000;
@@ -69,14 +75,17 @@ async function animate(timestamp) {
         console.log(data);
     }
     
-    let player_x = data.player.position.x
-    let player_y = data.player.position.y
-    let player_orientation = data.player.orientation
-    let lives = data.player.lives
-    let score = data.score
-    let time = data.time
-    let is_running = data.is_running
-    let level = data.level
+    // Extract data
+    let player = data.player;
+
+    let lives = data.player.lives;
+    let score = data.score;
+    let level = data.level;
+    let time = data.time;
+    let is_running = data.is_running;
+
+    let bullets = data.bullets;
+    let asteroids = data.asteroids;
 
     // clear the canvas
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -84,13 +93,13 @@ async function animate(timestamp) {
 
     // Draw the player as a triangle
     context.save();
-    if (data.player.is_invincible) {
+    if (player.is_invincible) {
         context.fillStyle = "purple";
     } else {
         context.fillStyle = "red";
     }
-    context.translate(player_x, player_y);
-    context.rotate(player_orientation);
+    context.translate(player.position.x, player.position.y);
+    context.rotate(player.orientation);
     context.beginPath();
     context.moveTo(25, 0);
     context.lineTo(-25, 25);
@@ -100,7 +109,7 @@ async function animate(timestamp) {
     context.restore();
 
     // Draw the bullets
-    for (let bullet of data.bullets) {
+    for (let bullet of bullets) {
         context?.save();
         context.fillStyle = "blue";
         context.beginPath();
@@ -110,7 +119,7 @@ async function animate(timestamp) {
     }
 
     // Draw the asteroids
-    for (let asteroid of data.asteroids) {
+    for (let asteroid of asteroids) {
         context?.save();
         context.fillStyle = "green";
         context.beginPath();
@@ -122,7 +131,7 @@ async function animate(timestamp) {
 
     // Draw the hitboxes
     if (hitboxes) {
-        for (let asteroid of data.asteroids) {
+        for (let asteroid of asteroids) {
             for (let asteroidHitbox of asteroid.hitbox) {
                 context?.save();
                 context.strokeStyle = "rgba(255, 0, 0, 0.5)";
@@ -132,7 +141,7 @@ async function animate(timestamp) {
                 context.restore();
             }
         }
-        for (let bullet of data.bullets) {
+        for (let bullet of bullets) {
             for (let bulletHitbox of bullet.hitbox) {
                 context?.save();
                 context.strokeStyle = "rgba(255, 0, 0, 0.5)";
@@ -142,7 +151,7 @@ async function animate(timestamp) {
                 context.restore();
             }
         }
-        for (let playerHitbox of data.player.hitbox) {
+        for (let playerHitbox of player.hitbox) {
             context?.save();
             context.strokeStyle = "rgba(255, 0, 0, 0.5)";
             context.beginPath();
@@ -158,7 +167,7 @@ async function animate(timestamp) {
     context.font = "20px Arial";
     context.fillText(`Lives: ${lives}`, 10, 20);
     context.fillText(`Score: ${score}`, 10, 40);
-    context?.fillText(`Level: ${data.level}`, 10, 60);
+    context?.fillText(`Level: ${level}`, 10, 60);
     context.fillText(`Time: ${time}`, 10, 80);
     context.restore();
     
