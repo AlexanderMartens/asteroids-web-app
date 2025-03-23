@@ -242,6 +242,28 @@ public class LocalController {
     }
 
     /**
+     * This method creates a new game on localhost:8080/api/newGame.
+     * Response messages are sent in a json format.
+     * 
+     * @param username - the login name of the user
+     * @param profile_name - the name of the profile
+     * @return - a json formatted game state
+     */
+    @CrossOrigin(origins="*")
+    @GetMapping("/newGame")
+    public String newGame(
+            @RequestParam(value = "username", defaultValue = "") String username,
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name
+            ) {
+        String key = username + " " + profile_name;
+        if (gameManagers.containsKey(key)) {
+            gameManagers.remove(key);
+        }
+        gameManagers.put(key, new GameManager());
+        return gameManagers.get(key).toJson();
+    }
+
+    /**
      * This method handles game update requests on localhost:8080/api/updateGame.
      * Response messages are sent in a json format.
      * 
@@ -259,23 +281,26 @@ public class LocalController {
             @RequestParam(value = "profile_name", defaultValue = "") String profile_name,
             @RequestParam(value = "inputs", defaultValue = "") String inputs
             ) {
-        // Check that the game manager exists
+        // Check that the game manager exists, if not create a new one
         String key = username + " " + profile_name;
         if (!gameManagers.containsKey(key)) {
             gameManagers.put(key, new GameManager());
             return gameManagers.get(key).toJson();
         }
+
+        // Parse the inputs
         String[] inputStrings = inputs.trim().split(",");
-        System.out.println("inputs: " + inputs);
         if (inputs.equals("")) {
             inputStrings = new String[0];
         } else {
             inputStrings = inputs.split(",");
         }
+        // Check if the game is running
         GameManager gameManager = gameManagers.get(key);
         if (!gameManager.is_running) {
             return gameManager.toJson();
         }
+        // Call the update method and return the game state
         Spaceship.Input[] input = new Spaceship.Input[inputStrings.length];
         for (int i = 0; i < inputStrings.length; i++) {
             input[i] = Spaceship.Input.valueOf(inputStrings[i]);

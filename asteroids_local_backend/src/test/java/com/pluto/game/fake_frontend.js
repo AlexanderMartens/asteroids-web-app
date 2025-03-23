@@ -18,11 +18,33 @@ let profile_name = "test";
 let input = "";
 let last_time = 0;
 let hitboxes = false;
+let paused = false;
 
 // Set hitboxes based on checkbox state
 let hitboxCheckbox = /** @type {HTMLInputElement} */ (document.getElementById("hitboxes"));
 hitboxCheckbox.addEventListener("change", function () {
     hitboxes = hitboxCheckbox.checked;
+});
+
+// Start new game
+let startButton = document.getElementById("startGameButton");
+startButton.addEventListener("click", async function () {
+    const response = await fetch(
+        `http://localhost:8080/api/newGame?` +
+        `username=${encodeURIComponent(username)}&` +
+        `profile_name=${encodeURIComponent(profile_name)}`
+    );
+});
+
+// Pause game
+let pauseButton = document.getElementById("pauseGameButton");
+pauseButton.addEventListener("click", async function () {
+    paused = !paused;
+    if (paused) {
+        pauseButton.innerText = "Resume";
+    } else {
+        pauseButton.innerText = "Pause";
+    }
 });
 
 // Check player inputs
@@ -62,6 +84,16 @@ async function animate(timestamp) {
     // Check if dt is NaN
     if (isNaN(dt)) {
         dt = 0;
+    }
+    if (paused) {
+        requestAnimationFrame(animate);
+        // Draw paused text
+        context?.save();
+        context.fillStyle = "black";
+        context.font = "50px Arial";
+        context.fillText("Paused", 350, 350);
+        context.restore();
+        return;
     }
     // Get game data
     const response = await fetch(
@@ -170,7 +202,18 @@ async function animate(timestamp) {
     context?.fillText(`Level: ${level}`, 10, 60);
     context.fillText(`Time: ${time}`, 10, 80);
     context.restore();
+
+    // Draw game over text
+    if (!is_running) {
+        context?.save();
+        context.fillStyle = "black";
+        context.font = "50px Arial";
+        context.fillText("Game Over", 350, 450);
+        context.restore();
+    }
+
+    
     
     requestAnimationFrame(animate);
 }
-animate()
+animate();
