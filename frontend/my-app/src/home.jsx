@@ -94,7 +94,7 @@ function Home() {
                     <div className='title'>Asteroids</div>
                 </div>
 
-                <img src={logo} className="login-logo" alt="Asteroid logo" />
+                <img src={logo} className="login-logo" alt="Asteroids logo" />
 
                 <div className='login-pass-container'>
 
