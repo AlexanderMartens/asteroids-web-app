@@ -59,10 +59,11 @@ public class LocalController {
 
         // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
         DatabaseClient dbClient = new DatabaseClient();
-        if (dbClient.loginUser(name, pass)) {
+        String error = dbClient.loginUser(name, pass);
+        if (error.equals("")) {
             return generateResponse(true);
         } else {
-            return generateResponse(false, "Unable to login");
+            return generateResponse(false, error);
         }
     }
 
@@ -91,35 +92,139 @@ public class LocalController {
 
         // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
         DatabaseClient dbClient = new DatabaseClient();
-        if (dbClient.createUser(name, pass)) {
+        String error = dbClient.createUser(name, pass);
+        if (error.equals("")) {
             return generateResponse(true);
         } else {
-            return generateResponse(false, "Unable to register");
+            return generateResponse(false, error);
         }
     }
 
     /**
-     * Generates a JSON formatted string representing a response message.
+     * This method handles user profile creation requests on localhost:8080/api/createProfile.
+     * Response messages are sent in a json format.
      * 
-     * Overloaded method allowing error message to be specified
-     * 
-     * @param result - True if the response was sucessful, false otherwise
-     * @param errorMsg - A detailed description of any errors, or blank if none
+     * @see generateResponse - for json response format
+     *
+     * @param username - the login name of the user
+     * @param profile_name - the name of the profile
+     * @return - a json formatted confirmation or error of the profile creation request
      */
-    private String generateResponse(boolean status, String errorMsg) {
-        return "{\"success\":\"" + status + "\","
-                + "\"error\":\"" + errorMsg + "\"}";
+    @CrossOrigin(origins="*")
+    @GetMapping("/createProfile")
+    public String createProfile(
+            @RequestParam(value = "username", defaultValue = "") String username, 
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name
+            ) {
+
+        // Check that profile_name is of valid format
+        if (!profile_name.matches(USERNAME_FORMAT))
+            return generateResponse(false, "Profile name is invalid");
+        
+        // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
+        DatabaseClient dbClient = new DatabaseClient();
+        String error = dbClient.createProfile(username, profile_name);
+        if (error.equals("")) {
+            return generateResponse(true);
+        } else {
+            return generateResponse(false, error);
+        }
     }
 
     /**
-     * Generates a JSON formatted string representing a response message.
+    * This method handles user profile editing requests on localhost:8080/api/editProfile.
+     * Response messages are sent in a json format.
      * 
-     * Overloaded method for no error message
-     * 
-     * @param result - True if the response was sucessful, false otherwise
+     * @see generateResponse - for json response format
+     *
+     * @param username - the login name of the user
+     * @param profile_name - the name of the profile
+     * @param new_profile_name - the new name of the profile
+     * @return - a json formatted confirmation or error of the profile editing request
      */
-    private String generateResponse(boolean status) {
-        return generateResponse(status, "");
+    @CrossOrigin(origins="*")
+    @GetMapping("/editProfile")
+    public String editProfile(
+            @RequestParam(value = "username", defaultValue = "") String username, 
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name,
+            @RequestParam(value = "new_profile_name", defaultValue = "") String new_profile_name
+            ) {
+        
+        // Check that new_profile_name is of valid format
+        if (!new_profile_name.matches(USERNAME_FORMAT))
+            return generateResponse(false, "New profile name is invalid");
+        
+        // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
+        DatabaseClient dbClient = new DatabaseClient();
+        String error = dbClient.renameProfile(username, profile_name, new_profile_name);
+        if (error.equals("")) {
+            return generateResponse(true);
+        } else {
+            return generateResponse(false, error);
+        }
+    }
+
+    /**
+     * This method handles user profile deletion requests on localhost:8080/api/deleteProfile.
+     * Response messages are sent in a json format.
+     * 
+     * @see generateResponse - for json response format
+     *
+     * @param username - the login name of the user
+     * @param profile_name - the name of the profile
+     * @return - a json formatted confirmation or error of the profile deletion request
+     */
+    @CrossOrigin(origins="*")
+    @GetMapping("/deleteProfile")
+    public String deleteProfile(
+            @RequestParam(value = "username", defaultValue = "") String username, 
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name
+            ) {
+
+        // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
+        DatabaseClient dbClient = new DatabaseClient();
+        String error = dbClient.deleteProfile(username, profile_name);
+        if (error.equals("")) {
+            return generateResponse(true);
+        } else {
+            return generateResponse(false, error);
+        }
+    }
+
+    /**
+     * This method handles user profile retrieval requests on localhost:8080/api/getProfiles.
+     * Response messages are sent in a json format.
+     * 
+     * @see generateResponse - for json response format
+     *
+     * @param username - the login name of the user
+     * @return - a json formatted list of profiles or an error message
+     */
+    @CrossOrigin(origins="*")
+    @GetMapping("/getProfiles")
+    public String getProfiles(
+            @RequestParam(value = "username", defaultValue = "") String username
+            ) {
+        
+        // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
+        DatabaseClient dbClient = new DatabaseClient();
+        String[] profiles = dbClient.getProfiles(username);
+        if (profiles != null) {
+            // Converts the array of profiles into a JSON formatted string
+            String profilesJson = "[";
+            for (int i = 0; i < profiles.length; i++) {
+                profilesJson += "\"" + profiles[i] + "\"";
+                if (i != profiles.length - 1) {
+                    profilesJson += ",";
+                }
+            }
+            profilesJson += "]";
+            return "{\"success\":\"" + true + "\","
+                    + "\"error\":\"" + "\","
+                    + "\"profiles\":" + profilesJson + "}";
+        } else {
+            return generateResponse(false, "Failed to fetch profiles");
+        }
     }
 
     /**
@@ -132,9 +237,12 @@ public class LocalController {
     */
     @CrossOrigin(origins = "*")
     @GetMapping("/leaderboard")
-    public String getLeaderboard(@RequestParam(value = "limit", defaultValue = "10") int limit) {
+    public String getLeaderboard(
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
+            @RequestParam(value = "score", defaultValue = "Score") String score
+            ) {
         DatabaseClient dbClient = new DatabaseClient();
-        ResultSet rs = dbClient.fetchTopScores(limit, "Score"); // Fetch top scores ordered by highest Score
+        ResultSet rs = dbClient.fetchTopScores(limit, score); // Fetch top scores ordered by highest Score
         StringBuilder jsonResult = new StringBuilder("{\"leaderboard\":[");
 
         try {
@@ -153,11 +261,11 @@ public class LocalController {
                         .append("}");
                 first = false;
             }
-            jsonResult.append("]}");
+            jsonResult.append("], \"success\":true, \"error\":\"\"}");
             return jsonResult.toString();
         } catch (SQLException e) {
             e.printStackTrace();
-            return "{\"error\":\"Failed to fetch leaderboard\"}";
+            return generateResponse(false, "Failed to fetch leaderboard");
         }
     }
 
@@ -185,11 +293,34 @@ public class LocalController {
         String error = dbClient.uploadScore(username, profile_name, score, level, duration);
 
         if (error.equals("")) {
-            return "{\"success\":true}";
+            return generateResponse(true);
         } else {
-            return "{\"success\":false, \"error\":\"" + error + "\"}";
+            return generateResponse(false, error);
         }
     }
 
+    /**
+     * Generates a JSON formatted string representing a response message.
+     * 
+     * Overloaded method allowing error message to be specified
+     * 
+     * @param result - True if the response was sucessful, false otherwise
+     * @param errorMsg - A detailed description of any errors, or blank if none
+     */
+    private String generateResponse(boolean status, String errorMsg) {
+        return "{\"success\":\"" + status + "\","
+                + "\"error\":\"" + errorMsg + "\"}";
+    }
+
+    /**
+     * Generates a JSON formatted string representing a response message.
+     * 
+     * Overloaded method for no error message
+     * 
+     * @param result - True if the response was sucessful, false otherwise
+     */
+    private String generateResponse(boolean status) {
+        return generateResponse(status, "");
+    }
 
 }
