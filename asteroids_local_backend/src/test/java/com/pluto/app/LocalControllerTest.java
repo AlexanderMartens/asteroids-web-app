@@ -1,14 +1,19 @@
 package com.pluto.app;
 
+// Testing utilities
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+// Spring utilties
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+// For parsing responses as JSON object
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Verifies correctness of HTTP responses from local backend for user logins
@@ -17,10 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class LocalControllerTest {
 
 	/**
-	 * IDK what autowired annotation does. supposed to do dependency injection or something?
+	 * Synchronous client for performing HTTP requests to mock the frontend
+	 * 
+	 * Autowired annotation allows Spring to automatically inject dependencies
+	 * (beans) at runtime 
 	 */
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private TestRestTemplate restTemplate; // TODO: rename to something more useful
 
 	/**
 	 * Injects the HTTP server port allocated at runtime
@@ -28,6 +36,11 @@ class LocalControllerTest {
 	@LocalServerPort
 	private int port;
 
+	/**
+	 * Included by Spring Boot
+	 * 
+	 * Verifies the application is able to load the Spring context
+	 */
 	@Test
 	void contextLoads() {
 	}

@@ -1,14 +1,46 @@
-import { useState } from 'react'
-import './App.css'
-import Home from './home'
+// Import React to export xml
+import React from 'react'
+// Browser Router enables setting up page routes
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
 
+// Highest specificity stylesheet
+import './App.css';
+
+// Files we will use as page Routes
+import Home from './home';
+import MainMenu from './main_menu';
+import Profiles from './profiles';
+import Stats from './stats';
+import Leaderboard from './leaderboard';
+import Cosmetics from './cosmetics';
+import Settings from './settings';
+import Play from './play';
+
+/**
+ * App component sets up the routing for the application using React Router.
+ * It defines the routes for various pages.
+ *
+ * @returns {JSX.Element} The JSX structure for the application's routing.
+ */
 function App() {
   return (
-    <>
+    <BrowserRouter>
     {/** Pages to render here */}
-      <Home/>
-    </>
+      <Routes>
+        <Route path='/' element={<Home/>}/>
+        <Route path='/main_menu' element={<MainMenu/>}/>
+        <Route path='/profiles' element={<Profiles/>}/>
+        <Route path='/stats' element={<Stats/>}/>
+        <Route path='/leaderboard' element={<Leaderboard/>}/>
+        <Route path='/cosmetics' element={<Cosmetics/>}/>
+        <Route path='/settings' element={<Settings/>}/>
+        <Route path='/play' element={<Play/>}/>
+      </Routes>
+    </BrowserRouter>
   )
-}
+};
 
-export default App
+// Exporting the App component, so that
+// it can be imported and rendered as the root
+// of the DOM in main
+export default App;
