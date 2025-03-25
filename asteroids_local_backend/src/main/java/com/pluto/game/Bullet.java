@@ -51,13 +51,26 @@ public class Bullet extends SpawnableEntity{
 
     /**
      * Converts the Spaceship object to a JSON string.
-     * Needs to include the position and orientation.
+     * Needs to include the position, orientation, and hitbox.
      * 
      * @return the JSON string representation of the Spaceship object
      */
     @Override
     public String toJson() {
-        return "{\"position\": " + this.getPosition().toJson() + ", \"orientation\": " + this.getOrientation() + "}";
+        StringBuilder json = new StringBuilder();
+        json.append("{\"position\": ");
+        json.append(this.getPosition().toJson());
+        json.append(", \"orientation\": ");
+        json.append(this.getOrientation());
+        json.append(", \"hitbox\": [");
+        for (int i = 0; i < this.hitbox.length; i++) {
+            json.append(this.hitbox[i].toJson());
+            if (i != this.hitbox.length - 1) {
+                json.append(", ");
+            }
+        }
+        json.append("]}");
+        return json.toString();
     }
     
 }

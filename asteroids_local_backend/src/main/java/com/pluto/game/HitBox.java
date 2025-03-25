@@ -26,4 +26,11 @@ public class HitBox {
         this.radius = radius;
     }
     
+    /**
+     * Converts the HitBox object to a JSON string.
+     * @return - the JSON string representation of the HitBox object
+     */
+    public String toJson() {
+        return "{\"position\": " + this.position.toJson() + ", \"radius\": " + this.radius + "}";
+    }
 }

@@ -58,10 +58,22 @@ public class Asteroid extends SpawnableEntity {
 
     /**
      * Converts the Asteroid object to a JSON string.
-     * Needs to return the position, orientation, and size of the asteroid.
+     * Needs to return the position, orientation, hitbox, and size of the asteroid.
      */
     @Override
     public String toJson() {
-        return "{\"position\": " + this.getPosition().toJson() + ", \"orientation\": " + this.getOrientation() + ", \"size\": \"" + this.size + "\"}";
+        StringBuilder json = new StringBuilder();
+        json.append("{\"position\": ");
+        json.append(this.getPosition().toJson());
+        json.append(", \"orientation\": ");
+        json.append(this.getOrientation());
+        json.append(", \"hitbox\": [");
+        for (int i = 0; i < this.hitbox.length; i++) {
+            json.append(this.hitbox[i].toJson());
+        }
+        json.append("], \"size\": ");
+        json.append("\"" + this.size.toString() + "\"");
+        json.append("}");
+        return json.toString();
     }
 }
