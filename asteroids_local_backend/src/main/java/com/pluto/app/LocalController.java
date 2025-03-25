@@ -1,6 +1,10 @@
 package com.pluto.app;
 
 import java.util.HashMap;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.springframework.web.bind.annotation.*;
 import com.pluto.database.DatabaseClient;
@@ -106,7 +110,6 @@ public class LocalController {
         }
     }
 
-
     /**
      * This method handles user profile creation requests on localhost:8080/api/createProfile.
      * Response messages are sent in a json format.
@@ -132,16 +135,14 @@ public class LocalController {
         DatabaseClient dbClient = new DatabaseClient();
         String error = dbClient.createProfile(username, profile_name);
         if (error.equals("")) {
-            return "{\"success\":\"" + true + "\","
-                    + "\"error\":\"" + "\"}";
+            return generateResponse(true);
         } else {
-            return "{\"success\":\"" + false + "\","
-                    + "\"error\":\"" + error + "\"}";
+            return generateResponse(false, error);
         }
     }
 
     /**
-     * This method handles user profile editing requests on localhost:8080/api/editProfile.
+    * This method handles user profile editing requests on localhost:8080/api/editProfile.
      * Response messages are sent in a json format.
      * 
      * @see generateResponse - for json response format
@@ -167,11 +168,9 @@ public class LocalController {
         DatabaseClient dbClient = new DatabaseClient();
         String error = dbClient.renameProfile(username, profile_name, new_profile_name);
         if (error.equals("")) {
-            return "{\"success\":\"" + true + "\","
-                    + "\"error\":\"" + "\"}";
+            return generateResponse(true);
         } else {
-            return "{\"success\":\"" + false + "\","
-                    + "\"error\":\"" + error + "\"}";
+            return generateResponse(false, error);
         }
     }
 
@@ -196,11 +195,9 @@ public class LocalController {
         DatabaseClient dbClient = new DatabaseClient();
         String error = dbClient.deleteProfile(username, profile_name);
         if (error.equals("")) {
-            return "{\"success\":\"" + true + "\","
-                    + "\"error\":\"" + "\"}";
+            return generateResponse(true);
         } else {
-            return "{\"success\":\"" + false + "\","
-                    + "\"error\":\"" + error + "\"}";
+            return generateResponse(false, error);
         }
     }
 
@@ -236,8 +233,79 @@ public class LocalController {
                     + "\"error\":\"" + "\","
                     + "\"profiles\":" + profilesJson + "}";
         } else {
-            return "{\"success\":\"" + false + "\","
-                    + "\"error\":\"" + "No profiles found" + "\"}";
+            return generateResponse(false, "Failed to fetch profiles");
+        }
+    }
+
+    /**
+    * Handles requests related to the leaderboard.
+    * This method fetches the top scores from the database view `Leaderboard`
+    * and returns them in JSON format.
+    *
+    * @param limit The number of top scores to fetch (default is 10).
+    * @return A JSON-formatted string containing the top scores or an error message.
+    */
+    @CrossOrigin(origins = "*")
+    @GetMapping("/leaderboard")
+    public String getLeaderboard(
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
+            @RequestParam(value = "score", defaultValue = "Score") String score
+            ) {
+        DatabaseClient dbClient = new DatabaseClient();
+        ResultSet rs = dbClient.fetchTopScores(limit, score); // Fetch top scores ordered by highest Score
+        StringBuilder jsonResult = new StringBuilder("{\"leaderboard\":[");
+
+        try {
+            boolean first = true;
+            while (rs.next()) {
+                if (!first) {
+                    jsonResult.append(",");
+                }
+                jsonResult.append("{")
+                        .append("\"user\":\"").append(rs.getString("User_name")).append("\",")
+                        .append("\"profile\":\"").append(rs.getString("Profile_name")).append("\",")
+                        .append("\"score\":").append(rs.getInt("Score")).append(",")
+                        .append("\"level\":").append(rs.getInt("Level_reached")).append(",")
+                        .append("\"duration\":").append(rs.getInt("Duration_seconds")).append(",")
+                        .append("\"time\":\"").append(rs.getTimestamp("Time_played")).append("\"")
+                        .append("}");
+                first = false;
+            }
+            jsonResult.append("], \"success\":true, \"error\":\"\"}");
+            return jsonResult.toString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return generateResponse(false, "Failed to fetch leaderboard");
+        }
+    }
+
+    /**
+    * Handles requests for uploading a new game score.
+    * This method inserts a new score record into the `Scores` table.
+    *
+    * @param username The username of the player.
+    * @param profile_name The profile name of the player.
+    * @param score The score achieved in the game.
+    * @param level The level reached in the game.
+    * @param duration The duration of the game session in seconds.
+    * @return A JSON response indicating success or failure.
+    */
+    @CrossOrigin(origins = "*")
+    @PostMapping("/uploadScore")
+    public String uploadScore(
+            @RequestParam("username") String username,
+            @RequestParam("profile_name") String profile_name,
+            @RequestParam("score") int score,
+            @RequestParam("level") int level,
+            @RequestParam("duration") int duration
+            ) {
+        DatabaseClient dbClient = new DatabaseClient();
+        String error = dbClient.uploadScore(username, profile_name, score, level, duration);
+
+        if (error.equals("")) {
+            return generateResponse(true);
+        } else {
+            return generateResponse(false, error);
         }
     }
 
