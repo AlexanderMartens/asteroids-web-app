@@ -265,9 +265,10 @@ public class LocalController {
 
     /**
      * This method handles game update requests on localhost:8080/api/updateGame.
+     * This method should be called every frame.
      * Response messages are sent in a json format.
      * 
-     * @param dt - the time since the last update
+     * @param dt - the time in seconds since the last update
      * @param username - the login name of the user
      * @param profile_name - the name of the profile
      * @param inputs - the player inputs

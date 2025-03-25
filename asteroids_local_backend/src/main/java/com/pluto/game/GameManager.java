@@ -21,7 +21,7 @@ public class GameManager {
     /* The list of bullets */
     private ArrayList<Bullet> bullets;
 
-    /* The time the game has been running */
+    /* The time in seconds the game has been running */
     private float time;
 
     /* The current score */
@@ -33,7 +33,7 @@ public class GameManager {
     /* Whether or not the game is running */
     public boolean is_running;
 
-    /* Width and height of the screen */
+    /* Width and height of the screen. These are units that can be scaled to fit window */
     private static final int SCREEN_WIDTH = 1000;
     private static final int SCREEN_HEIGHT = 1000;
 
@@ -59,7 +59,8 @@ public class GameManager {
     private static final int SCORE_PER_LEVEL = 100;
 
     /**
-     * Constructor for the GameManager class.
+     * Constructor for the GameManager class. Initializes the player, asteroids, and bullets.
+     * Spawns the starting asteroids and sets the game to running.
      */
     public GameManager() {
         this.player = new Spaceship();
@@ -68,15 +69,17 @@ public class GameManager {
         this.time = 0.0f;
         this.score = 0;
         this.level = 1;
-        this.is_running = false;
-        startGame();
+        is_running = true;
+        for (int i = 0; i < STARTING_ASTEROIDS; i++) {
+            spawnAsteroid();
+        }
     }
 
     /**
-     * Updates the game by one time step. It updates the player, asteroids, and bullets.
-     * Checks for collisions and updates the score and time.
+     * Updates the game by one frame. It updates the player, asteroids, and bullets.
+     * Checks for and handles collisions and updates the score and time.
      * 
-     * @param dt - the amount of time since the last update
+     * @param dt - the amount of time in seconds since the last update
      * @param input - the player inputs
      */
     public void update(float dt, Spaceship.Input[] input) {
@@ -95,7 +98,7 @@ public class GameManager {
         }
 
         // Check for collisions
-        checkCollisions();
+        checkAndHandleCollisions();
 
         // Shoot bullets
         for (Spaceship.Input i : input) {
@@ -104,7 +107,7 @@ public class GameManager {
             }
         }
 
-        // Despawn bullets
+        // Despawn bullets, uses iterator to avoid concurrent modification exception
         Iterator<Bullet> iterator = bullets.iterator();
         while (iterator.hasNext()) {
             Bullet bullet = iterator.next();
@@ -133,8 +136,9 @@ public class GameManager {
      * Checks for collisions between the player, asteroids, and bullets.
      * If a collision is detected, the appropriate action is taken.
      */
-    private void checkCollisions() {
+    private void checkAndHandleCollisions() {
         // Check for collisions between bullets and asteroids
+        // Uses iterators to avoid concurrent modification exception
         Iterator<Bullet> bulletIterator = bullets.iterator();
         while (bulletIterator.hasNext()) {
             Bullet bullet = bulletIterator.next();
@@ -163,9 +167,11 @@ public class GameManager {
 
     /**
      * Spawns a new asteroid at a random location on the screen.
-     * The asteroid will always spawn at least 300 units away from the player.
+     * The asteroid will always spawn at least PROTECTED_DISTANCE units away from the player.
      */
     private void spawnAsteroid() {
+        // Picks a random location on the screen, checks if it is at least PROTECTED_DISTANCE units away from the player
+        // If not, it will try again up to 1000 times before giving up. The odds of this happening are very very low.
         float x = (float) (Math.random() * SCREEN_WIDTH);
         float y = (float) (Math.random() * SCREEN_HEIGHT);
         int maxAttempts = 1000;
@@ -180,11 +186,11 @@ public class GameManager {
         }
         float orientation = (float) (Math.random() * 2 * Math.PI);
         float rotVelocity = (float) Math.random();
-        Vector2D<Float> velocity = new Vector2D<Float>((float) (Math.random() * MAX_ASTEROID_SPEED * 2) - MAX_ASTEROID_SPEED, 
-                                                       (float) (Math.random() * MAX_ASTEROID_SPEED * 2) - MAX_ASTEROID_SPEED);
+        // Math.random() returns a value between 0 and 1, so we multiply by 2 and subtract 1 to get a value between -1 and 1
+        Vector2D<Float> velocity = new Vector2D<Float>(((float) (Math.random() * 2) - 1 ) * MAX_ASTEROID_SPEED, 
+                                                       ((float) (Math.random() * 2) - 1 ) * MAX_ASTEROID_SPEED);
         Vector2D<Float> pos = new Vector2D<Float>(x, y);
-        Asteroid asteroid = new Asteroid(pos, orientation, velocity, Asteroid.AsteroidSize.LARGE, rotVelocity);
-        asteroids.add(asteroid);
+        asteroids.add(new Asteroid(pos, orientation, velocity, Asteroid.AsteroidSize.LARGE, rotVelocity));
     }
 
     /**
@@ -192,7 +198,6 @@ public class GameManager {
      * Will not spawn a bullet if the maximum number of bullets has been reached.
      */
     private void shoot() {
-        // TODO: Implement this method
         if (bullets.size() < MAX_BULLETS) {
             Vector2D<Float> pos = new Vector2D<Float>(player.getPosition().x, player.getPosition().y);
             float orientation = player.getOrientation();
@@ -205,49 +210,31 @@ public class GameManager {
      * Destroys an asteroid and spawns smaller asteroids in its place.
      */
     private void destroyAsteroid(Asteroid asteroid) {
-        if (asteroid.size == Asteroid.AsteroidSize.LARGE) {
-            for (int i = 0; i < 2; i++) {
-                Vector2D<Float> velocity = new Vector2D<Float>(asteroid.getVelocity().x + (float) (Math.random() * MAX_ASTEROID_SPEED * 2) - MAX_ASTEROID_SPEED,
-                                                               asteroid.getVelocity().y + (float) (Math.random() * MAX_ASTEROID_SPEED * 2) - MAX_ASTEROID_SPEED);
-                Asteroid newAsteroid = new Asteroid(asteroid.getPosition(), 
-                                                    asteroid.getOrientation(), 
-                                                    velocity, 
-                                                    Asteroid.AsteroidSize.MEDIUM, 
-                                                    (float) Math.random());
-                asteroids.add(newAsteroid);
-            }
-        } else if (asteroid.size == Asteroid.AsteroidSize.MEDIUM) {
-            for (int i = 0; i < 2; i++) {
-                Vector2D<Float> velocity = new Vector2D<Float>(asteroid.getVelocity().x + (float) (Math.random() * MAX_ASTEROID_SPEED * 2) - MAX_ASTEROID_SPEED,
-                                                               asteroid.getVelocity().y + (float) (Math.random() * MAX_ASTEROID_SPEED * 2) - MAX_ASTEROID_SPEED);
-                Asteroid newAsteroid = new Asteroid(asteroid.getPosition(), 
-                                                    asteroid.getOrientation(), 
-                                                    velocity, 
-                                                    Asteroid.AsteroidSize.SMALL, 
-                                                    (float) Math.random());
-                asteroids.add(newAsteroid);
-
-            }
+        Asteroid.AsteroidSize new_size = Asteroid.AsteroidSize.MEDIUM;
+        if (asteroid.size == Asteroid.AsteroidSize.MEDIUM) {
+            new_size = Asteroid.AsteroidSize.SMALL;
+        } else if (asteroid.size == Asteroid.AsteroidSize.SMALL) {
+            asteroids.remove(asteroid);
+            return;
+        }
+        for (int i = 0; i < 2; i++) {
+            // Adds random velocity to the destroyed asteroid's velocity, so smaller asteroids can be faster
+            Vector2D<Float> velocity = new Vector2D<Float>(asteroid.getVelocity().x + ((float) (Math.random() * 2) - 1 ) * MAX_ASTEROID_SPEED,
+                                                           asteroid.getVelocity().y + ((float) (Math.random() * 2) - 1 ) * MAX_ASTEROID_SPEED);
+            
+            asteroids.add(new Asteroid(asteroid.getPosition(), 
+                                       asteroid.getOrientation(), 
+                                       velocity, 
+                                       new_size, 
+                                       (float) Math.random()));
         }
         asteroids.remove(asteroid);
-    }
-
-    /**
-     * Starts the game by spawning the player and initial asteroids.
-     */
-    private void startGame() {
-        // Spawn 3 asteroids
-        for (int i = 0; i < STARTING_ASTEROIDS; i++) {
-            spawnAsteroid();
-        }
-        is_running = true;
     }
 
     /**
      * Is called when the game is over.
      */
     private void gameOver() {
-        // TODO: Implement this method
         is_running = false;
     }
 

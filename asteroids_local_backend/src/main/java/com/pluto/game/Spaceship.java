@@ -13,9 +13,7 @@ public class Spaceship extends SpawnableEntity {
         UP, LEFT, RIGHT, SHOOT
     }
 
-    /*
-     * Number of lives the player has
-     */
+    /* Number of lives the player has */
     private int lives;
 
     /* How much speed increases per second when moving forward */
@@ -43,10 +41,10 @@ public class Spaceship extends SpawnableEntity {
     }
 
     /**
-     * Moves the player object by one time step. It updates position and
+     * Moves the player object by one frame. It updates position and
      * orientation based on the object's velocity and rotation velocity and player inputs.
      * 
-     * @param dt - the amount of time since the last update
+     * @param dt - the amount of time in seconds since the last update
      * @param input - the player inputs
      */
     public void moveObj(float dt, Input[] input) {
