@@ -85,4 +85,24 @@ class LocalControllerTest {
 		assertEquals(expected, response.getBody());
 	}
 
+	/**
+ 	* Verifies response for leaderboard call when leaderboard is empty
+ 	*/
+	@Test
+	void testLeaderboardEmptyResponse() {
+		ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/leaderboard", String.class);
+		String expected = "{\"leaderboard\":[]}";
+		assertEquals(expected, response.getBody());
+	}
+
+	/**
+ 	* Verifies response for uploading a score with invalid profile_id
+ 	*/
+	@Test
+	void testUploadScoreFailureResponse() {
+		String url = String.format("http://localhost:%d/api/uploadScore?profile_id=9999&score=1000&level=5&duration=300", port);
+		ResponseEntity<String> response = restTemplate.postForEntity(url, null, String.class);
+		String expected = "{\"success\":false, \"error\":\"Failed to upload score\"}";
+		assertEquals(expected, response.getBody());
+	}
 }
