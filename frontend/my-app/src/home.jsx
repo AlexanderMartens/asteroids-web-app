@@ -89,6 +89,11 @@ function Home() {
             console.log("Updated Error:", data.error);
             return data.error;
         });
+        
+        if (data.error === "") {
+            setErrorMessage("Registration successful!"); // Update error message to success
+            console.log("updated registration message");
+        }
     }
 
     return (
