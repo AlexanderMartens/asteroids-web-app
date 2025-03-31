@@ -330,30 +330,6 @@ public class DatabaseClient {
             e.printStackTrace();
             return null;
         }
-    }   
-
-    /**
-     * Fetches the user id from the database.
-     * 
-     * @param dbConn - Connection to the database
-     * @param username - username of the User
-     * @return - The user id, returns -1 if user does not exist or an error occurs
-     */
-    private int getUserId(Connection dbConn, String username) {
-        // Use try with resources to close the statement and result set
-        try (PreparedStatement stmt = dbConn.prepareStatement("SELECT User_id FROM Login WHERE User_name = ?")) {
-            stmt.setString(1, username);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("User_id");
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Error fetching user ID for " + username + ": " + e.getMessage());
-            e.printStackTrace();
-        }
-        
-        return -1;
     }
 
     /**
