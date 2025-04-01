@@ -7,6 +7,7 @@
 import React, {useState} from 'react'
 import './home.css'
 import logo from './images/asteroid-logo-bgless.png'
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 /**
  * This function designs the frontend of the home/login page.
@@ -35,7 +36,7 @@ function Home() {
     const [password, setPassword] = useState('');
     const [timeTaken, setTimeTaken] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-
+    const navigate = useNavigate(); // Initialize useNavigate
 
     /**
      * This method sends user login requests to the backend at localhost:8080/api/login
@@ -58,10 +59,11 @@ function Home() {
         console.log(`Log in clicked. Username: ${encodeURIComponent(username)} Password: ${encodeURIComponent(password)}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
 
-        setErrorMessage(prev => {
-            console.log("Updated Error:", data.error);
-            return data.error;
-        });
+        if (data.success == 'true') {
+            navigate('/main_menu'); // Redirect to /main_menu on success
+        } else {
+            setErrorMessage(data.error); // Display error message on failure
+        }
     }
 
     /**
