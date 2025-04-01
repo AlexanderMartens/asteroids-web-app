@@ -86,8 +86,9 @@ function Home() {
         console.log(`Success: ${data.success}, Error: ${data.error}`);
 
         setErrorMessage(prev => {
-            console.log("Updated Error:", data.error);
-            return data.error;
+            const message = data.error === "" ? "Registration successful!" : data.error; // Registration success message
+            console.log("Updated Error:", message);
+            return message;
         });
     }
 
