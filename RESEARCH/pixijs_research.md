@@ -92,6 +92,9 @@ The code in full is in the T_07 repository found here [^2]
 #### JS implementation
 I spent some time looking at the YouTube tutorial's code, and after a couple minutes I decided it was too long to follow for the purposes of this research doc. At that point of deciding, Alex had an implementation that was up and running so I decided to end this research. Also, this game logic sat entirely within javascript which sort of defeats the purpose of our backend's singleton and game logic. The code is here [^5]
 
+#### Conclusion
+PixiJS was actually harder to use than I initially anticipated and decided against it. The JS implementation is simplier to understand, but too much logic is stored purely in JS. Both are possible and fast solutions to a web game, but not exactly what we need. We prefer to use the frontend as a renderer rather than the entire code.
+
 ### Sources
 <!--list your sources and link them to a footnote with the source url-->
 - PixiJS[^1]
