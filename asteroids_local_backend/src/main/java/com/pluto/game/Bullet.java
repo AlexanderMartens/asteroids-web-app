@@ -7,25 +7,40 @@ import java.lang.Math;
  * needed to render bullets on the screen, and associated methods to
  * manipulate the objects during the game.
  */
-public class Bullet extends SpawnableEntity{
+public class Bullet extends SpawnableEntity {
     /* The speed of the bullet per second */
     private static final float speed = 500.0f; // Needs playtesting
 
     /* The time the bullet has been alive */
     private float timeAlive;
 
+    /* The damage this bullet object deals */
+    private int damage;
+
     /**
      * Constructor for the Bullet class.
      * 
-     * @param position - the position of the bullet
+     * @param position    - the position of the bullet
      * @param orientation - the orientation of the bullet
      */
-    public Bullet(Vector2D<Float> position, float orientation) {
+    public Bullet(Vector2D<Float> position, float orientation, int damage) {
         this.setPosition(position);
         this.setOrientation(orientation);
-        this.setVelocity(new Vector2D<Float>((float) Math.cos(orientation) * speed, (float) Math.sin(orientation) * speed));
+        this.setVelocity(
+                new Vector2D<Float>((float) Math.cos(orientation) * speed, (float) Math.sin(orientation) * speed));
         this.timeAlive = 0.0f;
-        this.hitbox = new HitBox[] { new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 5.0f) };
+        this.hitbox = new HitBox[] {
+                new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 5.0f) };
+        this.damage = damage;
+    }
+
+    /**
+     * Gets the damage of this bullet object as an integer.
+     *
+     * @return - the damage of this bullet.
+     */
+    public int dealsDamage() {
+        return this.damage;
     }
 
     /**
@@ -35,7 +50,8 @@ public class Bullet extends SpawnableEntity{
      * @param dt - the amount of time since the last update
      */
     public void moveObj(float dt) {
-        Vector2D<Float> newPos = new Vector2D<Float>(getPosition().x + getVelocity().x * dt, getPosition().y + getVelocity().y * dt);
+        Vector2D<Float> newPos = new Vector2D<Float>(getPosition().x + getVelocity().x * dt,
+                getPosition().y + getVelocity().y * dt);
         this.setPosition(newPos);
         this.timeAlive += dt;
     }
@@ -72,5 +88,4 @@ public class Bullet extends SpawnableEntity{
         json.append("]}");
         return json.toString();
     }
-    
 }

@@ -5,7 +5,14 @@ package com.pluto.game;
  * needed to render asteroids on the screen, and associated methods to
  * manipulate the objects during the game.
  */
-public class Asteroid extends SpawnableEntity {
+public class Asteroid extends Enemy {
+    /*
+     * The starting health of an asteroid depending on type.
+     */
+    private static final int LARGE_ASTROID_HEALTH = 3;
+    private static final int MEDIUM_ASTROID_HEALTH = 2;
+    private static final int SMALL_ASTROID_HEALTH = 1;
+
     /* These enums determine the sizes of the asteroid objects */
     static enum AsteroidSize {
         SMALL, MEDIUM, LARGE
@@ -23,24 +30,32 @@ public class Asteroid extends SpawnableEntity {
     /**
      * Constructor for the Asteroid class.
      * 
-     * @param position - the position of the asteroid
+     * @param position    - the position of the asteroid
      * @param orientation - the orientation of the asteroid
-     * @param velocity - the velocity of the asteroid
-     * @param size - the size of the asteroid
+     * @param velocity    - the velocity of the asteroid
+     * @param size        - the size of the asteroid
      * @param rotVelocity - the rotation velocity of the asteroid
      */
-    public Asteroid(Vector2D<Float> position, float orientation, Vector2D<Float> velocity, AsteroidSize size, float rotVelocity) {
+    public Asteroid(Vector2D<Float> position, float orientation, Vector2D<Float> velocity, AsteroidSize size,
+            float rotVelocity) {
+        setType(EnemyType.ASTEROID);
         this.setPosition(position);
         this.setOrientation(orientation);
         this.setVelocity(velocity);
         this.size = size;
         this.rotVelocity = rotVelocity;
         if (size == AsteroidSize.SMALL) {
-            this.hitbox = new HitBox[] { new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 25.0f) };
+            this.hitbox = new HitBox[] {
+                    new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 25.0f) };
+            setHealth(SMALL_ASTROID_HEALTH);
         } else if (size == AsteroidSize.MEDIUM) {
-            this.hitbox = new HitBox[] { new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 50.0f) };
+            this.hitbox = new HitBox[] {
+                    new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 50.0f) };
+            setHealth(MEDIUM_ASTROID_HEALTH);
         } else {
-            this.hitbox = new HitBox[] { new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 100.0f) };
+            this.hitbox = new HitBox[] {
+                    new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 100.0f) };
+            setHealth(LARGE_ASTROID_HEALTH);
         }
     }
 
@@ -51,7 +66,8 @@ public class Asteroid extends SpawnableEntity {
      * @param dt - the amount of time since the last update
      */
     public void moveObj(float dt) {
-        Vector2D<Float> newPos = new Vector2D<Float>(getPosition().x + getVelocity().x * dt, getPosition().y + getVelocity().y * dt);
+        Vector2D<Float> newPos = new Vector2D<Float>(getPosition().x + getVelocity().x * dt,
+                getPosition().y + getVelocity().y * dt);
         this.setPosition(newPos);
         this.rotate(rotVelocity * dt);
     }
@@ -62,16 +78,10 @@ public class Asteroid extends SpawnableEntity {
      */
     @Override
     public String toJson() {
+        String parentJson = super.toJson();
         StringBuilder json = new StringBuilder();
-        json.append("{\"position\": ");
-        json.append(this.getPosition().toJson());
-        json.append(", \"orientation\": ");
-        json.append(this.getOrientation());
-        json.append(", \"hitbox\": [");
-        for (int i = 0; i < this.hitbox.length; i++) {
-            json.append(this.hitbox[i].toJson());
-        }
-        json.append("], \"size\": ");
+        json.append(parentJson.substring(0, parentJson.length() - 1));
+        json.append(", \"size\": ");
         json.append("\"" + this.size.toString() + "\"");
         json.append("}");
         return json.toString();
