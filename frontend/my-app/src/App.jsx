@@ -32,12 +32,12 @@ function App() {
         <Routes>
           <Route path='/' element={<Home/>}/>
           <Route path='/main_menu' element={<ProtectedRoute><MainMenu/></ProtectedRoute>}/>
-          <Route path='/profiles' element={<Profiles/>}/>
-          <Route path='/stats' element={<Stats/>}/>
-          <Route path='/leaderboard' element={<Leaderboard/>}/>
-          <Route path='/cosmetics' element={<Cosmetics/>}/>
-          <Route path='/settings' element={<Settings/>}/>
-          <Route path='/play' element={<Play/>}/>
+          <Route path='/profiles' element={<ProtectedRoute><Profiles/></ProtectedRoute>}/>
+          <Route path='/stats' element={<ProtectedRoute><Stats/></ProtectedRoute>}/>
+          <Route path='/leaderboard' element={<ProtectedRoute><Leaderboard/></ProtectedRoute>}/>
+          <Route path='/cosmetics' element={<ProtectedRoute><Cosmetics/></ProtectedRoute>}/>
+          <Route path='/settings' element={<ProtectedRoute><Settings/></ProtectedRoute>}/>
+          <Route path='/play' element={<ProtectedRoute><Play/></ProtectedRoute>}/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
