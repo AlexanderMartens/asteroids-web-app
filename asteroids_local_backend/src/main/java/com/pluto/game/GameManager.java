@@ -206,17 +206,25 @@ public class GameManager {
             }
             attempts++;
         }
+        float orientation = (float) (Math.random() * 2 * Math.PI);
+        float rotVelocity = (float) Math.random();
+        Vector2D<Float> pos = new Vector2D<Float>(x, y);
 
-        Enemy enemy = null;
+        Enemy enemy;
         if (type == EnemyType.ASTEROID) {
-            float orientation = (float) (Math.random() * 2 * Math.PI);
-            float rotVelocity = (float) Math.random();
             // Math.random() returns a value between 0 and 1, so we multiply by 2 and
             // subtract 1 to get a value between -1 and 1
             Vector2D<Float> velocity = new Vector2D<Float>(((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
                     ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
-            Vector2D<Float> pos = new Vector2D<Float>(x, y);
             enemy = new Asteroid(pos, orientation, velocity, Asteroid.AsteroidSize.LARGE, rotVelocity);
+
+        } else if (type == EnemyType.COMET) {
+            Vector2D<Float> velocity = new Vector2D<Float>(((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
+                    ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
+            enemy = new Asteroid(pos, orientation, velocity, Asteroid.AsteroidSize.COMET, rotVelocity);
+            
+        } else {
+            return;
         }
 
         enemies.add(enemy);

@@ -9,13 +9,14 @@ public class Asteroid extends Enemy {
     /*
      * The starting health of an asteroid depending on type.
      */
+    private static final int COMET_HEALTH = 10;
     private static final int LARGE_ASTROID_HEALTH = 3;
     private static final int MEDIUM_ASTROID_HEALTH = 2;
     private static final int SMALL_ASTROID_HEALTH = 1;
 
     /* These enums determine the sizes of the asteroid objects */
     static enum AsteroidSize {
-        SMALL, MEDIUM, LARGE
+        SMALL, MEDIUM, LARGE, COMET
     }
 
     /* Determines this asteroids size */
@@ -52,10 +53,15 @@ public class Asteroid extends Enemy {
             this.hitbox = new HitBox[] {
                     new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 50.0f) };
             setHealth(MEDIUM_ASTROID_HEALTH);
-        } else {
+        } else if (size == AsteroidSize.LARGE) {
             this.hitbox = new HitBox[] {
                     new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 100.0f) };
             setHealth(LARGE_ASTROID_HEALTH);
+        } else {
+            this.hitbox = new HitBox[] {
+                    new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 60.0f) };
+            setType(EnemyType.COMET); // Set this type to a comet now
+            setHealth(COMET_HEALTH);
         }
     }
 
@@ -65,6 +71,7 @@ public class Asteroid extends Enemy {
      * 
      * @param dt - the amount of time since the last update
      */
+    @Override
     public void moveObj(float dt) {
         Vector2D<Float> newPos = new Vector2D<Float>(getPosition().x + getVelocity().x * dt,
                 getPosition().y + getVelocity().y * dt);

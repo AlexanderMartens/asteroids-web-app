@@ -5,9 +5,10 @@ import java.lang.Math;
 /**
  * A class that represents Asteroid game objects. It contains all the attributes
  * needed to render bullets on the screen, and associated methods to
- * manipulate the objects during the game.
+ * manipulate the objects during the game. Player bullets also inherit from
+ * enemy but cannot hit the player.
  */
-public class Bullet extends SpawnableEntity {
+public class Bullet extends Enemy {
     /* The speed of the bullet per second */
     private static final float speed = 500.0f; // Needs playtesting
 
@@ -73,19 +74,6 @@ public class Bullet extends SpawnableEntity {
      */
     @Override
     public String toJson() {
-        StringBuilder json = new StringBuilder();
-        json.append("{\"position\": ");
-        json.append(this.getPosition().toJson());
-        json.append(", \"orientation\": ");
-        json.append(this.getOrientation());
-        json.append(", \"hitbox\": [");
-        for (int i = 0; i < this.hitbox.length; i++) {
-            json.append(this.hitbox[i].toJson());
-            if (i != this.hitbox.length - 1) {
-                json.append(", ");
-            }
-        }
-        json.append("]}");
-        return json.toString();
+        return super.toJson();
     }
 }
