@@ -25,6 +25,7 @@ public class Bullet extends Enemy {
      * @param orientation - the orientation of the bullet
      */
     public Bullet(Vector2D<Float> position, float orientation, int damage) {
+        setType(EnemyType.BULLET);
         this.setPosition(position);
         this.setOrientation(orientation);
         this.setVelocity(

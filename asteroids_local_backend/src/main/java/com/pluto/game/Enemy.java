@@ -73,9 +73,9 @@ public abstract class Enemy extends SpawnableEntity {
      */
     public String toJson() {
         StringBuilder json = new StringBuilder();
-        json.append("{\"type\": ");
+        json.append("{\"type\": \"");
         json.append(this.type().toString());
-        json.append(", \"position\": ");
+        json.append("\", \"position\": ");
         json.append(this.getPosition().toJson());
         json.append(", \"orientation\": ");
         json.append(this.getOrientation());
