@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
-import asteroid32png from './images/asteroid_32x32.png'; // adjust the path as needed
+import asteroid32png from './images/asteroid_32x32.png';
+import asteroid64png from './images/asteroid_64x64.png';
 
 const Play = () => {
   const canvasRef = useRef(null);
@@ -92,32 +93,32 @@ const Play = () => {
 
       // Asteroids
       const asteroid32Image = new Image();
+      const asteroid64Image = new Image();
       asteroid32Image.src = asteroid32png;
+      asteroid64Image.src = asteroid64png;
 
       asteroids.forEach((asteroid) => {
+        let imageToDraw = new Image();
+        const size = asteroid.hitbox[0].radius * 2;
+
+        // TODO: change the sprite based on the size of the asteroid
+        if (size < 0.0005) {
+            imageToDraw = asteroid32Image;
+        } else {
+            imageToDraw = asteroid64Image;
+        }
+
         context.save();
 
         
-        const halfSize = asteroid.hitbox[0].radius * 2;
 
         context.drawImage(
-            asteroid32Image,
-            asteroid.position.x - halfSize / 2,
-            asteroid.position.y - halfSize / 2,
-            halfSize,
-            halfSize
+            imageToDraw,
+            asteroid.position.x - size / 2,
+            asteroid.position.y - size / 2,
+            size,
+            size
         );
-
-        // context.fillStyle = "green";
-        // context.beginPath();
-        // context.arc(
-        //   asteroid.position.x,
-        //   asteroid.position.y,
-        //   asteroid.hitbox[0].radius,
-        //   0,
-        //   2 * Math.PI
-        // );
-        // context.fill();
 
         context.restore();
       });
@@ -127,6 +128,7 @@ const Play = () => {
         const drawHitbox = (hitbox) => {
           context.save();
           context.strokeStyle = "rgba(255, 0, 0, 0.5)";
+          context.lineWidth = 3;
           context.beginPath();
           context.arc(hitbox.position.x, hitbox.position.y, hitbox.radius, 0, 2 * Math.PI);
           context.stroke();
