@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import asteroidImg from ''; // adjust the path as needed
 
 const Play = () => {
   const canvasRef = useRef(null);
