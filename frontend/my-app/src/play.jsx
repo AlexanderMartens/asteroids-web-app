@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import asteroidImg from ''; // adjust the path as needed
+import asteroid32png from './images/asteroid_32x32.png'; // adjust the path as needed
 
 const Play = () => {
   const canvasRef = useRef(null);
@@ -91,18 +91,34 @@ const Play = () => {
       });
 
       // Asteroids
+      const asteroid32Image = new Image();
+      asteroid32Image.src = asteroid32png;
+
       asteroids.forEach((asteroid) => {
         context.save();
-        context.fillStyle = "green";
-        context.beginPath();
-        context.arc(
-          asteroid.position.x,
-          asteroid.position.y,
-          asteroid.hitbox[0].radius,
-          0,
-          2 * Math.PI
+
+        
+        const halfSize = asteroid.hitbox[0].radius * 2;
+
+        context.drawImage(
+            asteroid32Image,
+            asteroid.position.x - halfSize / 2,
+            asteroid.position.y - halfSize / 2,
+            halfSize,
+            halfSize
         );
-        context.fill();
+
+        // context.fillStyle = "green";
+        // context.beginPath();
+        // context.arc(
+        //   asteroid.position.x,
+        //   asteroid.position.y,
+        //   asteroid.hitbox[0].radius,
+        //   0,
+        //   2 * Math.PI
+        // );
+        // context.fill();
+
         context.restore();
       });
 
