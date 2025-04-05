@@ -38,12 +38,13 @@ public class Spaceship extends SpawnableEntity {
      * with 3 lives. Hitbox will be a circle with radius 25 for now.
      */
     public Spaceship() {
-        this.setPosition(new Vector2D<Float>(500.0f, 500.0f));
-        this.setOrientation(0.0f);
-        this.setVelocity(new Vector2D<Float>(0.0f, 0.0f));
+        super(new Vector2D<Float>(500.0f, 500.0f), // Starting position
+                new Vector2D<Float>(0.0f, 0.0f), // Starting velocity
+                0.0f, // Starting orientation
+                new HitBox[] {
+                        new HitBox(new Vector2D<Float>(500.f, 500.f), 25.0f)
+                });
         this.lives = 3;
-        this.hitbox = new HitBox[] {
-                new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 25.0f) };
     }
 
     /**

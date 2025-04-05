@@ -44,6 +44,18 @@ public abstract class SpawnableEntity {
     private Vector2D<Float> velocity;
 
     /**
+     * Constructor for the SpawnableEntity. Ensures that all derived classes
+     * initialize SpawnableEntity data members.
+     */
+    public SpawnableEntity(Vector2D<Float> position, Vector2D<Float> velocity,
+            float orientation, HitBox[] hitbox) {
+        this.position = position;
+        this.velocity = velocity;
+        this.orientation = orientation;
+        this.hitbox = hitbox;
+    }
+
+    /**
      * This method rotates the spawnable entity by an angle in radians. It
      * updates this object's orientation and hitbox accordingly.
      *
@@ -57,12 +69,12 @@ public abstract class SpawnableEntity {
         float localX;
         float localY;
         // holds the rotated coordinates of a hitebox circle
-        float rotX; 
+        float rotX;
         float rotY;
         for (HitBox circle : hitbox) {
             // Convert the circle location to local object coordinates
             localX = circle.position.x - position.x;
-            localY = circle.position.y - position.y; 
+            localY = circle.position.y - position.y;
 
             // Rotate local coordinates by radians
             rotX = (float) (localX * Math.cos(radians) - localY * Math.sin(radians));

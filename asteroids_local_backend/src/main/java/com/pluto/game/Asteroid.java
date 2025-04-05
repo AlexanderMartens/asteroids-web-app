@@ -10,8 +10,8 @@ public class Asteroid extends Enemy {
      * The starting health of an asteroid depending on type.
      */
     private static final int COMET_HEALTH = 10;
-    private static final int LARGE_ASTROID_HEALTH = 3;
-    private static final int MEDIUM_ASTROID_HEALTH = 2;
+    private static final int LARGE_ASTROID_HEALTH = 10;
+    private static final int MEDIUM_ASTROID_HEALTH = 5;
     private static final int SMALL_ASTROID_HEALTH = 1;
 
     /* These enums determine the sizes of the asteroid objects */
@@ -37,14 +37,12 @@ public class Asteroid extends Enemy {
      * @param size        - the size of the asteroid
      * @param rotVelocity - the rotation velocity of the asteroid
      */
-    public Asteroid(Vector2D<Float> position, float orientation, Vector2D<Float> velocity, AsteroidSize size,
-            float rotVelocity) {
-        setType(EnemyType.ASTEROID);
-        this.setPosition(position);
-        this.setOrientation(orientation);
-        this.setVelocity(velocity);
+    public Asteroid(Vector2D<Float> position, Vector2D<Float> velocity, 
+            float orientation, AsteroidSize size, float rotVelocity) {
+        super(position, velocity, orientation, null, EnemyType.ASTEROID, 0);
         this.size = size;
         this.rotVelocity = rotVelocity;
+        
         if (size == AsteroidSize.SMALL) {
             this.hitbox = new HitBox[] {
                     new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 25.0f) };

@@ -17,7 +17,7 @@ public class GameManager {
     private ArrayList<Enemy> enemies;
 
     /* The list of bullets */
-    private ArrayList<Bullet> bullets;
+    private ArrayList<Bullet> playerBullets;
 
     /* The time in seconds the game has been running */
     private float time;
@@ -67,7 +67,7 @@ public class GameManager {
     public GameManager() {
         this.player = new Spaceship();
         this.enemies = new ArrayList<Enemy>();
-        this.bullets = new ArrayList<Bullet>();
+        this.playerBullets = new ArrayList<Bullet>();
         this.time = 0.0f;
         this.score = 0;
         this.level = 1;
@@ -95,7 +95,7 @@ public class GameManager {
             enemy.moveObj(dt);
         }
 
-        for (Bullet bullet : bullets) {
+        for (Bullet bullet : playerBullets) {
             bullet.moveObj(dt);
         }
 
@@ -110,7 +110,7 @@ public class GameManager {
         }
 
         // Despawn bullets, uses iterator to avoid concurrent modification exception
-        Iterator<Bullet> iterator = bullets.iterator();
+        Iterator<Bullet> iterator = playerBullets.iterator();
         while (iterator.hasNext()) {
             Bullet bullet = iterator.next();
             if (bullet.getTimeAlive() > BULLET_LIFETIME) {
@@ -123,7 +123,7 @@ public class GameManager {
             for (int i = 0; i < level + STARTING_ASTEROIDS; i++) {
                 spawnEnemy(EnemyType.ASTEROID);
             }
-            bullets.clear();
+            playerBullets.clear();
             score += SCORE_PER_LEVEL * level;
             level++;
         }
@@ -141,7 +141,7 @@ public class GameManager {
     private void checkAndHandleCollisions() {
         // Check for collisions between bullets and asteroids
         // Uses iterators to avoid concurrent modification exception
-        Iterator<Bullet> bulletIterator = bullets.iterator();
+        Iterator<Bullet> bulletIterator = playerBullets.iterator();
         while (bulletIterator.hasNext()) {
             Bullet bullet = bulletIterator.next();
             Iterator<Enemy> enemyIterator = enemies.iterator();
@@ -177,9 +177,9 @@ public class GameManager {
      * Will not spawn a bullet if the maximum number of bullets has been reached.
      */
     private void playerShoot() {
-        if (bullets.size() < MAX_BULLETS) {
+        if (playerBullets.size() < MAX_BULLETS) {
             Bullet bullet = player.shootBullet();
-            bullets.add(bullet);
+            playerBullets.add(bullet);
         }
     }
 
@@ -216,12 +216,12 @@ public class GameManager {
             // subtract 1 to get a value between -1 and 1
             Vector2D<Float> velocity = new Vector2D<Float>(((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
                     ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
-            enemy = new Asteroid(pos, orientation, velocity, Asteroid.AsteroidSize.LARGE, rotVelocity);
+            enemy = new Asteroid(pos, velocity, orientation, Asteroid.AsteroidSize.LARGE, rotVelocity);
 
         } else if (type == EnemyType.COMET) {
             Vector2D<Float> velocity = new Vector2D<Float>(((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
                     ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
-            enemy = new Asteroid(pos, orientation, velocity, Asteroid.AsteroidSize.COMET, rotVelocity);
+            enemy = new Asteroid(pos, velocity, orientation, Asteroid.AsteroidSize.COMET, rotVelocity);
             
         } else {
             return;
@@ -271,8 +271,8 @@ public class GameManager {
                     asteroid.getVelocity().y + ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
 
             enemies.add(new Asteroid(asteroid.getPosition(),
-                    asteroid.getOrientation(),
                     velocity,
+                    asteroid.getOrientation(),
                     new_size,
                     (float) Math.random()));
         }
@@ -306,9 +306,9 @@ public class GameManager {
             }
         }
         json.append("],\"bullets\":[");
-        for (int i = 0; i < bullets.size(); i++) {
-            json.append(bullets.get(i).toJson());
-            if (i < bullets.size() - 1) {
+        for (int i = 0; i < playerBullets.size(); i++) {
+            json.append(playerBullets.get(i).toJson());
+            if (i < playerBullets.size() - 1) {
                 json.append(",");
             }
         }

@@ -12,6 +12,17 @@ public abstract class Enemy extends SpawnableEntity {
     private int health;
 
     /**
+     * Constructor for the Enemy class. Ensures that all data members are
+     * initialized for derived classes.
+     */
+    public Enemy(Vector2D<Float> position, Vector2D<Float> velocity,
+            float orientation, HitBox[] hitbox, EnemyType type, int health) {
+        super(position, velocity, orientation, hitbox);
+        this.enemyType = type;
+        this.health = health;
+    }
+
+    /**
      * A method that reduces this Enemy object's health by the specified amount
      * of damage. If damage is negative, then this method does not do anything.
      * The health of this object will not fall below 0.

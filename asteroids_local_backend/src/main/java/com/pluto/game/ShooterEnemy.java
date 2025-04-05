@@ -13,19 +13,53 @@ public abstract class ShooterEnemy extends Enemy {
     public abstract Bullet shootPlayer(Vector2D<Float> playerLocation);
 
     /**
-     * Creates and updates the path object of this ShooterEnemy.
+     * Initializes path data member
      */
-    public void createPath(int radius) {
-        
+    public ShooterEnemy(Vector2D<Float> position, Vector2D<Float> velocity,
+            float orientation, HitBox[] hitbox, EnemyType type, int health) {
+        super(position, velocity, orientation, hitbox, type, health);
+        this.path = createPath();
     }
 
     /**
-     * A class to represent the path object of this ShooterEnemy. For now, the 
-     * paths are circles, but will change to closed cubic bezier curves?
+     * Creates and updates the path object of this ShooterEnemy.
+     */
+    public Path createPath() {
+        int a = (int) (Math.random() * 400 + 400);
+        int b = (int) (Math.random() * 400 + 400);
+        return new Path(this.getPosition(), a, b);
+    }
+
+    /**
+     * A class to represent the path object of this ShooterEnemy. For now, the
+     * paths are elipses, but will change to closed cubic bezier curves?
+     * 
+     * @param a - the horizontal radius of this elipse
+     * @param b - the vertical radius of this elipse
      */
     private static class Path {
-        private Path(int r) {
-            
+        private int a;
+        private int b;
+        private Vector2D<Float> position;
+
+        public Path(Vector2D<Float> position, int a, int b) {
+            this.a = a;
+            this.b = b;
+            this.position = position;
+        }
+
+        private float pathFunctionX(float time) {
+            return (float) (a * Math.cos(time)) + position.x;
+        }
+
+        private float pathFunctionY(float time) {
+            return (float) (b * Math.sin(time)) + position.y;
+        }
+
+        public Vector2D<Float> getLocation(float time) {
+            float x = pathFunctionX(time);
+            float y = pathFunctionY(time);
+            return new Vector2D<Float>(x, y);
         }
     }
 }

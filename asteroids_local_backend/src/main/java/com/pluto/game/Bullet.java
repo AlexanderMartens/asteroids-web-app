@@ -10,7 +10,7 @@ import java.lang.Math;
  */
 public class Bullet extends Enemy {
     /* The speed of the bullet per second */
-    private static final float speed = 500.0f; // Needs playtesting
+    private static final float SPEED = 500.0f; // Needs playtesting
 
     /* The time the bullet has been alive */
     private float timeAlive;
@@ -25,15 +25,29 @@ public class Bullet extends Enemy {
      * @param orientation - the orientation of the bullet
      */
     public Bullet(Vector2D<Float> position, float orientation, int damage) {
-        setType(EnemyType.BULLET);
-        this.setPosition(position);
-        this.setOrientation(orientation);
+        super(position, null, orientation, null, EnemyType.BULLET, 1);  
         this.setVelocity(
-                new Vector2D<Float>((float) Math.cos(orientation) * speed, (float) Math.sin(orientation) * speed));
-        this.timeAlive = 0.0f;
+                new Vector2D<Float>((float) Math.cos(orientation) * SPEED,
+                        (float) Math.sin(orientation) * SPEED));
         this.hitbox = new HitBox[] {
-                new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 5.0f) };
+                new HitBox(new Vector2D<Float>(this.getPosition().x,
+                        this.getPosition().y), 5.0f) };
+        this.timeAlive = 0.0f;
         this.damage = damage;
+    }
+
+    /**
+     * Constructs a bullet object given the starting position and direction.
+     * Note that the speed is still determed by the SPEED constant.
+     *
+     * @param position  - the starting position of this bullet.
+     * @param direction - the direction vector this bullet follows
+     * @param damage    - the damage of this bullet.
+     */
+    public Bullet(Vector2D<Float> position, Vector2D<Float> direction, int damage) {
+        // Converts the direction vector into an orientation
+        this(position, (float) Math.atan2(direction.y, direction.x), damage);
+
     }
 
     /**
@@ -52,7 +66,8 @@ public class Bullet extends Enemy {
      * @param dt - the amount of time since the last update
      */
     public void moveObj(float dt) {
-        Vector2D<Float> newPos = new Vector2D<Float>(getPosition().x + getVelocity().x * dt,
+        Vector2D<Float> newPos = new Vector2D<Float>(
+                getPosition().x + getVelocity().x * dt,
                 getPosition().y + getVelocity().y * dt);
         this.setPosition(newPos);
         this.timeAlive += dt;
