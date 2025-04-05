@@ -8,7 +8,7 @@ public abstract class ShooterEnemy extends Enemy {
      * The amount of time this ShooterEnemy has been alive for. This determines
      * their location on the path and their ability to shoot.
      */
-    private int pathTime;
+    private float pathTime;
 
     /* The path of this ShooterEnemy */
     private Path path;
@@ -34,7 +34,7 @@ public abstract class ShooterEnemy extends Enemy {
     @Override
     public void moveObj(float dt) {
         pathTime += dt;
-        setPosition(path.getLocation(pathTime));
+        this.setPosition(path.getLocation(pathTime));
     }
 
     /**
@@ -64,6 +64,7 @@ public abstract class ShooterEnemy extends Enemy {
     private static class Path {
         private int a;
         private int b;
+        private static float OMEGA = 4.0f;
         private Vector2D<Float> position;
 
         public Path(Vector2D<Float> position, int a, int b) {
@@ -73,11 +74,11 @@ public abstract class ShooterEnemy extends Enemy {
         }
 
         private float pathFunctionX(float time) {
-            return (float) (a * Math.cos(time)) + position.x;
+            return (float) (a * Math.cos(time / OMEGA)) + (position.x - a);
         }
 
         private float pathFunctionY(float time) {
-            return (float) (b * Math.sin(time)) + position.y;
+            return (float) (b * Math.sin(time / OMEGA)) + position.y;
         }
 
         public Vector2D<Float> getLocation(float time) {

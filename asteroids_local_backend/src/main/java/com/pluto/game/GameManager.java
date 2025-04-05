@@ -2,6 +2,7 @@ package com.pluto.game;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ListIterator;
 
 /**
  * A class that represents the game manager. It contains all the attributes
@@ -56,6 +57,9 @@ public class GameManager {
     /* How much score destroying asteroids gives */
     private static final int SCORE_PER_ASTEROID = 10;
 
+    /* How much score destroying aliens gives */
+    private static final int SCORE_PER_ALIEN = 50;
+
     /* How much score for completing a level */
     private static final int SCORE_PER_LEVEL = 100;
 
@@ -72,9 +76,10 @@ public class GameManager {
         this.score = 0;
         this.level = 1;
         is_running = true;
-        for (int i = 0; i < STARTING_ASTEROIDS; i++) {
-            spawnEnemy(EnemyType.ASTEROID);
-        }
+        spawnEnemy(EnemyType.ALIEN);
+        // for (int i = 0; i < STARTING_ASTEROIDS; i++) {
+        // spawnEnemy(EnemyType.ASTEROID);
+        // }
     }
 
     /**
@@ -88,19 +93,27 @@ public class GameManager {
         if (dt == 0) {
             return;
         }
-        // Move objects
-        player.moveObj(dt, input);
 
+        // Move all objects
+        player.moveObj(dt, input);
         for (Enemy enemy : enemies) {
             enemy.moveObj(dt);
         }
-
         for (Bullet bullet : playerBullets) {
             bullet.moveObj(dt);
         }
 
-        // Check for collisions
-        checkAndHandleCollisions();
+        // Handle enemy shooting
+        ListIterator<Enemy> enemyIterator = enemies.listIterator();
+        while (enemyIterator.hasNext()) {
+            Enemy enemy = enemyIterator.next();
+            if (enemy instanceof ShooterEnemy) {
+                Bullet[] enemyBullets = ((ShooterEnemy) enemy).shootPlayer(player.getPosition());
+                for (Bullet bullet : enemyBullets) {
+                    enemyIterator.add(bullet);
+                }
+            }
+        }
 
         // Shoot bullets
         for (Spaceship.Input i : input) {
@@ -109,16 +122,13 @@ public class GameManager {
             }
         }
 
-        // Despawn bullets, uses iterator to avoid concurrent modification exception
-        Iterator<Bullet> iterator = playerBullets.iterator();
-        while (iterator.hasNext()) {
-            Bullet bullet = iterator.next();
-            if (bullet.getTimeAlive() > BULLET_LIFETIME) {
-                iterator.remove();
-            }
-        }
+        // Check for collisions
+        checkAndHandleCollisions();
 
-        // Check if all asteroids are destroyed
+        // Despawn old bullets
+        despawnBullets();
+
+        // Check if all enemies are destroyed
         if (enemies.size() == 0) {
             for (int i = 0; i < level + STARTING_ASTEROIDS; i++) {
                 spawnEnemy(EnemyType.ASTEROID);
@@ -131,6 +141,30 @@ public class GameManager {
         // Update time
         if (is_running) {
             time += dt;
+        }
+    }
+
+    /**
+     * Despawns old Bullet objects. A Bullet is considered old if its
+     * time alive is greater than BULLET_LIFETIME.
+     */
+    private void despawnBullets() {
+        // Despawn player bullets, uses iterator to avoid concurrent modification
+        // exception
+        Iterator<Bullet> bulletIterator = playerBullets.iterator();
+        while (bulletIterator.hasNext()) {
+            Bullet bullet = bulletIterator.next();
+            if (bullet.getTimeAlive() > BULLET_LIFETIME) {
+                bulletIterator.remove();
+            }
+        }
+
+        // Despawn enemy bullets
+        Iterator<Enemy> enemyIterator = enemies.iterator();
+        while (enemyIterator.hasNext()) {
+            Enemy enemy = enemyIterator.next();
+            if (enemy instanceof Bullet && ((Bullet) enemy).getTimeAlive() > BULLET_LIFETIME)
+                enemyIterator.remove();
         }
     }
 
@@ -222,7 +256,9 @@ public class GameManager {
             Vector2D<Float> velocity = new Vector2D<Float>(((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
                     ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
             enemy = new Asteroid(pos, velocity, orientation, Asteroid.AsteroidSize.COMET, rotVelocity);
-            
+
+        } else if (type == EnemyType.ALIEN) {
+            enemy = new Alien(pos, null);
         } else {
             return;
         }
@@ -238,7 +274,12 @@ public class GameManager {
     private void destroyEnemy(Enemy enemy) {
         switch (enemy.type()) {
             case ASTEROID:
+                score += SCORE_PER_ASTEROID * level;
                 destroyAsteroid((Asteroid) enemy);
+                break;
+            case ALIEN:
+                score += SCORE_PER_ALIEN * level;
+                destroyAlien((Alien) enemy);
                 break;
             default:
                 return;
@@ -252,8 +293,6 @@ public class GameManager {
      * @param asteroid - the asteroid object to be destroyed
      */
     private void destroyAsteroid(Asteroid asteroid) {
-        score += SCORE_PER_ASTEROID * level;
-
         Asteroid.AsteroidSize new_size = Asteroid.AsteroidSize.MEDIUM;
         if (asteroid.size == Asteroid.AsteroidSize.MEDIUM) {
             new_size = Asteroid.AsteroidSize.SMALL;
@@ -278,6 +317,13 @@ public class GameManager {
         }
 
         enemies.remove(asteroid);
+    }
+
+    /**
+     * Destroys an Alien object
+     */
+    private void destroyAlien(Alien alien) {
+        enemies.remove(alien);
     }
 
     /**

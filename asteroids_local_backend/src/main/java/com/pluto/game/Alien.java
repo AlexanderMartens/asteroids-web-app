@@ -1,7 +1,5 @@
 package com.pluto.game;
 
-import java.util.Vector;
-
 /**
  * Class to represent Alien objects.
  */
@@ -39,7 +37,7 @@ public class Alien extends ShooterEnemy {
     public Alien(Vector2D<Float> position, Vector2D<Float> velocity) {
         super(position, velocity, 0.0f, null, EnemyType.ALIEN, ALIEN_HEALTH);
         this.hitbox = new HitBox[] { new HitBox(position.x, position.y, 25) };
-
+        isCharging = false;
     }
 
     /**
@@ -56,6 +54,9 @@ public class Alien extends ShooterEnemy {
         timeLastExplode += dt;
     }
 
+    /**
+     * Explodes and shoots 8 bullets in the cardinal directions
+     */
     private Bullet[] explode() {
         // First check if we can explode
         if (chargingTime >= TOTAL_CHARGE_TIME) {
@@ -63,6 +64,9 @@ public class Alien extends ShooterEnemy {
             chargingTime = 0;
             timeLastExplode = 0;
             timeLastShot = 0;
+            isCharging = false;
+            // Give the alien a new path after exploding
+            resetPath();
             
             // Shoot in 8 directions
             Bullet[] bullets = new Bullet[8];
