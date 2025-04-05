@@ -264,7 +264,7 @@ public class LocalController {
     /**
     * Handles requests related to the leaderboard.
     * This method fetches the top scores from the database view `Leaderboard`
-    * and returns them in JSON format.
+    * and returns them in JSON format. The scores can be sorted by 'score', 'level', or 'duration_secodns'.
     *
     * @param limit The number of top scores to fetch (default is 10).
     * @return A JSON-formatted string containing the top scores or an error message.
@@ -297,12 +297,12 @@ public class LocalController {
                     jsonResult.append(",");
                 }
                 jsonResult.append("{")
-                        .append("\"user\":\"").append(rs.getString("User_name")).append("\",")
-                        .append("\"profile\":\"").append(rs.getString("Profile_name")).append("\",")
-                        .append("\"score\":").append(rs.getInt("Score")).append(",")
-                        .append("\"level\":").append(rs.getInt("Level_reached")).append(",")
-                        .append("\"duration\":").append(rs.getInt("Duration_seconds")).append(",")
-                        .append("\"time\":\"").append(rs.getTimestamp("Time_played")).append("\"")
+                        .append("\"user\":\"").append(rs.getString("user_name")).append("\",")
+                        .append("\"profile\":\"").append(rs.getString("profile_name")).append("\",")
+                        .append("\"score\":").append(rs.getInt("score")).append(",")
+                        .append("\"level\":").append(rs.getInt("level")).append(",")
+                        .append("\"duration\":").append(rs.getInt("duration_seconds")).append(",")
+                        .append("\"time\":\"").append(rs.getTimestamp("time_played")).append("\"")
                         .append("}");
                 first = false;
             }
@@ -329,7 +329,7 @@ public class LocalController {
     * error - string
     */
     @CrossOrigin(origins = "*")
-    @PostMapping("/uploadScore")
+    @GetMapping("/uploadScore")
     public String uploadScore(
             @RequestParam("username") String username,
             @RequestParam("profile_name") String profile_name,
