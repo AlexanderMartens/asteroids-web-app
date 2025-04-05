@@ -4,13 +4,19 @@ package com.pluto.game;
  * Abstract class to represent enemies that can shoot objects at the player.
  */
 public abstract class ShooterEnemy extends Enemy {
+    /*
+     * The amount of time this ShooterEnemy has been alive for. This determines
+     * their location on the path and their ability to shoot.
+     */
+    private int pathTime;
+
     /* The path of this ShooterEnemy */
     private Path path;
 
     /**
-     * Shoots a bullet at the player.
+     * Shoots a bullet or multiple bullets at the player.
      */
-    public abstract Bullet shootPlayer(Vector2D<Float> playerLocation);
+    public abstract Bullet[] shootPlayer(Vector2D<Float> playerLocation);
 
     /**
      * Initializes path data member
@@ -19,6 +25,24 @@ public abstract class ShooterEnemy extends Enemy {
             float orientation, HitBox[] hitbox, EnemyType type, int health) {
         super(position, velocity, orientation, hitbox, type, health);
         this.path = createPath();
+        this.pathTime = 0;
+    }
+
+    /**
+     * Moves this shooter enemy.
+     */
+    @Override
+    public void moveObj(float dt) {
+        pathTime += dt;
+        setPosition(path.getLocation(pathTime));
+    }
+
+    /**
+     * Creates a new path for this ShooterEnemy.
+     */
+    public void resetPath() {
+        pathTime = 0;
+        path = createPath();
     }
 
     /**

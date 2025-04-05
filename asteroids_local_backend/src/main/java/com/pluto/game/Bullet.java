@@ -12,6 +12,9 @@ public class Bullet extends Enemy {
     /* The speed of the bullet per second */
     private static final float SPEED = 500.0f; // Needs playtesting
 
+    /* Health of all bullet objects */
+    private static int BULLET_HEALTH = 1;
+
     /* The time the bullet has been alive */
     private float timeAlive;
 
@@ -25,7 +28,7 @@ public class Bullet extends Enemy {
      * @param orientation - the orientation of the bullet
      */
     public Bullet(Vector2D<Float> position, float orientation, int damage) {
-        super(position, null, orientation, null, EnemyType.BULLET, 1);  
+        super(position, null, orientation, null, EnemyType.BULLET, BULLET_HEALTH);  
         this.setVelocity(
                 new Vector2D<Float>((float) Math.cos(orientation) * SPEED,
                         (float) Math.sin(orientation) * SPEED));
