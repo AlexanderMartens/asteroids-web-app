@@ -49,8 +49,8 @@ public abstract class ShooterEnemy extends Enemy {
      * Creates and updates the path object of this ShooterEnemy.
      */
     public Path createPath() {
-        int a = (int) (Math.random() * 400 + 400);
-        int b = (int) (Math.random() * 400 + 400);
+        int a = (int) (Math.random() * 600 + 100);
+        int b = (int) (Math.random() * 600 + 100);
         return new Path(this.getPosition(), a, b);
     }
 

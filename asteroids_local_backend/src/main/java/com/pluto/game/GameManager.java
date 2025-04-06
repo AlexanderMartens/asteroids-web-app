@@ -281,6 +281,9 @@ public class GameManager {
                 score += SCORE_PER_ALIEN * level;
                 destroyAlien((Alien) enemy);
                 break;
+            case BULLET:
+                  enemies.remove(enemy);
+                  break;
             default:
                 return;
         }
