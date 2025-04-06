@@ -77,6 +77,7 @@ public class GameManager {
         this.level = 1;
         is_running = true;
         spawnEnemy(EnemyType.ALIEN);
+        spawnEnemy(EnemyType.ASTEROID);
         // for (int i = 0; i < STARTING_ASTEROIDS; i++) {
         // spawnEnemy(EnemyType.ASTEROID);
         // }
