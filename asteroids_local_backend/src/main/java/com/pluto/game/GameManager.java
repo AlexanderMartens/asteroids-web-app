@@ -76,8 +76,7 @@ public class GameManager {
         this.score = 0;
         this.level = 1;
         is_running = true;
-        spawnEnemy(EnemyType.ALIEN);
-        spawnEnemy(EnemyType.ASTEROID);
+        spawnEnemy(EnemyType.COMET);
         // for (int i = 0; i < STARTING_ASTEROIDS; i++) {
         // spawnEnemy(EnemyType.ASTEROID);
         // }
@@ -254,8 +253,8 @@ public class GameManager {
             enemy = new Asteroid(pos, velocity, orientation, Asteroid.AsteroidSize.LARGE, rotVelocity);
 
         } else if (type == EnemyType.COMET) {
-            Vector2D<Float> velocity = new Vector2D<Float>(((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
-                    ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
+            Vector2D<Float> velocity = new Vector2D<Float>(((float) (Math.random() * 4) - 2) * MAX_ASTEROID_SPEED,
+                    ((float) (Math.random() * 4) - 2) * MAX_ASTEROID_SPEED);
             enemy = new Asteroid(pos, velocity, orientation, Asteroid.AsteroidSize.COMET, rotVelocity);
 
         } else if (type == EnemyType.ALIEN) {
@@ -277,6 +276,13 @@ public class GameManager {
             case ASTEROID:
                 score += SCORE_PER_ASTEROID * level;
                 destroyAsteroid((Asteroid) enemy);
+                break;
+            case COMET:
+                // Destroyed comet, spawn Alien in its place
+                score += SCORE_PER_ASTEROID;
+                Alien alien = new Alien(enemy.getPosition(), null);
+                enemies.remove(enemy);
+                enemies.add(alien);
                 break;
             case ALIEN:
                 score += SCORE_PER_ALIEN * level;
