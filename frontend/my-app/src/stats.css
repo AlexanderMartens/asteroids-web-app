@@ -4,8 +4,19 @@
     justify-content: space-around;
 }
 
+.stats-row {
+    display: flex;
+}
+
 .stats-container {
+    border: 1px solid white;
+}
+
+.bests-container {
     display: flex;
     justify-content: space-between;
-    border: 1px solid white;
+}
+
+.recent-container {
+    flex-direction: column;
 }
