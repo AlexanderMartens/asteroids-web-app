@@ -3,7 +3,6 @@ package com.pluto.game;
 /**
  * Class to represent Alien objects.
  */
-
 public class Alien extends ShooterEnemy {
     /* How often an Alien may shoot a bullet */
     private static int SHOOT_TIME = 3;
@@ -32,7 +31,10 @@ public class Alien extends ShooterEnemy {
     private static int ALIEN_HEALTH = 15;
 
     /**
+     * Constructor for the Alien.
      *
+     * @param position - the position to spawn the Alien
+     * @param velocity - the velocity of this Alien, which is unused
      */
     public Alien(Vector2D<Float> position, Vector2D<Float> velocity) {
         super(position, velocity, 0.0f, null, EnemyType.ALIEN, ALIEN_HEALTH);
@@ -41,7 +43,10 @@ public class Alien extends ShooterEnemy {
     }
 
     /**
+     * Moves the Alien along its path given the timestep. It updates internal
+     * timers of this Alien which determine its mechanics.
      *
+     * @param dt - the timestep at which to move this Alien by.
      */
     @Override
     public void moveObj(float dt) {
@@ -55,7 +60,11 @@ public class Alien extends ShooterEnemy {
     }
 
     /**
-     * Explodes and shoots 8 bullets in the cardinal directions
+     * Explodes and shoots 8 bullets in the cardinal directions, if the Alien
+     * is able to. It otherwise returns an empty array.
+     *
+     * @return - An array of bullets or an empty array, depending on the Alien's
+     *         internal time
      */
     private Bullet[] explode() {
         // First check if we can explode
@@ -67,7 +76,7 @@ public class Alien extends ShooterEnemy {
             isCharging = false;
             // Give the alien a new path after exploding
             resetPath();
-            
+
             // Shoot in 8 directions
             Bullet[] bullets = new Bullet[8];
             Vector2D<Float> n, s, e, w, ne, nw, se, sw;
@@ -90,14 +99,18 @@ public class Alien extends ShooterEnemy {
             bullets[7] = new Bullet(getPosition(), sw, 1);
             return bullets;
         }
-        
+
         // Cannot explode yet. Return an empty array
         return new Bullet[0];
     }
 
     /**
-     * Is called to shoot at the Player. If the time since the alien has last
-     * shot is greater than
+     * Is called to shoot at the Player. It may either shoot a single bullet,
+     * shoot several, or none at all, depending on the internal timers of this
+     * Alien object.
+     *
+     * @param playerPosition - the position of the player to shoot at.
+     * @return - an array of bullets to be shot, which may be empty.
      */
     @Override
     public Bullet[] shootPlayer(Vector2D<Float> playerPosition) {

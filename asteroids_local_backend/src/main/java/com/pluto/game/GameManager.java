@@ -83,7 +83,7 @@ public class GameManager {
     }
 
     /**
-     * Updates the game by one frame. It updates the player, asteroids, and bullets.
+     * Updates the game by one frame. It updates the player, enemies, and bullets.
      * Checks for and handles collisions and updates the score and time.
      * 
      * @param dt    - the amount of time in seconds since the last update
@@ -107,11 +107,11 @@ public class GameManager {
         ListIterator<Enemy> enemyIterator = enemies.listIterator();
         while (enemyIterator.hasNext()) {
             Enemy enemy = enemyIterator.next();
-            if (enemy instanceof ShooterEnemy) {
-                Bullet[] enemyBullets = ((ShooterEnemy) enemy).shootPlayer(player.getPosition());
-                for (Bullet bullet : enemyBullets) {
-                    enemyIterator.add(bullet);
-                }
+            if (!(enemy instanceof ShooterEnemy))
+                continue;
+            Bullet[] enemyBullets = ((ShooterEnemy) enemy).shootPlayer(player.getPosition());
+            for (Bullet bullet : enemyBullets) {
+                enemyIterator.add(bullet);
             }
         }
 
@@ -128,7 +128,7 @@ public class GameManager {
         // Despawn old bullets
         despawnBullets();
 
-        // Check if all enemies are destroyed
+        // Check if all enemies are destroyed and if so, handle new level
         if (enemies.size() == 0) {
             for (int i = 0; i < level + STARTING_ASTEROIDS; i++) {
                 spawnEnemy(EnemyType.ASTEROID);
@@ -163,7 +163,8 @@ public class GameManager {
         Iterator<Enemy> enemyIterator = enemies.iterator();
         while (enemyIterator.hasNext()) {
             Enemy enemy = enemyIterator.next();
-            if (enemy instanceof Bullet && ((Bullet) enemy).getTimeAlive() > BULLET_LIFETIME)
+            if (enemy instanceof Bullet
+                    && ((Bullet) enemy).getTimeAlive() > BULLET_LIFETIME)
                 enemyIterator.remove();
         }
     }
@@ -207,8 +208,8 @@ public class GameManager {
     }
 
     /**
-     * Spawns a new bullet at the player's location.
-     * Will not spawn a bullet if the maximum number of bullets has been reached.
+     * Spawns a new bullet at the player's location. Will not spawn a bullet
+     * if the maximum number of bullets has been reached.
      */
     private void playerShoot() {
         if (playerBullets.size() < MAX_BULLETS) {
@@ -221,6 +222,8 @@ public class GameManager {
      * Spawns a new asteroid at a random location on the screen.
      * The asteroid will always spawn at least PROTECTED_DISTANCE units away from
      * the player.
+     *
+     * @param type - the EnemyType of the enemy to spawn.
      */
     private void spawnEnemy(EnemyType type) {
         // Picks a random location on the screen, checks if it is at least
@@ -248,16 +251,20 @@ public class GameManager {
         if (type == EnemyType.ASTEROID) {
             // Math.random() returns a value between 0 and 1, so we multiply by 2 and
             // subtract 1 to get a value between -1 and 1
-            Vector2D<Float> velocity = new Vector2D<Float>(((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
+            Vector2D<Float> velocity = new Vector2D<Float>(
+                    ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
                     ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
             enemy = new Asteroid(pos, velocity, orientation, Asteroid.AsteroidSize.LARGE, rotVelocity);
 
         } else if (type == EnemyType.COMET) {
-            Vector2D<Float> velocity = new Vector2D<Float>(((float) (Math.random() * 4) - 2) * MAX_ASTEROID_SPEED,
-                    ((float) (Math.random() * 4) - 2) * MAX_ASTEROID_SPEED);
+            // Comets may be twice as fast as asteroids
+            Vector2D<Float> velocity = new Vector2D<Float>(
+                    ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED * 2,
+                    ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED * 2);
             enemy = new Asteroid(pos, velocity, orientation, Asteroid.AsteroidSize.COMET, rotVelocity);
 
         } else if (type == EnemyType.ALIEN) {
+            // Alien's have built in velocity.
             enemy = new Alien(pos, null);
         } else {
             return;
@@ -289,8 +296,8 @@ public class GameManager {
                 destroyAlien((Alien) enemy);
                 break;
             case BULLET:
-                  enemies.remove(enemy);
-                  break;
+                enemies.remove(enemy);
+                break;
             default:
                 return;
         }
@@ -330,7 +337,7 @@ public class GameManager {
     }
 
     /**
-     * Destroys an Alien object
+     * Destroys an Alien object.
      */
     private void destroyAlien(Alien alien) {
         enemies.remove(alien);
