@@ -49,11 +49,11 @@ public abstract class ShooterEnemy extends Enemy {
      * Creates and updates the path object of this ShooterEnemy.
      */
     public Path createPath() {
-        // Generate random numbers in [-700, -100] or [100, 700]
-        int a = (int) Math.random() * 1200;
-        a = (a > 600)? a - 500 : a - 700;
+        // Generate random numbers in [-350, -25] or [25, 350]
+        int a = (int) Math.random() * 650;
+        a = (a > 325)? a - 350 : a - 300;
         int b = (int) Math.random() * 1200;
-        b = (b > 600)? b - 500 : b - 700;
+        b = (b > 325)? b - 350 : b - 300;
         return new Path(this.getPosition(), a, b);
     }
 
@@ -67,7 +67,7 @@ public abstract class ShooterEnemy extends Enemy {
     private static class Path {
         private int a;
         private int b;
-        private static float OMEGA = 4.0f;
+        private static float OMEGA = 2.50f;
         private Vector2D<Float> position;
 
         public Path(Vector2D<Float> position, int a, int b) {
