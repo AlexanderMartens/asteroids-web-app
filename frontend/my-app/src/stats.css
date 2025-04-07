@@ -1,0 +1,11 @@
+#stats-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid white;
+}
