@@ -2,6 +2,7 @@ import React from 'react';
 import './stats.css'
 import { Link } from 'react-router-dom';
 import TrophyIcon from './images/trophy-icon.svg?react'
+import StarIcon from './images/star-icon.svg?react'
 
 function Stats() {
     return (
@@ -20,7 +21,7 @@ function Stats() {
                 <div className='stats-container' id='highest-level-container'>
                     <div className='stats-internal-top'>
                         <div className='stat-name'>Highest Level</div>
-                        <div className='stats-top-right'></div>
+                        <div className='stats-top-right'><StarIcon/></div>
                     </div>
                     <div className='stat-value'>46</div>
                 </div>
