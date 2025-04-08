@@ -5,21 +5,13 @@
     padding: 16px;
 }
 
-
 .stats-row {
     display: flex;
 }
 
 .stats-container {
-    border: 1px solid white;
-    border-radius: 16px;
-}
-
-.bests-container {
     display: flex;
     justify-content: space-between;
-}
-
-.recent-container {
-    flex-direction: column;
+    border: 1px solid white;
+    border-radius: 16px;
 }
