@@ -272,7 +272,7 @@ public class LocalController {
     *   score - int
     *   level - int
     *   duration - int
-    *   time - string
+    *   time - string - formatted as yyyy-mm-dd hh:mm:ss.fffffffff, @see java.sql.Timestamp.toString()
     */
     @CrossOrigin(origins = "*")
     @GetMapping("/leaderboard")
@@ -368,7 +368,8 @@ public class LocalController {
 
     /**
      * This method handles game update requests on localhost:8080/api/updateGame.
-     * This method should be called every frame.
+     * This method should be called every frame. The time returned is the amount of
+     * time the game has been running for in seconds using dt.
      * Response messages are sent in a json format.
      * 
      * @param dt - the time in seconds since the last update
