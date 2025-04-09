@@ -13,10 +13,10 @@ import com.pluto.game.GameManager;
 import com.pluto.game.Spaceship;
 
 /**
- * A controller class for the local backend. It handles HTTP requests from the 
- * front end using RestAPI and the Spring Boot framework. By default, it 
+ * A controller class for the local backend. It handles HTTP requests from the
+ * front end using RestAPI and the Spring Boot framework. By default, it
  * listens on port 8080. All requests are located on localhost:8080/api/
- */ 
+ */
 @RestController
 @RequestMapping("/api")
 public class LocalController {
@@ -39,7 +39,8 @@ public class LocalController {
     private static final String PASSWORD_FORMAT = "^[a-zA-Z0-9-=\\[\\]\\\\;',.\\/!@#$%^&*()_+{}|:\"<>?`~]{4,32}$";
 
     /**
-     * Stores all the game managers for each user. The key is "username profile_name"
+     * Stores all the game managers for each user. The key is "username
+     * profile_name"
      * and the value is the GameManager object.
      */
     private HashMap<String, GameManager> gameManagers = new HashMap<String, GameManager>();
@@ -57,20 +58,20 @@ public class LocalController {
      * success - boolean
      * error - string
      */
-    @CrossOrigin(origins="*")
+    @CrossOrigin(origins = "*")
     @GetMapping("/login")
     public String login(
-            @RequestParam(value = "name", defaultValue = "") String name, 
-            @RequestParam(value = "pass", defaultValue = "") String pass
-            ) {
-        
+            @RequestParam(value = "name", defaultValue = "") String name,
+            @RequestParam(value = "pass", defaultValue = "") String pass) {
+
         // Check that name and pass are of valid format
         if (!name.matches(USERNAME_FORMAT))
             return generateResponse(false, "Username is invalid");
         if (!pass.matches(PASSWORD_FORMAT))
             return generateResponse(false, "Password is invalid");
 
-        // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
+        // TODO: rewrite condition block as try-catch block for checking dbClient
+        // creation errors
         DatabaseClient dbClient = new DatabaseClient();
         String error = dbClient.loginUser(name, pass);
         if (error.equals("")) {
@@ -80,8 +81,9 @@ public class LocalController {
         }
     }
 
-    /** 
-     * This method handles user registration requests on localhost:8080/api/register.
+    /**
+     * This method handles user registration requests on
+     * localhost:8080/api/register.
      * Response messages are sent in a json format.
      * 
      * @see generateResponse - for json response format
@@ -93,20 +95,20 @@ public class LocalController {
      * success - boolean
      * error - string
      */
-    @CrossOrigin(origins="*")
+    @CrossOrigin(origins = "*")
     @GetMapping("/register")
     public String register(
-            @RequestParam(value = "name", defaultValue = "") String name, 
-            @RequestParam(value = "pass", defaultValue = "") String pass
-            ) {
-        
+            @RequestParam(value = "name", defaultValue = "") String name,
+            @RequestParam(value = "pass", defaultValue = "") String pass) {
+
         // Check that name and pass are of valid format
         if (!name.matches(USERNAME_FORMAT))
             return generateResponse(false, "Username is invalid");
         if (!pass.matches(PASSWORD_FORMAT))
             return generateResponse(false, "Password is invalid");
 
-        // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
+        // TODO: rewrite condition block as try-catch block for checking dbClient
+        // creation errors
         DatabaseClient dbClient = new DatabaseClient();
         String error = dbClient.createUser(name, pass);
         if (error.equals("")) {
@@ -117,30 +119,31 @@ public class LocalController {
     }
 
     /**
-     * This method handles user profile creation requests on localhost:8080/api/createProfile.
+     * This method handles user profile creation requests on
+     * localhost:8080/api/createProfile.
      * Response messages are sent in a json format.
      * 
      * @see generateResponse - for json response format
      *
-     * @param username - the login name of the user
+     * @param username     - the login name of the user
      * @param profile_name - the name of the profile
      * @return - a json formatted confirmation or error of the profile creation request
      * The json has the following attributes:
      * success - boolean
      * error - string
      */
-    @CrossOrigin(origins="*")
+    @CrossOrigin(origins = "*")
     @GetMapping("/createProfile")
     public String createProfile(
-            @RequestParam(value = "username", defaultValue = "") String username, 
-            @RequestParam(value = "profile_name", defaultValue = "") String profile_name
-            ) {
+            @RequestParam(value = "username", defaultValue = "") String username,
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name) {
 
         // Check that profile_name is of valid format
         if (!profile_name.matches(USERNAME_FORMAT))
             return generateResponse(false, "Profile name is invalid");
-        
-        // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
+
+        // TODO: rewrite condition block as try-catch block for checking dbClient
+        // creation errors
         DatabaseClient dbClient = new DatabaseClient();
         String error = dbClient.createProfile(username, profile_name);
         if (error.equals("")) {
@@ -151,32 +154,33 @@ public class LocalController {
     }
 
     /**
-    * This method handles user profile editing requests on localhost:8080/api/editProfile.
+     * This method handles user profile editing requests on
+     * localhost:8080/api/editProfile.
      * Response messages are sent in a json format.
      * 
      * @see generateResponse - for json response format
      *
-     * @param username - the login name of the user
-     * @param profile_name - the name of the profile
+     * @param username         - the login name of the user
+     * @param profile_name     - the name of the profile
      * @param new_profile_name - the new name of the profile
      * @return - a json formatted confirmation or error of the profile editing request
      * The json has the following attributes:
      * success - boolean
      * error - string
      */
-    @CrossOrigin(origins="*")
+    @CrossOrigin(origins = "*")
     @GetMapping("/editProfile")
     public String editProfile(
-            @RequestParam(value = "username", defaultValue = "") String username, 
+            @RequestParam(value = "username", defaultValue = "") String username,
             @RequestParam(value = "profile_name", defaultValue = "") String profile_name,
-            @RequestParam(value = "new_profile_name", defaultValue = "") String new_profile_name
-            ) {
-        
+            @RequestParam(value = "new_profile_name", defaultValue = "") String new_profile_name) {
+
         // Check that new_profile_name is of valid format
         if (!new_profile_name.matches(USERNAME_FORMAT))
             return generateResponse(false, "New profile name is invalid");
-        
-        // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
+
+        // TODO: rewrite condition block as try-catch block for checking dbClient
+        // creation errors
         DatabaseClient dbClient = new DatabaseClient();
         String error = dbClient.renameProfile(username, profile_name, new_profile_name);
         if (error.equals("")) {
@@ -187,26 +191,27 @@ public class LocalController {
     }
 
     /**
-     * This method handles user profile deletion requests on localhost:8080/api/deleteProfile.
+     * This method handles user profile deletion requests on
+     * localhost:8080/api/deleteProfile.
      * Response messages are sent in a json format.
      * 
      * @see generateResponse - for json response format
      *
-     * @param username - the login name of the user
+     * @param username     - the login name of the user
      * @param profile_name - the name of the profile
      * @return - a json formatted confirmation or error of the profile deletion request
      * The json has the following attributes:
      * success - boolean
      * error - string
      */
-    @CrossOrigin(origins="*")
+    @CrossOrigin(origins = "*")
     @GetMapping("/deleteProfile")
     public String deleteProfile(
-            @RequestParam(value = "username", defaultValue = "") String username, 
-            @RequestParam(value = "profile_name", defaultValue = "") String profile_name
-            ) {
+            @RequestParam(value = "username", defaultValue = "") String username,
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name) {
 
-        // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
+        // TODO: rewrite condition block as try-catch block for checking dbClient
+        // creation errors
         DatabaseClient dbClient = new DatabaseClient();
         String error = dbClient.deleteProfile(username, profile_name);
         if (error.equals("")) {
@@ -217,7 +222,8 @@ public class LocalController {
     }
 
     /**
-     * This method handles user profile retrieval requests on localhost:8080/api/getProfiles.
+     * This method handles user profile retrieval requests on
+     * localhost:8080/api/getProfiles.
      * Response messages are sent in a json format.
      * 
      * @see generateResponse - for json response format
@@ -229,13 +235,13 @@ public class LocalController {
      * error - string
      * profiles - a list of strings
      */
-    @CrossOrigin(origins="*")
+    @CrossOrigin(origins = "*")
     @GetMapping("/getProfiles")
     public String getProfiles(
-            @RequestParam(value = "username", defaultValue = "") String username
-            ) {
-        
-        // TODO: rewrite condition block as try-catch block for checking dbClient creation errors
+            @RequestParam(value = "username", defaultValue = "") String username) {
+
+        // TODO: rewrite condition block as try-catch block for checking dbClient
+        // creation errors
         DatabaseClient dbClient = new DatabaseClient();
         String[] profiles = dbClient.getProfiles(username);
         if (profiles != null) {
@@ -278,8 +284,7 @@ public class LocalController {
     @GetMapping("/leaderboard")
     public String getLeaderboard(
             @RequestParam(value = "limit", defaultValue = "10") int limit,
-            @RequestParam(value = "score", defaultValue = "Score") String score
-            ) {
+            @RequestParam(value = "score", defaultValue = "Score") String score) {
         DatabaseClient dbClient = new DatabaseClient();
         ResultSet rs = dbClient.fetchTopScores(limit, score); // Fetch top scores ordered by highest Score
         StringBuilder jsonResult = new StringBuilder("{\"leaderboard\":[");
@@ -329,8 +334,7 @@ public class LocalController {
             @RequestParam("profile_name") String profile_name,
             @RequestParam("score") int score,
             @RequestParam("level") int level,
-            @RequestParam("duration") int duration
-            ) {
+            @RequestParam("duration") int duration) {
         DatabaseClient dbClient = new DatabaseClient();
         String error = dbClient.uploadScore(username, profile_name, score, level, duration);
 
@@ -345,19 +349,18 @@ public class LocalController {
      * This method creates a new game on localhost:8080/api/newGame.
      * Response messages are sent in a json format.
      * 
-     * @param username - the login name of the user
+     * @param username     - the login name of the user
      * @param profile_name - the name of the profile
      * @return - a json formatted confirmation or error of the new game request
      * The json has the following attributes:
      * success - boolean
      * error - string
      */
-    @CrossOrigin(origins="*")
+    @CrossOrigin(origins = "*")
     @GetMapping("/newGame")
     public String newGame(
             @RequestParam(value = "username", defaultValue = "") String username,
-            @RequestParam(value = "profile_name", defaultValue = "") String profile_name
-            ) {
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name) {
         String key = username + " " + profile_name;
         if (gameManagers.containsKey(key)) {
             gameManagers.remove(key);
@@ -372,10 +375,10 @@ public class LocalController {
      * time the game has been running for in seconds using dt.
      * Response messages are sent in a json format.
      * 
-     * @param dt - the time in seconds since the last update
-     * @param username - the login name of the user
+     * @param dt           - the time in seconds since the last update
+     * @param username     - the login name of the user
      * @param profile_name - the name of the profile
-     * @param inputs - the player inputs
+     * @param inputs       - the player inputs
      * @return - a json formatted game state
      * The json has the following attributes:
      * player - player object
@@ -416,14 +419,13 @@ public class LocalController {
      * time - float
      * is_running - boolean
      */
-    @CrossOrigin(origins="*")
+    @CrossOrigin(origins = "*")
     @GetMapping("/updateGame")
     public String updateGame(
             @RequestParam(value = "dt", defaultValue = "0") float dt,
             @RequestParam(value = "username", defaultValue = "") String username,
             @RequestParam(value = "profile_name", defaultValue = "") String profile_name,
-            @RequestParam(value = "inputs", defaultValue = "") String inputs
-            ) {
+            @RequestParam(value = "inputs", defaultValue = "") String inputs) {
         // Check that the game manager exists, if not create a new one
         String key = username + " " + profile_name;
         if (!gameManagers.containsKey(key)) {
@@ -458,7 +460,7 @@ public class LocalController {
      * 
      * Overloaded method allowing error message to be specified
      * 
-     * @param result - True if the response was sucessful, false otherwise
+     * @param result   - True if the response was sucessful, false otherwise
      * @param errorMsg - A detailed description of any errors, or blank if none
      */
     private String generateResponse(boolean status, String errorMsg) {

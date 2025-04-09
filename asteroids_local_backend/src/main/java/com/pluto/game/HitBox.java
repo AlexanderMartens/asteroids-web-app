@@ -25,6 +25,17 @@ public class HitBox {
         this.position = position;
         this.radius = radius;
     }
+
+    /**
+     * Constructor for the HitBox class.
+     *
+     * @param x - the x location of this hitbox
+     * @param y - the y location of this hitbox
+     * @param radius - the radius of this hitbox
+     */
+    public HitBox(float x, float y, float radius) {
+        this(new Vector2D<Float>(x, y), radius);
+    }
     
     /**
      * Converts the HitBox object to a JSON string.
