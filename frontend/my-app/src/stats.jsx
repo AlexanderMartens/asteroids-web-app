@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import TrophyIcon from './images/trophy-icon.svg?react';
 import StarIcon from './images/star-icon.svg?react';
 import ClockIcon from './images/clock-icon.svg?react';
+import ControllerIcon from './images/controller-icon.svg?react';
 
 function Stats() {
     return (
@@ -36,7 +37,7 @@ function Stats() {
                 <div className='stats-container' id='longest-survival-container'>
                     <div className='stats-internal-top'>
                         <div className='stat-name'>Games Played</div>
-                        <div className='stats-top-right'></div>
+                        <div className='stats-top-right'><ControllerIcon/></div>
                     </div>
                     <div className='stat-value'>74</div>
                 </div>
