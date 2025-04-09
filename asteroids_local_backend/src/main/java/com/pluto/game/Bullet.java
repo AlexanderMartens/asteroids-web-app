@@ -28,7 +28,7 @@ public class Bullet extends Enemy {
      * @param orientation - the orientation of the bullet
      */
     public Bullet(Vector2D<Float> position, float orientation, int damage) {
-        super(position, null, orientation, null, EnemyType.BULLET, BULLET_HEALTH);  
+        super(position, null, orientation, null, EnemyType.BULLET, BULLET_HEALTH);
         this.setVelocity(
                 new Vector2D<Float>((float) Math.cos(orientation) * SPEED,
                         (float) Math.sin(orientation) * SPEED));

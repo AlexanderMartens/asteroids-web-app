@@ -37,27 +37,31 @@ public class Asteroid extends Enemy {
      * @param size        - the size of the asteroid
      * @param rotVelocity - the rotation velocity of the asteroid
      */
-    public Asteroid(Vector2D<Float> position, Vector2D<Float> velocity, 
+    public Asteroid(Vector2D<Float> position, Vector2D<Float> velocity,
             float orientation, AsteroidSize size, float rotVelocity) {
         super(position, velocity, orientation, null, EnemyType.ASTEROID, 0);
         this.size = size;
         this.rotVelocity = rotVelocity;
-        
+
         if (size == AsteroidSize.SMALL) {
             this.hitbox = new HitBox[] {
-                    new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 25.0f) };
+                    new HitBox(this.getPosition().x, this.getPosition().y, 25.0f)
+            };
             setHealth(SMALL_ASTROID_HEALTH);
         } else if (size == AsteroidSize.MEDIUM) {
             this.hitbox = new HitBox[] {
-                    new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 50.0f) };
+                    new HitBox(this.getPosition().x, this.getPosition().y, 50.0f)
+            };
             setHealth(MEDIUM_ASTROID_HEALTH);
         } else if (size == AsteroidSize.LARGE) {
             this.hitbox = new HitBox[] {
-                    new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 100.0f) };
+                    new HitBox(this.getPosition().x, this.getPosition().y, 100.0f)
+            };
             setHealth(LARGE_ASTROID_HEALTH);
         } else {
             this.hitbox = new HitBox[] {
-                    new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 60.0f) };
+                    new HitBox(this.getPosition().x, this.getPosition().y, 60.0f)
+            };
             setType(EnemyType.COMET); // Set this type to a comet now
             setHealth(COMET_HEALTH);
         }
@@ -80,6 +84,8 @@ public class Asteroid extends Enemy {
     /**
      * Converts the Asteroid object to a JSON string.
      * Needs to return the position, orientation, hitbox, and size of the asteroid.
+     *
+     * @return - A json formatted string representing this Asteroid object
      */
     @Override
     public String toJson() {

@@ -77,9 +77,6 @@ public class GameManager {
         this.level = 1;
         is_running = true;
         spawnEnemy(EnemyType.COMET);
-        // for (int i = 0; i < STARTING_ASTEROIDS; i++) {
-        // spawnEnemy(EnemyType.ASTEROID);
-        // }
     }
 
     /**
@@ -254,17 +251,19 @@ public class GameManager {
             Vector2D<Float> velocity = new Vector2D<Float>(
                     ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
                     ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
-            enemy = new Asteroid(pos, velocity, orientation, Asteroid.AsteroidSize.LARGE, rotVelocity);
+            enemy = new Asteroid(
+                    pos, velocity, orientation, Asteroid.AsteroidSize.LARGE, rotVelocity);
 
         } else if (type == EnemyType.COMET) {
             // Comets may be twice as fast as asteroids
             Vector2D<Float> velocity = new Vector2D<Float>(
                     ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED * 2,
                     ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED * 2);
-            enemy = new Asteroid(pos, velocity, orientation, Asteroid.AsteroidSize.COMET, rotVelocity);
+            enemy = new Asteroid(
+                    pos, velocity, orientation, Asteroid.AsteroidSize.COMET, rotVelocity);
 
         } else if (type == EnemyType.ALIEN) {
-            // Alien's have built in velocity.
+            // Aliens have built in velocity.
             enemy = new Alien(pos, null);
         } else {
             return;
@@ -323,8 +322,10 @@ public class GameManager {
             // Adds random velocity to the destroyed asteroid's velocity, so smaller
             // asteroids can be faster
             Vector2D<Float> velocity = new Vector2D<Float>(
-                    asteroid.getVelocity().x + ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
-                    asteroid.getVelocity().y + ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
+                    asteroid.getVelocity().x +
+                            ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
+                    asteroid.getVelocity().y +
+                            ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
 
             enemies.add(new Asteroid(asteroid.getPosition(),
                     velocity,
@@ -355,6 +356,8 @@ public class GameManager {
      * Returns the game state of the player, asteroids, and bullets.
      * Also includes the current score, current level, time, and whether the game is
      * running.
+     *
+     * @return - a json formatted string representing this GameManager
      */
     public String toJson() {
         StringBuilder json = new StringBuilder();

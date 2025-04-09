@@ -19,7 +19,7 @@ public class HitBox {
      * Constructor for the HitBox class.
      * 
      * @param position - the center position of the hitbox
-     * @param radius - the radius of the hitbox
+     * @param radius   - the radius of the hitbox
      */
     public HitBox(Vector2D<Float> position, float radius) {
         this.position = position;
@@ -29,16 +29,17 @@ public class HitBox {
     /**
      * Constructor for the HitBox class.
      *
-     * @param x - the x location of this hitbox
-     * @param y - the y location of this hitbox
+     * @param x      - the x location of this hitbox
+     * @param y      - the y location of this hitbox
      * @param radius - the radius of this hitbox
      */
     public HitBox(float x, float y, float radius) {
         this(new Vector2D<Float>(x, y), radius);
     }
-    
+
     /**
      * Converts the HitBox object to a JSON string.
+     * 
      * @return - the JSON string representation of the HitBox object
      */
     public String toJson() {
