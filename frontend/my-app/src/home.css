@@ -107,3 +107,7 @@
     background-color: #333;
     color: white;
 }
+
+.error-message {
+    min-height: 30px; 
+}

@@ -7,6 +7,7 @@
 import React, {useState} from 'react'
 import './home.css'
 import logo from './images/asteroid-logo-bgless.png'
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 /**
  * This function designs the frontend of the home/login page.
@@ -34,6 +35,8 @@ function Home() {
      */
     const [password, setPassword] = useState('');
     const [timeTaken, setTimeTaken] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate(); // Initialize useNavigate
 
     /**
      * This method sends user login requests to the backend at localhost:8080/api/login
@@ -55,6 +58,12 @@ function Home() {
         // Log success and error messages
         console.log(`Log in clicked. Username: ${encodeURIComponent(username)} Password: ${encodeURIComponent(password)}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
+
+        if (data.success == 'true') {
+            navigate('/main_menu'); // Redirect to /main_menu on success
+        } else {
+            setErrorMessage(data.error); // Display error message on failure
+        }
     }
 
     /**
@@ -77,6 +86,12 @@ function Home() {
         // Log success and error messages
         console.log(`Register clicked. Username: ${encodeURIComponent(username)} Password: ${encodeURIComponent(password)}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
+
+        setErrorMessage(prev => {
+            const message = data.error === "" ? "Registration successful!" : data.error; // Registration success message
+            console.log("Updated Error:", message);
+            return message;
+        });
     }
 
     return (
@@ -121,6 +136,11 @@ function Home() {
                 <div className='login-register-container'>
                     <button className='login-register' onClick={handleLogin}>Log In</button>
                     <button className='login-register' onClick={handleRegister}>Register</button>
+                </div>
+                
+                <div>
+                    {/** Displays error message if login or registration fails */}
+                    <p className='error-message'>{errorMessage}</p>
                 </div>
 
             </div>
