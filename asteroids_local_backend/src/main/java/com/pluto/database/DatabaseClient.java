@@ -30,7 +30,7 @@ public class DatabaseClient {
      * Default constructor for the DatabaseClient.
      */
     public DatabaseClient() {
-        this("jdbc:mysql://project_07-user_database-1:3306", "root", "password");
+        this("jdbc:mysql://user_database:3306", "root", "password");
     }
     
     /**
@@ -53,7 +53,7 @@ public class DatabaseClient {
             // Here we create the user
             // Check if the user already exists
             PreparedStatement stmt = dbConn.prepareStatement(
-                "SELECT * FROM Login WHERE User_name = ?"
+                "SELECT * FROM Users WHERE User_name = ?"
             );
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -63,7 +63,7 @@ public class DatabaseClient {
 
             // If the user does not exist, create the user
             stmt = dbConn.prepareStatement(
-                "INSERT INTO Login (User_name, User_password) VALUES (?, ?)"
+                "INSERT INTO Users (User_name, User_password) VALUES (?, ?)"
             );
             stmt.setString(1, username);
             stmt.setString(2, password);
@@ -98,7 +98,7 @@ public class DatabaseClient {
             // Here we log in the user
             // Check if the user exists and the password is correct
             PreparedStatement stmt = dbConn.prepareStatement(
-                "SELECT * FROM Login WHERE User_name = ? AND User_password = ?"
+                "SELECT * FROM Users WHERE User_name = ? AND User_password = ?"
             );
             stmt.setString(1, username);
             stmt.setString(2, password);
@@ -375,6 +375,30 @@ public class DatabaseClient {
             e.printStackTrace();
             return "Error uploading score";
         }
+    }
+
+    /**
+     * Fetches the user id from the database.
+     * 
+     * @param dbConn - Connection to the database
+     * @param username - username of the User
+     * @return - The user id, returns -1 if user does not exist or an error occurs
+     */
+    private int getUserId(Connection dbConn, String username) {
+        // Use try with resources to close the statement and result set
+        try (PreparedStatement stmt = dbConn.prepareStatement("SELECT User_id FROM Users WHERE User_name = ?")) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("User_id");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching user ID for " + username + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return -1;
     }
 
     /**
