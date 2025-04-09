@@ -1,8 +1,9 @@
 import React from 'react';
 import './stats.css'
 import { Link } from 'react-router-dom';
-import TrophyIcon from './images/trophy-icon.svg?react'
-import StarIcon from './images/star-icon.svg?react'
+import TrophyIcon from './images/trophy-icon.svg?react';
+import StarIcon from './images/star-icon.svg?react';
+import ClockIcon from './images/clock-icon.svg?react';
 
 function Stats() {
     return (
@@ -28,7 +29,7 @@ function Stats() {
                 <div className='stats-container' id='longest-survival-container'>
                     <div className='stats-internal-top'>
                         <div className='stat-name'>Longest Survival</div>
-                        <div className='stats-top-right'></div>
+                        <div className='stats-top-right'><ClockIcon/></div>
                     </div>
                     <div className='stat-value'>15:32</div>
                 </div>
