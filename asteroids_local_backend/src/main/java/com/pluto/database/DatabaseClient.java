@@ -53,7 +53,7 @@ public class DatabaseClient {
             // Here we create the user
             // Check if the user already exists
             PreparedStatement stmt = dbConn.prepareStatement(
-                "SELECT * FROM Login WHERE User_name = ?"
+                "SELECT * FROM Users WHERE User_name = ?"
             );
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -63,7 +63,7 @@ public class DatabaseClient {
 
             // If the user does not exist, create the user
             stmt = dbConn.prepareStatement(
-                "INSERT INTO Login (User_name, User_password) VALUES (?, ?)"
+                "INSERT INTO Users (User_name, User_password) VALUES (?, ?)"
             );
             stmt.setString(1, username);
             stmt.setString(2, password);
@@ -98,7 +98,7 @@ public class DatabaseClient {
             // Here we log in the user
             // Check if the user exists and the password is correct
             PreparedStatement stmt = dbConn.prepareStatement(
-                "SELECT * FROM Login WHERE User_name = ? AND User_password = ?"
+                "SELECT * FROM Users WHERE User_name = ? AND User_password = ?"
             );
             stmt.setString(1, username);
             stmt.setString(2, password);
@@ -341,7 +341,7 @@ public class DatabaseClient {
      */
     private int getUserId(Connection dbConn, String username) {
         // Use try with resources to close the statement and result set
-        try (PreparedStatement stmt = dbConn.prepareStatement("SELECT User_id FROM Login WHERE User_name = ?")) {
+        try (PreparedStatement stmt = dbConn.prepareStatement("SELECT User_id FROM Users WHERE User_name = ?")) {
             stmt.setString(1, username);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
