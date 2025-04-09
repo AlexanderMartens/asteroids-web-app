@@ -117,7 +117,7 @@ async function animate(timestamp) {
     let is_running = data.is_running;
 
     let bullets = data.bullets;
-    let asteroids = data.asteroids;
+    let enemies = data.enemies;
 
     // clear the canvas
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -150,25 +150,25 @@ async function animate(timestamp) {
         context.restore();
     }
 
-    // Draw the asteroids
-    for (let asteroid of asteroids) {
+    // Draw the enemies
+    for (let enemy of enemies) {
         context?.save();
         context.fillStyle = "green";
         context.beginPath();
-        let size = asteroid.hitbox[0].radius;
-        context.arc(asteroid.position.x, asteroid.position.y, size, 0, 2 * Math.PI);
+        let size = enemy.hitbox[0].radius;
+        context.arc(enemy.position.x, enemy.position.y, size, 0, 2 * Math.PI);
         context.fill();
         context.restore();
     }
 
     // Draw the hitboxes
     if (hitboxes) {
-        for (let asteroid of asteroids) {
-            for (let asteroidHitbox of asteroid.hitbox) {
+        for (let enemy of enemies) {
+            for (let enemyHitbox of enemy.hitbox) {
                 context?.save();
                 context.strokeStyle = "rgba(255, 0, 0, 0.5)";
                 context.beginPath();
-                context.arc(asteroidHitbox.position.x, asteroidHitbox.position.y, asteroidHitbox.radius, 0, 2 * Math.PI);
+                context.arc(enemyHitbox.position.x, enemyHitbox.position.y, enemyHitbox.radius, 0, 2 * Math.PI);
                 context.stroke();
                 context.restore();
             }
