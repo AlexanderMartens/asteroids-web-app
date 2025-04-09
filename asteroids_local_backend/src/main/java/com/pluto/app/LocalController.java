@@ -54,6 +54,9 @@ public class LocalController {
      * @param name - the login name of the user
      * @param pass - the password of the user
      * @return - a json formatted confirmation or error of the login request
+     * The json has the following attributes:
+     * success - boolean
+     * error - string
      */
     @CrossOrigin(origins = "*")
     @GetMapping("/login")
@@ -88,6 +91,9 @@ public class LocalController {
      * @param name - the login name of the user
      * @param pass - the password of the user
      * @return - a json formatted confirmation or error of the registration request
+     * The json has the following attributes:
+     * success - boolean
+     * error - string
      */
     @CrossOrigin(origins = "*")
     @GetMapping("/register")
@@ -121,8 +127,10 @@ public class LocalController {
      *
      * @param username     - the login name of the user
      * @param profile_name - the name of the profile
-     * @return - a json formatted confirmation or error of the profile creation
-     *         request
+     * @return - a json formatted confirmation or error of the profile creation request
+     * The json has the following attributes:
+     * success - boolean
+     * error - string
      */
     @CrossOrigin(origins = "*")
     @GetMapping("/createProfile")
@@ -155,8 +163,10 @@ public class LocalController {
      * @param username         - the login name of the user
      * @param profile_name     - the name of the profile
      * @param new_profile_name - the new name of the profile
-     * @return - a json formatted confirmation or error of the profile editing
-     *         request
+     * @return - a json formatted confirmation or error of the profile editing request
+     * The json has the following attributes:
+     * success - boolean
+     * error - string
      */
     @CrossOrigin(origins = "*")
     @GetMapping("/editProfile")
@@ -189,8 +199,10 @@ public class LocalController {
      *
      * @param username     - the login name of the user
      * @param profile_name - the name of the profile
-     * @return - a json formatted confirmation or error of the profile deletion
-     *         request
+     * @return - a json formatted confirmation or error of the profile deletion request
+     * The json has the following attributes:
+     * success - boolean
+     * error - string
      */
     @CrossOrigin(origins = "*")
     @GetMapping("/deleteProfile")
@@ -218,6 +230,10 @@ public class LocalController {
      *
      * @param username - the login name of the user
      * @return - a json formatted list of profiles or an error message
+     * The json has the following attributes:
+     * success - boolean
+     * error - string
+     * profiles - a list of strings
      */
     @CrossOrigin(origins = "*")
     @GetMapping("/getProfiles")
@@ -247,14 +263,23 @@ public class LocalController {
     }
 
     /**
-     * Handles requests related to the leaderboard.
-     * This method fetches the top scores from the database view `Leaderboard`
-     * and returns them in JSON format.
-     *
-     * @param limit The number of top scores to fetch (default is 10).
-     * @return A JSON-formatted string containing the top scores or an error
-     *         message.
-     */
+    * Handles requests related to the leaderboard.
+    * This method fetches the top scores from the database view `Leaderboard`
+    * and returns them in JSON format.
+    *
+    * @param limit The number of top scores to fetch (default is 10).
+    * @return A JSON-formatted string containing the top scores or an error message.
+    * The JSON has the following attributes:
+    * success - boolean
+    * error - string
+    * leaderboard - a list of scores
+    *   user - string
+    *   profile - string
+    *   score - int
+    *   level - int
+    *   duration - int
+    *   time - string - formatted as yyyy-mm-dd hh:mm:ss.fffffffff, @see java.sql.Timestamp.toString()
+    */
     @CrossOrigin(origins = "*")
     @GetMapping("/leaderboard")
     public String getLeaderboard(
@@ -289,16 +314,19 @@ public class LocalController {
     }
 
     /**
-     * Handles requests for uploading a new game score.
-     * This method inserts a new score record into the `Scores` table.
-     *
-     * @param username     The username of the player.
-     * @param profile_name The profile name of the player.
-     * @param score        The score achieved in the game.
-     * @param level        The level reached in the game.
-     * @param duration     The duration of the game session in seconds.
-     * @return A JSON response indicating success or failure.
-     */
+    * Handles requests for uploading a new game score.
+    * This method inserts a new score record into the `Scores` table.
+    *
+    * @param username The username of the player.
+    * @param profile_name The profile name of the player.
+    * @param score The score achieved in the game.
+    * @param level The level reached in the game.
+    * @param duration The duration of the game session in seconds.
+    * @return A JSON response indicating success or failure.
+    * The JSON has the following attributes:
+    * success - boolean
+    * error - string
+    */
     @CrossOrigin(origins = "*")
     @PostMapping("/uploadScore")
     public String uploadScore(
@@ -323,7 +351,10 @@ public class LocalController {
      * 
      * @param username     - the login name of the user
      * @param profile_name - the name of the profile
-     * @return - a json formatted game state
+     * @return - a json formatted confirmation or error of the new game request
+     * The json has the following attributes:
+     * success - boolean
+     * error - string
      */
     @CrossOrigin(origins = "*")
     @GetMapping("/newGame")
@@ -335,12 +366,13 @@ public class LocalController {
             gameManagers.remove(key);
         }
         gameManagers.put(key, new GameManager());
-        return gameManagers.get(key).toJson();
+        return generateResponse(true);
     }
 
     /**
      * This method handles game update requests on localhost:8080/api/updateGame.
-     * This method should be called every frame.
+     * This method should be called every frame. The time returned is the amount of
+     * time the game has been running for in seconds using dt.
      * Response messages are sent in a json format.
      * 
      * @param dt           - the time in seconds since the last update
@@ -348,6 +380,44 @@ public class LocalController {
      * @param profile_name - the name of the profile
      * @param inputs       - the player inputs
      * @return - a json formatted game state
+     * The json has the following attributes:
+     * player - player object
+     *    position - Vector2D
+     *       x - float
+     *       y - float
+     *    orientation - float
+     *    hitbox - list of hitboxes
+     *       position - Vector2D
+     *          x - float
+     *          y - float
+     *       radius - float
+     *    lives - int
+     *    is_invincible - boolean
+     * asteroids - list of asteroids
+     *    position - Vector2D
+     *       x - float
+     *       y - float
+     *    orientation - float
+     *    hitbox - list of hitboxes
+     *       position - Vector2D
+     *          x - float
+     *          y - float
+     *       radius - float
+     *    size - string
+     * bullets - list of bullets
+     *    position - Vector2D
+     *       x - float
+     *       y - float
+     *    orientation - float
+     *    hitbox - list of hitboxes
+     *       position - Vector2D
+     *          x - float
+     *          y - float
+     *       radius - float
+     * score - int
+     * level - int
+     * time - float
+     * is_running - boolean
      */
     @CrossOrigin(origins = "*")
     @GetMapping("/updateGame")
