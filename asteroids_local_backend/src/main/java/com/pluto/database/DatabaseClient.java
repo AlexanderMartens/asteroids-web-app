@@ -414,6 +414,67 @@ public class DatabaseClient {
             return null;
         }
     }
+
+    /**
+     * Fetches statistics for a profile from the database. Has poor performance
+     * if there are a lot of scores in the database and there are many reads.
+     * Should be fine for this project.
+     * 
+     * @param username - username of the user
+     * @param profile_name - profile name of the user
+     * @return - an array of integers containing the statistics for the profile
+     * is null if an error occurs
+     *           [0] - highest score
+     *           [1] - highest level
+     *           [2] - highest duration
+     *           [3] - number of games played
+     */
+    public int[] getStats(String username, String profile_name) {
+        try (
+            Connection dbConn = DriverManager.getConnection(
+                url + "/Users", dbUser, dbPass
+            );
+        ) {
+            // Get the user_id from the Users table
+            int userId = getUserId(dbConn, username);
+            if (userId == -1) {
+                return null;
+            }
+
+            // Get the profile_id from the Profiles table
+            int profile_id = getProfileId(dbConn, userId, profile_name);
+            if (profile_id == -1) {
+                return null;
+            }
+
+            // Get the statistics for the profile
+            PreparedStatement stmt = dbConn.prepareStatement(
+                "SELECT MAX(score) AS highest_score, " +
+                       "MAX(level) AS highest_level, " +
+                       "MAX(duration_seconds) AS highest_duration, " +
+                       "COUNT(*) AS games_played " +
+                "FROM Scores " +
+                "WHERE profile_id = ?"
+            );
+
+            stmt.setInt(1, profile_id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                int[] stats = new int[4];
+                stats[0] = rs.getInt("highest_score");
+                stats[1] = rs.getInt("highest_level");
+                stats[2] = rs.getInt("highest_duration");
+                stats[3] = rs.getInt("games_played");
+                return stats;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
         
     /**
      * Fetches the user id from the database.
