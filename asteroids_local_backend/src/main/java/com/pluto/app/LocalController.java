@@ -1,8 +1,6 @@
 package com.pluto.app;
 
 import java.util.HashMap;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -36,7 +34,8 @@ public class LocalController {
      * Note: the frontend must encode all symbols in form %XX with hex digit XX
      * in order for it to not be interpreted as a special character in the URL
      */
-    private static final String PASSWORD_FORMAT = "^[a-zA-Z0-9-=\\[\\]\\\\;',.\\/!@#$%^&*()_+{}|:\"<>?`~]{4,32}$";
+    private static final String PASSWORD_FORMAT = 
+            "^[a-zA-Z0-9-=\\[\\]\\\\;',.\\/!@#$%^&*()_+{}|:\"<>?`~]{4,32}$";
 
     /**
      * Stores all the game managers for each user. The key is "username
@@ -278,7 +277,8 @@ public class LocalController {
     *   score - int
     *   level - int
     *   duration - int
-    *   time - string - formatted as yyyy-mm-dd hh:mm:ss.fffffffff, @see java.sql.Timestamp.toString()
+    *   time - string - formatted as yyyy-mm-dd hh:mm:ss.fffffffff, 
+    *   @see java.sql.Timestamp.toString()
     */
     @CrossOrigin(origins = "*")
     @GetMapping("/leaderboard")
@@ -286,7 +286,8 @@ public class LocalController {
             @RequestParam(value = "limit", defaultValue = "10") int limit,
             @RequestParam(value = "score", defaultValue = "Score") String score) {
         DatabaseClient dbClient = new DatabaseClient();
-        ResultSet rs = dbClient.fetchTopScores(limit, score); // Fetch top scores ordered by highest Score
+        // Fetch top scores ordered by highest Score
+        ResultSet rs = dbClient.fetchTopScores(limit, score); 
         StringBuilder jsonResult = new StringBuilder("{\"leaderboard\":[");
 
         try {
@@ -380,6 +381,7 @@ public class LocalController {
      * @param profile_name - the name of the profile
      * @param inputs       - the player inputs
      * @return - a json formatted game state
+     * 
      * The json has the following attributes:
      * player - player object
      *    position - Vector2D
@@ -393,7 +395,8 @@ public class LocalController {
      *       radius - float
      *    lives - int
      *    is_invincible - boolean
-     * asteroids - list of asteroids
+     * enemies - array of enemies
+     *    type - string, type of enemy ("ASTEROID", "COMET", "ALIEN", "BULLET")
      *    position - Vector2D
      *       x - float
      *       y - float
@@ -403,8 +406,8 @@ public class LocalController {
      *          x - float
      *          y - float
      *       radius - float
-     *    size - string
-     * bullets - list of bullets
+     *    size - string (Only for Asteroid enemies. Can be "SMALL", "MEDIUM" or "LARGE")
+     * bullets - list of player bullets
      *    position - Vector2D
      *       x - float
      *       y - float
@@ -460,7 +463,7 @@ public class LocalController {
      * 
      * Overloaded method allowing error message to be specified
      * 
-     * @param result   - True if the response was sucessful, false otherwise
+     * @param status   - True if the response was sucessful, false otherwise
      * @param errorMsg - A detailed description of any errors, or blank if none
      */
     private String generateResponse(boolean status, String errorMsg) {
@@ -473,10 +476,9 @@ public class LocalController {
      * 
      * Overloaded method for no error message
      * 
-     * @param result - True if the response was sucessful, false otherwise
+     * @param status - True if the response was sucessful, false otherwise
      */
     private String generateResponse(boolean status) {
         return generateResponse(status, "");
     }
-
 }

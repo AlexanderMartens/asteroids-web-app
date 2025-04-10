@@ -112,6 +112,8 @@ public class Spaceship extends SpawnableEntity {
 
     /**
      * Shoots a bullet object with the specified damage.
+     *
+     * @return - A bullet object the player has shot.
      */
     public Bullet shootBullet() {
         Vector2D<Float> pos = new Vector2D<Float>(getPosition().x, getPosition().y);
