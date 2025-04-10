@@ -310,6 +310,43 @@ public class LocalController {
     }
 
     /**
+     * Handles requests for getting profile statistics.
+     * This method retrieves the statistics for a given username and profile
+     * from the database.
+     * 
+     * @param username The username of the player.
+     * @param profile_name The profile name of the player.
+     * @return A JSON response containing the profile statistics or an error message.
+     * The json has the following attributes:
+     * success - boolean
+     * error - string
+     * stats - a json object with the following attributes:
+     *   highest_score - int
+     *   highest_level - int
+     *   longest_duration - int
+     *   total_games - int
+     */
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getStats")
+    public String getStats(
+            @RequestParam("username") String username,
+            @RequestParam("profile_name") String profile_name
+            ) {
+        DatabaseClient dbClient = new DatabaseClient();
+        int[] stats = dbClient.getStats(username, profile_name);
+        if (stats == null) {
+            return generateResponse(false, "Failed to fetch profile statistics");
+        }
+        StringBuilder jsonResult = new StringBuilder("{\"success\":true, \"error\":\"\", \"stats\":{");
+        jsonResult.append("\"highest_score\":").append(stats[0]).append(",")
+                .append("\"highest_level\":").append(stats[1]).append(",")
+                .append("\"longest_duration\":").append(stats[2]).append(",")
+                .append("\"total_games\":").append(stats[3])
+                .append("}}");
+        return jsonResult.toString();
+    }
+
+    /**
      * This method creates a new game on localhost:8080/api/newGame.
      * Response messages are sent in a json format.
      * 
