@@ -264,7 +264,8 @@ public class LocalController {
     /**
     * Handles requests related to the leaderboard.
     * This method fetches the top scores from the database view `Leaderboard`
-    * and returns them in JSON format. The scores can be sorted by 'score', 'level', or 'duration_secodns'.
+    * and returns them in JSON format. The scores can be sorted by 'score', 'level', 
+    * or 'duration_secodns'.
     *
     * @param limit The number of top scores to fetch (default is 10).
     * @return A JSON-formatted string containing the top scores or an error message.
@@ -344,6 +345,42 @@ public class LocalController {
         } else {
             return generateResponse(false, error);
         }
+    }
+
+    /**
+     * Handles requests for getting profile statistics.
+     * This method retrieves the statistics for a given username and profile
+     * from the database.
+     * 
+     * @param username The username of the player.
+     * @param profile_name The profile name of the player.
+     * @return A JSON response containing the profile statistics or an error message.
+     * The json has the following attributes:
+     * success - boolean
+     * error - string
+     * stats - a json object with the following attributes:
+     *   highest_score - int
+     *   highest_level - int
+     *   longest_duration - int
+     *   total_games - int
+     */
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getStats")
+    public String getStats(
+            @RequestParam("username") String username,
+            @RequestParam("profile_name") String profile_name) {
+        DatabaseClient dbClient = new DatabaseClient();
+        int[] stats = dbClient.getStats(username, profile_name);
+        if (stats == null) {
+            return generateResponse(false, "Failed to fetch profile statistics");
+        }
+        StringBuilder jsonResult = new StringBuilder("{\"success\":true, \"error\":\"\", \"stats\":{");
+        jsonResult.append("\"highest_score\":").append(stats[0]).append(",")
+                .append("\"highest_level\":").append(stats[1]).append(",")
+                .append("\"longest_duration\":").append(stats[2]).append(",")
+                .append("\"total_games\":").append(stats[3])
+                .append("}}");
+        return jsonResult.toString();
     }
 
     /**
