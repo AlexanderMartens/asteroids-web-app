@@ -9,9 +9,11 @@ import ControllerIcon from './images/controller-icon.svg?react';
 function Stats() {
     return (
         <div id='stats-page'>
-            <Link id='back-container' to='/main_menu'>
-                <button id='stats-back-button'>{'< '}Back</button>
-            </Link>
+            <div id='back-container'>
+                <Link to='/main_menu'>
+                    <button id='stats-back-button'>{'< '}Back</button>
+                </Link>
+            </div>
             <div className='stats-grid'>
                 <div className='stats-container' id='highest-score-container'>
                     <div className='stats-internal-top'>
