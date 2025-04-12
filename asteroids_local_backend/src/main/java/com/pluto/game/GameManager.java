@@ -229,7 +229,7 @@ public class GameManager {
      */
     private void startCurrentLevel() {
         // First check if there is level data
-        if (levelData == null) {
+        if (this.level > 50 || levelData == null) {
             gameOver(); 
         }
 
