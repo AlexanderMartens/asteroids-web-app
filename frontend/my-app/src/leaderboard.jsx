@@ -6,7 +6,15 @@ function Leaderboard() {
     let leaders = [];
     const mockLeaderData = [
         {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'}, 
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User2', 'score': '654321'}
+        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User2', 'score': '654321'},
+        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'}, 
+        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'},
+        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'}, 
+        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'}, 
+        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'}, 
+        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'},
+        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'},
+        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'}
     ];
 
     function populateLeaders() {
@@ -22,20 +30,19 @@ function Leaderboard() {
             <div id='leaderboards-content'>
                 <h1 id='leaderboards-title'>Leaderboards</h1>
                 <div className='tabs'>
-                    <button>Score</button>
-                    <button>Level</button>
+                    <button className='button-2'>Score</button>
+                    <button className='button-2'>Level</button>
                 </div>
                 <div id='leaderboard-container'>
-                    <div id='rank-stack'>
-                        <div className='rank'>1</div>
-                        <div className='rank'>2</div>
-                    </div>
                     <div id='leaderboard-stack'>
                         {leaders.map((data, index) => (
-                            <div className='player' key={index}>
-                                <img src={data.favorite_ship} alt='ship' className='favorite-ship'/>
-                                <div>{data.user_name}</div>
-                                <div>{data.score}</div>
+                            <div className='leaderboard-item'>
+                                <div className='rank'>{index+1}</div>
+                                <div className='player' key={index}>
+                                    <img src={data.favorite_ship} alt='ship' className='favorite-ship'/>
+                                    <div>{data.user_name}</div>
+                                    <div>{data.score}</div>
+                                </div>
                             </div>
                         ))}
                     </div>
