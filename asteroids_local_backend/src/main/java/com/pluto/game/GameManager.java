@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 /**
  * A class that represents the game manager. It contains all the attributes
  * needed to render the game on the screen, and associated methods to
@@ -29,6 +35,9 @@ public class GameManager {
     /* The current level */
     private int level;
 
+    /* Contains data per each level */
+    private JSONObject levelData;
+
     /* Whether or not the game is running */
     public boolean is_running;
 
@@ -45,9 +54,6 @@ public class GameManager {
     /* The amount of time a bullet lasts on the screen in seconds */
     private static final float BULLET_LIFETIME = 2.0f;
 
-    /* Amount of asteroids spawned at the start of the game */
-    private static final int STARTING_ASTEROIDS = 3;
-
     /* How far the asteroids spawn away from the player */
     private static final int PROTECTED_DISTANCE = 300;
 
@@ -63,6 +69,10 @@ public class GameManager {
     /* How much score for completing a level */
     private static final int SCORE_PER_LEVEL = 100;
 
+    /* Default path to level data */
+    private static final String LEVEL_DATA_PATH = 
+        "src/main/java/com/pluto/game/LevelData.json";
+
     /**
      * Constructor for the GameManager class. Initializes the player, enemies, and
      * bullets.
@@ -76,7 +86,8 @@ public class GameManager {
         this.score = 0;
         this.level = 1;
         is_running = true;
-        spawnEnemy(EnemyType.COMET);
+        readLevelData(LEVEL_DATA_PATH);
+        startLevel();
     }
 
     /**
@@ -127,12 +138,10 @@ public class GameManager {
 
         // Check if all enemies are destroyed and if so, handle new level
         if (enemies.size() == 0) {
-            for (int i = 0; i < level + STARTING_ASTEROIDS; i++) {
-                spawnEnemy(EnemyType.ASTEROID);
-            }
             playerBullets.clear();
             score += SCORE_PER_LEVEL * level;
             level++;
+            startLevel();
         }
 
         // Update time
@@ -212,6 +221,33 @@ public class GameManager {
         if (playerBullets.size() < MAX_BULLETS) {
             Bullet bullet = player.shootBullet();
             playerBullets.add(bullet);
+        }
+    }
+
+    /**
+     * Spawns enemies according to current level.
+     */
+    private void startLevel() {
+        // First check if there is level data
+        if (levelData == null) {
+            gameOver(); 
+        }
+
+        String lvl = this.level + "";
+        JSONObject currentLevelJson = this.levelData.getJSONObject(lvl);
+        // Get the number of enemies from the json file
+        int numAsteroids = currentLevelJson.getInt("ASTEROID");
+        int numComets = currentLevelJson.getInt("COMET");
+        int numAliens = currentLevelJson.getInt("ALIEN");
+
+        for (int i = 0; i < numAsteroids; i++) {
+            spawnEnemy(EnemyType.ASTEROID);
+        }
+        for (int i = 0; i < numComets; i++) {
+            spawnEnemy(EnemyType.COMET);
+        }
+        for (int i = 0; i < numAliens; i++) {
+            spawnEnemy(EnemyType.ALIEN);
         }
     }
 
@@ -342,6 +378,20 @@ public class GameManager {
      */
     private void destroyAlien(Alien alien) {
         enemies.remove(alien);
+    }
+
+    /**
+     * Reads a .json file into memory and creates a levelData json object.
+     */
+    private void readLevelData(String path) {
+        try {
+            String jsonString = new String(Files.readAllBytes(Paths.get(path)));
+            levelData = new JSONObject(jsonString).getJSONObject("levels");
+        } catch (IOException e) {
+            levelData = null;
+        } catch (JSONException e) {
+            levelData = null;
+        }
     }
 
     /**
