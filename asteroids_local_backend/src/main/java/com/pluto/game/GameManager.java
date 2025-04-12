@@ -87,7 +87,7 @@ public class GameManager {
         this.level = 1;
         is_running = true;
         readLevelData(LEVEL_DATA_PATH);
-        startLevel();
+        startCurrentLevel();
     }
 
     /**
@@ -141,7 +141,7 @@ public class GameManager {
             playerBullets.clear();
             score += SCORE_PER_LEVEL * level;
             level++;
-            startLevel();
+            startCurrentLevel();
         }
 
         // Update time
@@ -227,7 +227,7 @@ public class GameManager {
     /**
      * Spawns enemies according to current level.
      */
-    private void startLevel() {
+    private void startCurrentLevel() {
         // First check if there is level data
         if (levelData == null) {
             gameOver(); 
