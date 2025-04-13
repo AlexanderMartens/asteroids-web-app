@@ -69,13 +69,6 @@
     width: 20px;
 }
 
-/* Custom font for the Asteroids title */
-@font-face {
-
-    font-family: 'SpaceMission';
-    src: url('./fonts/SpaceMission-rgyw9.otf') format('opentype');
-}
-
 /* Styling for the Asteroids title */
 .title {
 

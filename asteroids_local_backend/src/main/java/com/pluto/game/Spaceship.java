@@ -3,7 +3,8 @@ package com.pluto.game;
 import java.lang.Math;
 
 /**
- * A class that represents the player game objects. It contains all the attributes
+ * A class that represents the player game objects. It contains all the
+ * attributes
  * needed to render the player on the screen, and associated methods to
  * manipulate the objects during the game.
  */
@@ -13,38 +14,45 @@ public class Spaceship extends SpawnableEntity {
         UP, LEFT, RIGHT, SHOOT
     }
 
-    /* Number of lives the player has */
-    private int lives;
-
     /* How much speed increases per second when moving forward */
-    private static final float accel = 500; // Needs playtesting
+    private static final float ACCEL = 500; // Needs playtesting
 
     /* How much the velocity decreases each second */
-    private static final float drag = 1f; // Needs playtesting
+    private static final float DRAG = 1f; // Needs playtesting
 
-    /* How fast the player rotates in radians per second*/
-    private static final float rotSpeed = 5f; // Needs playtesting
+    /* How fast the player rotates in radians per second */
+    private static final float ROT_SPEED = 5f; // Needs playtesting
+
+    /* The bullet damage this spaceship deals */
+    private static final int BULLET_DAMAGE = 1;
+
+    /* Number of lives the player has */
+    private int lives;
 
     /* Timer of invicibility when hit, 0 if not invincible */
     private float invincibleTimer = 0.0f;
 
     /**
-     * Constructor for the Spaceship class. Player spawns at the center of the screen
+     * Constructor for the Spaceship class. Player spawns at the center of the
+     * screen
      * with 3 lives. Hitbox will be a circle with radius 25 for now.
      */
     public Spaceship() {
-        this.setPosition(new Vector2D<Float>(500.0f, 500.0f));
-        this.setOrientation(0.0f);
-        this.setVelocity(new Vector2D<Float>(0.0f, 0.0f));
+        super(new Vector2D<Float>(500.0f, 500.0f), // Starting position
+                new Vector2D<Float>(0.0f, 0.0f), // Starting velocity
+                0.0f, // Starting orientation
+                new HitBox[] {
+                        new HitBox(new Vector2D<Float>(500.f, 500.f), 25.0f)
+                });
         this.lives = 3;
-        this.hitbox = new HitBox[] { new HitBox(new Vector2D<Float>(this.getPosition().x, this.getPosition().y), 25.0f) };
     }
 
     /**
      * Moves the player object by one frame. It updates position and
-     * orientation based on the object's velocity and rotation velocity and player inputs.
+     * orientation based on the object's velocity and rotation velocity and player
+     * inputs.
      * 
-     * @param dt - the amount of time in seconds since the last update
+     * @param dt    - the amount of time in seconds since the last update
      * @param input - the player inputs
      */
     public void moveObj(float dt, Input[] input) {
@@ -53,24 +61,25 @@ public class Spaceship extends SpawnableEntity {
             switch (i) {
                 case UP:
                     newVel = new Vector2D<Float>(
-                        (newVel.x + accel * dt * (float) Math.cos(getOrientation())), 
-                        (newVel.y + accel * dt * (float) Math.sin(getOrientation())));
+                            (newVel.x + ACCEL * dt * (float) Math.cos(getOrientation())),
+                            (newVel.y + ACCEL * dt * (float) Math.sin(getOrientation())));
                     this.setVelocity(newVel);
                     break;
                 case LEFT:
-                    this.rotate(-rotSpeed * dt);
+                    this.rotate(-ROT_SPEED * dt);
                     break;
                 case RIGHT:
-                    this.rotate(rotSpeed * dt);
+                    this.rotate(ROT_SPEED * dt);
                     break;
                 case SHOOT: // Game manager handles shooting
                     break;
             }
         }
-        newVel.x = newVel.x * (1 - drag * dt);
-        newVel.y = newVel.y * (1 - drag * dt);
+        newVel.x = newVel.x * (1 - DRAG * dt);
+        newVel.y = newVel.y * (1 - DRAG * dt);
         this.setVelocity(newVel);
-        Vector2D<Float> newPos = new Vector2D<Float>(getPosition().x + getVelocity().x * dt, getPosition().y + getVelocity().y * dt);
+        Vector2D<Float> newPos = new Vector2D<Float>(getPosition().x + getVelocity().x * dt,
+                getPosition().y + getVelocity().y * dt);
         this.setPosition(newPos);
         invincibleTimer -= dt;
         if (invincibleTimer < 0) {
@@ -80,6 +89,7 @@ public class Spaceship extends SpawnableEntity {
 
     /**
      * Getter for the number of lives the player has
+     * 
      * @return the number of lives the player has
      */
     public int getLives() {
@@ -101,8 +111,22 @@ public class Spaceship extends SpawnableEntity {
     }
 
     /**
+     * Shoots a bullet object with the specified damage.
+     *
+     * @return - A bullet object the player has shot.
+     */
+    public Bullet shootBullet() {
+        Vector2D<Float> pos = new Vector2D<Float>(getPosition().x, getPosition().y);
+        float orientation = getOrientation();
+        Bullet bullet = new Bullet(pos, orientation, BULLET_DAMAGE);
+
+        return bullet;
+    }
+
+    /**
      * Converts the Spaceship object to a JSON string.
-     * Needs to include the position, orientation, hitboxes, number of lives, and if invincible.
+     * Needs to include the position, orientation, hitboxes, number of lives, and if
+     * invincible.
      * 
      * @return the JSON string representation of the Spaceship object
      */
@@ -128,5 +152,4 @@ public class Spaceship extends SpawnableEntity {
         json.append("}");
         return json.toString();
     }
-    
 }
