@@ -63,6 +63,8 @@ const Game = () => {
         const data = await response.json();
         if (timestamp % 1000 < 16) console.log(data);
 
+        console.log("Enemies:", data.enemies);
+
         const player = data.player;
         const lives = player?.lives ?? 0;
         const score = data.score ?? 0;
@@ -98,15 +100,16 @@ const Game = () => {
         });
 
         // Enemies
-        enemies.forEach((enemy) => {
-          context.save();
+        for (let enemy of enemies) {
+          context?.save();
           context.fillStyle = "green";
           context.beginPath();
-          const size = enemy.hitbox?.[0]?.radius ?? 10;
+          let size = enemy.hitbox[0].radius;
+          console.log("enemy size", size);
           context.arc(enemy.position.x, enemy.position.y, size, 0, 2 * Math.PI);
           context.fill();
           context.restore();
-        });
+        }
 
         // Hitboxes
         if (hitboxes) {
