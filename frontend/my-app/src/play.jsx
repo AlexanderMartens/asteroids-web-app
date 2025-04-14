@@ -114,6 +114,7 @@ const Game = () => {
         // Asteroid sprite depends on the size
         if (enemy.type === "ASTEROID") {
           const { x, y } = enemy.position;
+          const orientation = enemy.orientation;
           let image;
           let imageSize;
 
@@ -127,10 +128,12 @@ const Game = () => {
 
           if (image) {
             context?.save();
+            context.translate(x, y);
+            context.rotate(orientation);
             context.drawImage(
               image,
-              x - imageSize / 2, // center the image
-              y - imageSize / 2,
+              0 - imageSize / 2, // center the image
+              0 - imageSize / 2,
               imageSize,
               imageSize
             );
