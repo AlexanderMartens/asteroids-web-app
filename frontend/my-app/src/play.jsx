@@ -1,10 +1,16 @@
 import React, { useEffect, useRef } from "react";
+import asteroid_64 from "./images/asteroid_64x64.png";
+import asteroid_32 from "./images/asteroid_32x32.png";
 
 const Game = () => {
   const canvasRef = useRef(null);
   const hitboxCheckboxRef = useRef(null);
   const pauseButtonRef = useRef(null);
   const requestRef = useRef(null);
+  const asteroidImg32 = new Image();
+  const asteroidImg64 = new Image();
+  asteroidImg32.src = asteroid_32;
+  asteroidImg64.src = asteroid_64;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -103,14 +109,43 @@ const Game = () => {
 
       // Enemies
       for (let enemy of enemies) {
-        context?.save();
-        context.fillStyle = "green";
-        context.beginPath();
-        let size = enemy.hitbox[0].radius;
-        console.log("enemy size", size);
-        context.arc(enemy.position.x, enemy.position.y, size, 0, 2 * Math.PI);
-        context.fill();
-        context.restore();
+        console.log("Enemy type:", enemy.type);
+
+        // Asteroid sprite depends on the size
+        if (enemy.type === "ASTEROID") {
+          const { x, y } = enemy.position;
+          let image;
+          let imageSize;
+
+          if (enemy.size === "SMALL" || enemy.size === "MEDIUM") {
+            image = asteroidImg32;
+            imageSize = enemy.hitbox[0].radius * 2; // use hitbox radius for small/medium asteroids
+          } else if (enemy.size === "LARGE") {
+            image = asteroidImg64;
+            imageSize = enemy.hitbox[0].radius * 2; // use hitbox radius for large asteroids
+          }
+
+          if (image) {
+            context?.save();
+            context.drawImage(
+              image,
+              x - imageSize / 2, // center the image
+              y - imageSize / 2,
+              imageSize,
+              imageSize
+            );
+            context.restore();
+          }
+        } else {
+          // fallback: draw green circle for non-asteroid enemies
+          context?.save();
+          context.fillStyle = "green";
+          context.beginPath();
+          let size = enemy.hitbox[0].radius;
+          context.arc(enemy.position.x, enemy.position.y, size, 0, 2 * Math.PI);
+          context.fill();
+          context.restore();
+        }
       }
 
       // Hitboxes
