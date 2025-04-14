@@ -264,7 +264,8 @@ public class LocalController {
     /**
     * Handles requests related to the leaderboard.
     * This method fetches the top scores from the database view `Leaderboard`
-    * and returns them in JSON format.
+    * and returns them in JSON format. The scores can be sorted by 'score', 'level', 
+    * or 'duration_secodns'.
     *
     * @param limit The number of top scores to fetch (default is 10).
     * @return A JSON-formatted string containing the top scores or an error message.
@@ -297,12 +298,12 @@ public class LocalController {
                     jsonResult.append(",");
                 }
                 jsonResult.append("{")
-                        .append("\"user\":\"").append(rs.getString("User_name")).append("\",")
-                        .append("\"profile\":\"").append(rs.getString("Profile_name")).append("\",")
-                        .append("\"score\":").append(rs.getInt("Score")).append(",")
-                        .append("\"level\":").append(rs.getInt("Level_reached")).append(",")
-                        .append("\"duration\":").append(rs.getInt("Duration_seconds")).append(",")
-                        .append("\"time\":\"").append(rs.getTimestamp("Time_played")).append("\"")
+                        .append("\"user\":\"").append(rs.getString("user_name")).append("\",")
+                        .append("\"profile\":\"").append(rs.getString("profile_name")).append("\",")
+                        .append("\"score\":").append(rs.getInt("score")).append(",")
+                        .append("\"level\":").append(rs.getInt("level")).append(",")
+                        .append("\"duration\":").append(rs.getInt("duration_seconds")).append(",")
+                        .append("\"time\":\"").append(rs.getTimestamp("time_played")).append("\"")
                         .append("}");
                 first = false;
             }
@@ -329,7 +330,7 @@ public class LocalController {
     * error - string
     */
     @CrossOrigin(origins = "*")
-    @PostMapping("/uploadScore")
+    @GetMapping("/uploadScore")
     public String uploadScore(
             @RequestParam("username") String username,
             @RequestParam("profile_name") String profile_name,
@@ -344,6 +345,42 @@ public class LocalController {
         } else {
             return generateResponse(false, error);
         }
+    }
+
+    /**
+     * Handles requests for getting profile statistics.
+     * This method retrieves the statistics for a given username and profile
+     * from the database.
+     * 
+     * @param username The username of the player.
+     * @param profile_name The profile name of the player.
+     * @return A JSON response containing the profile statistics or an error message.
+     * The json has the following attributes:
+     * success - boolean
+     * error - string
+     * stats - a json object with the following attributes:
+     *   highest_score - int
+     *   highest_level - int
+     *   longest_duration - int
+     *   total_games - int
+     */
+    @CrossOrigin(origins = "*")
+    @GetMapping("/getStats")
+    public String getStats(
+            @RequestParam("username") String username,
+            @RequestParam("profile_name") String profile_name) {
+        DatabaseClient dbClient = new DatabaseClient();
+        int[] stats = dbClient.getStats(username, profile_name);
+        if (stats == null) {
+            return generateResponse(false, "Failed to fetch profile statistics");
+        }
+        StringBuilder jsonResult = new StringBuilder("{\"success\":true, \"error\":\"\", \"stats\":{");
+        jsonResult.append("\"highest_score\":").append(stats[0]).append(",")
+                .append("\"highest_level\":").append(stats[1]).append(",")
+                .append("\"longest_duration\":").append(stats[2]).append(",")
+                .append("\"total_games\":").append(stats[3])
+                .append("}}");
+        return jsonResult.toString();
     }
 
     /**

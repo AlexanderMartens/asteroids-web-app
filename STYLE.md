@@ -3,6 +3,7 @@
 ## General Guidelines
 - All names should only include letters `a-z` and `A-Z`, numbers `0-9`, and underscore `_`.
 - Maintain consistency across files.
+- `google-java-format` is a useful VSCode extension that helps format Java and JavaScript code.
 
 ## Gitlab Guidelines
 
@@ -89,8 +90,13 @@ Use **four** spaces to indent tabs. Many IDEs allow tab to be rebound to output 
     ```
 
 ### Identifier Naming Conventions
-- **Variables & Functions**: Use `snake_case` (e.g., `calculate_sum`).
-- **Constants**: Use `UPPER_CASE` (e.g., `MAX_RETRIES`).
+- **Variables & Functions**:
+    - **Java**: Use `camelCase`
+    - **JS+React**: Use `camelCase`
+    - **CSS**: Use `kebab-case`
+    - **Constants**: Use `UPPER_CASE` (e.g., `MAX_RETRIES`).
+- **Database Table Names**: Use `PascalCase`
+- **Database Column Names**: Use `snake_case`
 - **Classes**: Use `PascalCase` (e.g., `UserManager`).
 - **Files**: Use `snake_case` (e.g., `data_processor.py`), unless another naming convention is needed or highly reccomended for a language (ex: `React`, `Markdown`, etc.).
 
