@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import asteroid_64 from "./images/asteroid_64x64.png";
 import asteroid_32 from "./images/asteroid_32x32.png";
+import ship from "./images/asteroid-logo-bgless.png";
 
 const Game = () => {
   const canvasRef = useRef(null);
@@ -9,8 +10,10 @@ const Game = () => {
   const requestRef = useRef(null);
   const asteroidImg32 = new Image();
   const asteroidImg64 = new Image();
+  const shipImg = new Image();
   asteroidImg32.src = asteroid_32;
   asteroidImg64.src = asteroid_64;
+  shipImg.src = ship;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -84,18 +87,22 @@ const Game = () => {
 
       context.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Player
-      context.save();
-      context.fillStyle = player?.is_invincible ? "purple" : "red";
-      context.translate(player.position.x, player.position.y);
-      context.rotate(player.orientation);
-      context.beginPath();
-      context.moveTo(25, 0);
-      context.lineTo(-25, 25);
-      context.lineTo(-25, -25);
-      context.closePath();
-      context.fill();
-      context.restore();
+      if (player) {
+        context.save();
+        context.translate(player.position.x, player.position.y);
+        context.rotate(player.orientation + Math.PI / 2); //corrects for image rotation
+      
+        const shipSize = player.hitbox[0].radius * 2;
+        context.drawImage(
+          shipImg,
+          -shipSize / 2,
+          -shipSize / 2,
+          shipSize,
+          shipSize
+        );
+      
+        context.restore();
+      }
 
       // Bullets
       bullets.forEach((bullet) => {
