@@ -42,7 +42,12 @@ public class Spaceship extends SpawnableEntity {
                 new Vector2D<Float>(0.0f, 0.0f), // Starting velocity
                 0.0f, // Starting orientation
                 new HitBox[] {
-                        new HitBox(new Vector2D<Float>(500.f, 500.f), 25.0f)
+                        new HitBox(new Vector2D<Float>(500.f, 500.f), 15.0f),
+                        new HitBox(new Vector2D<Float>(500.f - 10, 500.f + 10), 15.0f),
+                        new HitBox(new Vector2D<Float>(500.f - 10, 500.f - 10), 15.0f),
+                        new HitBox(new Vector2D<Float>(500.f - 23, 500.f - 23), 3.0f),
+                        new HitBox(new Vector2D<Float>(500.f - 23, 500.f + 23), 3.0f),
+                        new HitBox(new Vector2D<Float>(500.f + 20, 500.f), 3.0f),
                 });
         this.lives = 3;
     }
