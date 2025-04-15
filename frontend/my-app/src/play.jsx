@@ -92,7 +92,7 @@ const Game = () => {
         context.translate(player.position.x, player.position.y);
         context.rotate(player.orientation + Math.PI / 2); //corrects for image rotation
       
-        const shipSize = player.hitbox[0].radius * 2;
+        const shipSize = 50.0;
         context.drawImage(
           shipImg,
           -shipSize / 2,
