@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import asteroid_64 from "./images/asteroid_64x64.png";
 import asteroid_32 from "./images/asteroid_32x32.png";
 import ship from "./images/asteroid-logo-bgless.png";
+import invShip from "./images/invincible-ship.png"
 
 const Game = () => {
   const canvasRef = useRef(null);
@@ -11,9 +12,11 @@ const Game = () => {
   const asteroidImg32 = new Image();
   const asteroidImg64 = new Image();
   const shipImg = new Image();
+  const invincibleShip = new Image();
   asteroidImg32.src = asteroid_32;
   asteroidImg64.src = asteroid_64;
   shipImg.src = ship;
+  invincibleShip.src = invShip;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -93,13 +96,23 @@ const Game = () => {
         context.rotate(player.orientation + Math.PI / 2); //corrects for image rotation
       
         const shipSize = 50.0;
-        context.drawImage(
+        if (player.is_invincible) {
+          context.drawImage(
+          invincibleShip,
+          -shipSize / 2,
+          -shipSize / 2,
+          shipSize,
+          shipSize
+          );
+        } else{
+          context.drawImage(
           shipImg,
           -shipSize / 2,
           -shipSize / 2,
           shipSize,
           shipSize
-        );
+          );
+        }
       
         context.restore();
       }
