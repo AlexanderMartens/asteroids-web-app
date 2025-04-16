@@ -40,7 +40,7 @@ public class GameManager {
     private static final int SCREEN_HEIGHT = 1000;
 
     /* The maximum number of bullets allowed at a time */
-    private static final int MAX_BULLETS = 50;
+    private static final int MAX_BULLETS = 10;
 
     /* The amount of time a bullet lasts on the screen in seconds */
     private static final float BULLET_LIFETIME = 2.0f;
