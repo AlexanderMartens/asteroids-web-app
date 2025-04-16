@@ -21,7 +21,9 @@
 #leaderboards-title {
     margin: 0;
     padding: 0;
-    padding-top: 64px;
+    padding-top: 84px;
+    padding-bottom: 14px;
+    font-size: 4rem;
 }
 
 .tabs {
@@ -43,6 +45,7 @@
     align-items: center;
     height: 80px;
     width: 80px;
+    font-size: 1.8rem;
 }
 
 #leaderboard-stack {
@@ -60,8 +63,8 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: 28px;
+    padding-right: 28px;
     width: 400px;
     height: 80px;
     border-radius: 12px;
@@ -75,4 +78,26 @@
 
 .leaderboard-item {
     display: flex;
+}
+
+.leaderboard-username {
+    display: flex;
+    align-self: flex-end;
+    align-items: center;
+    height: 95%;
+    font-size: 1.1rem;
+}
+
+.leaderboard-score {
+    display: flex;
+    align-self: flex-end;
+    align-items: center;
+    height: 95%;
+    font-size: 1.1rem;
+}
+
+.button-2.active {
+    border-color: #73B6FF;
+    color: #73B6FF;
+    outline: 4px solid #73B6FF;
 }
