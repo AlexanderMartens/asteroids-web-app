@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import asteroid_64 from "./images/asteroid_64x64.png";
 import asteroid_32 from "./images/asteroid_32x32.png";
 import ship from "./images/asteroid-logo-bgless.png";
-import invShip from "./images/invincible-ship.png"
+import invShip from "./images/invincible-ship.png";
 
 const Game = () => {
   const canvasRef = useRef(null);
@@ -18,40 +18,100 @@ const Game = () => {
   shipImg.src = ship;
   invincibleShip.src = invShip;
 
+  // Variables for handling shoot inputs per keydown
+  const isHoldingShoot = useRef(false);
+  const inputRef = useRef(new Set()); // Handles all inputs
+  const currFrameBuffer = useRef(false); // Handles shoot inputs pressed on current frame
+  const nextFrameBuffer = useRef(false); // Handles shoot inputs pressed for next frame
+  const lock = useRef(false); // Acts as a lock to avoid race conditions
+  const timeLastShot = useRef(null); // Used to limit holding down shoot inputs
+
+  /**
+   * Method for handling user input on a keydown event. All keys except shoot
+   * are per frame. Shoot key is handled per keydown and keyup event. A locking
+   * mechanism is used to handle race conditions.
+   */
+  const handleKeyDown = useCallback((event) => {
+    let currTime = Date.now();
+    let dt = currTime - timeLastShot.current;
+    // Process shoot input
+    // If we are not holding shoot, then shoot. If we are holding shoot, then
+    // check timer to see if we can shoot again.
+    if (event.key === "s" && (!isHoldingShoot.current || dt > 800)) {
+      timeLastShot.current = currTime;
+      if (!lock.current) {
+        // Handle shoot for current frame
+        currFrameBuffer.current = true;
+      } else {
+        // Handle for next frame
+        nextFrameBuffer.current = true;
+      }
+      isHoldingShoot.current = true;
+    }
+
+    // Process movement input
+    if (event.key === "w") inputRef.current.add("UP");
+    if (event.key === "a") inputRef.current.add("LEFT");
+    if (event.key === "d") inputRef.current.add("RIGHT");
+  }, []);
+
+  /**
+   * Method for handling user input on a keyup event.
+   */
+  const handleKeyUp = useCallback((event) => {
+    if (event.key === "w") inputRef.current.delete("UP");
+    if (event.key === "a") inputRef.current.delete("LEFT");
+    if (event.key === "d") inputRef.current.delete("RIGHT");
+    if (event.key === "s") {
+      isHoldingShoot.current = false;
+    }
+  }, []);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
 
     let username = "test";
     let profile_name = "test";
-    let input = "";
     let last_time = 0;
     let hitboxes = false;
     let paused = false;
-
-    const activeInputs = new Set();
 
     const handleHitboxChange = () => {
       hitboxes = hitboxCheckboxRef.current.checked;
     };
 
-    const handleKeyDown = (event) => {
-      if (event.key === "w") activeInputs.add("UP");
-      if (event.key === "s") activeInputs.add("SHOOT");
-      if (event.key === "a") activeInputs.add("LEFT");
-      if (event.key === "d") activeInputs.add("RIGHT");
-      input = Array.from(activeInputs).join(",");
-    };
-
-    const handleKeyUp = (event) => {
-      if (event.key === "w") activeInputs.delete("UP");
-      if (event.key === "s") activeInputs.delete("SHOOT");
-      if (event.key === "a") activeInputs.delete("LEFT");
-      if (event.key === "d") activeInputs.delete("RIGHT");
-      input = Array.from(activeInputs).join(",");
-    };
-
     const animate = async (timestamp) => {
+      // If holding shoot key down, trigger a KeyboardEvent
+      // Fixes the problem that if another key is pressed while holding shoot
+      // Then the event listener no longer triggers shoot events
+      if (isHoldingShoot.current) {
+        handleKeyDown(
+          new KeyboardEvent("keydown", {
+            key: "s",
+            code: "s",
+          }),
+        );
+      }
+      // Transfer previous frame inputs (which is held in next frame buffer) to current frame
+      currFrameBuffer.current =
+        currFrameBuffer.current || nextFrameBuffer.current;
+      nextFrameBuffer.current = false;
+      // Reset shoot input for this frame
+      inputRef.current.delete("SHOOT");
+
+      // Any shot input before here is sent to currFrameBuffer
+      lock.current = true;
+      // Any shoot inputs inside lock will be processed into nextFrameBuffer
+      // If we have shot this frame, add it to the inputRef
+      if (currFrameBuffer.current) {
+        inputRef.current.add("SHOOT");
+        // Without lock, race condition happens here
+        currFrameBuffer.current = false;
+      }
+      lock.current = false;
+      // Any shoot input past here is sent to currFrameBuffer
+
       let dt = (timestamp - last_time) / 1000;
       last_time = timestamp;
       if (isNaN(dt)) dt = 0;
@@ -68,9 +128,9 @@ const Game = () => {
 
       const response = await fetch(
         `http://localhost:8080/api/updateGame?dt=${encodeURIComponent(dt)}&` +
-          `username=${encodeURIComponent(username)}&` +
-          `profile_name=${encodeURIComponent(profile_name)}&` +
-          `inputs=${encodeURIComponent(input)}`,
+        `username=${encodeURIComponent(username)}&` +
+        `profile_name=${encodeURIComponent(profile_name)}&` +
+        `inputs=${encodeURIComponent(Array.from(inputRef.current).join(","))}`,
       );
 
       const data = await response.json();
@@ -94,26 +154,26 @@ const Game = () => {
         context.save();
         context.translate(player.position.x, player.position.y);
         context.rotate(player.orientation + Math.PI / 2); //corrects for image rotation
-      
+
         const shipSize = 50.0;
         if (player.is_invincible) {
           context.drawImage(
-          invincibleShip,
-          -shipSize / 2,
-          -shipSize / 2,
-          shipSize,
-          shipSize
+            invincibleShip,
+            -shipSize / 2,
+            -shipSize / 2,
+            shipSize,
+            shipSize,
           );
-        } else{
+        } else {
           context.drawImage(
-          shipImg,
-          -shipSize / 2,
-          -shipSize / 2,
-          shipSize,
-          shipSize
+            shipImg,
+            -shipSize / 2,
+            -shipSize / 2,
+            shipSize,
+            shipSize,
           );
         }
-      
+
         context.restore();
       }
 
@@ -155,7 +215,7 @@ const Game = () => {
               0 - imageSize / 2, // center the image
               0 - imageSize / 2,
               imageSize,
-              imageSize
+              imageSize,
             );
             context.restore();
           }
@@ -189,8 +249,7 @@ const Game = () => {
             context.stroke();
             context.restore();
           });
-          console.log(
-            "enemy pos",
+          console.log( "enemy pos",
             enemy.position,
             "hitbox pos",
             enemy.hitbox[0].position,
@@ -254,8 +313,8 @@ const Game = () => {
     startBtn?.addEventListener("click", async () => {
       await fetch(
         `http://localhost:8080/api/newGame?` +
-          `username=${encodeURIComponent(username)}&` +
-          `profile_name=${encodeURIComponent(profile_name)}`,
+        `username=${encodeURIComponent(username)}&` +
+        `profile_name=${encodeURIComponent(profile_name)}`,
       );
     });
 
@@ -268,6 +327,7 @@ const Game = () => {
 
     return () => {
       cancelAnimationFrame(requestRef.current);
+      // Clear inputs after rendering
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
     };
