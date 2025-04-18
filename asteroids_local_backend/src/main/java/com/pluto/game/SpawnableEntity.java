@@ -133,16 +133,22 @@ public abstract class SpawnableEntity {
             this.position = position;
             return;
         }
-        float dx = position.x - this.position.x;
-        float dy = position.y - this.position.y;
+        
+        // We cannot simply wrap hitboxes around the screen, or they will be
+        // disconnected from the center of the object during rotation. 
+        // We must make them relative to the new position, possibly allowing 
+        // them to be negative.
+        float oldX = this.position.x; 
+        float oldY = this.position.y; 
         this.position = position;
         this.position.x = (this.position.x + SCREEN_WIDTH) % SCREEN_WIDTH;
         this.position.y = (this.position.y + SCREEN_HEIGHT) % SCREEN_HEIGHT;
+        
+        float dx = this.position.x - oldX;
+        float dy = this.position.y - oldY;
         for (HitBox circle : hitbox) {
             circle.position.x += dx;
             circle.position.y += dy;
-            circle.position.x = (circle.position.x + SCREEN_WIDTH) % SCREEN_WIDTH;
-            circle.position.y = (circle.position.y + SCREEN_HEIGHT) % SCREEN_HEIGHT;
         }
     }
 
