@@ -19,6 +19,7 @@ ALTER TABLE `Profiles` AUTO_INCREMENT = 15001;
 CREATE TABLE IF NOT EXISTS `Scores` (
     `score_id` INT NOT NULL AUTO_INCREMENT,
     `profile_id` INT NOT NULL,
+    `difficulty` ENUM('EASY', 'MEDIUM', 'HARD') NOT NULL,
     `score` INT NOT NULL,
     `level` INT NOT NULL,
     `duration_seconds` INT NOT NULL,
