@@ -1,16 +1,18 @@
 package com.pluto.game;
 
 public enum Difficulty {
-    EASY(0.5F, 4),
-    MEDIUM(1.0F, 2),
-    HARD(2.0F, 1);
+    EASY(0.5F, 4, 0.75f),
+    MEDIUM(1.0F, 2, 1f),
+    HARD(2.0F, 1, 1.5f);
 
     private final float scoreMultiplier;
     private final int bulletDamage;
+    private final float enemySpeedMultiplier;
 
-    Difficulty(float scoreMultiplier, int bulletDamage) {
+    Difficulty(float scoreMultiplier, int bulletDamage, float enemySpeedMultiplier) {
         this.scoreMultiplier = scoreMultiplier;
         this.bulletDamage = bulletDamage;
+        this.enemySpeedMultiplier = enemySpeedMultiplier;
     }
 
     public float getScoreMultiplier() {
@@ -19,5 +21,9 @@ public enum Difficulty {
 
     public int getBulletDamage() {
         return bulletDamage;
+    }
+
+    public float getEnemySpeedMultiplier() {
+        return enemySpeedMultiplier;
     }
 }

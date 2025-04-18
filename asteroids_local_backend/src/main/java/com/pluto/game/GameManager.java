@@ -98,7 +98,7 @@ public class GameManager {
         // Move all objects
         player.moveObj(dt, input);
         for (Enemy enemy : enemies) {
-            enemy.moveObj(dt);
+            enemy.moveObj(dt * difficulty.getEnemySpeedMultiplier());
         }
         for (Bullet bullet : playerBullets) {
             bullet.moveObj(dt);
