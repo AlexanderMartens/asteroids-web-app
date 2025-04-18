@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import org.springframework.web.bind.annotation.*;
 import com.pluto.database.DatabaseClient;
-
+import com.pluto.game.Difficulty;
 import com.pluto.game.GameManager;
 import com.pluto.game.Spaceship;
 
@@ -389,6 +389,7 @@ public class LocalController {
      * 
      * @param username     - the login name of the user
      * @param profile_name - the name of the profile
+     * @param difficulty  - the difficulty of the game, can be "EASY", "MEDIUM" or "HARD"
      * @return - a json formatted confirmation or error of the new game request
      * The json has the following attributes:
      * success - boolean
@@ -398,12 +399,13 @@ public class LocalController {
     @GetMapping("/newGame")
     public String newGame(
             @RequestParam(value = "username", defaultValue = "") String username,
-            @RequestParam(value = "profile_name", defaultValue = "") String profile_name) {
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name,
+            @RequestParam(value = "difficulty", defaultValue = "MEDIUM") String difficulty) {
         String key = username + " " + profile_name;
         if (gameManagers.containsKey(key)) {
             gameManagers.remove(key);
         }
-        gameManagers.put(key, new GameManager());
+        gameManagers.put(key, new GameManager(Difficulty.valueOf(difficulty)));
         return generateResponse(true);
     }
 
@@ -417,6 +419,7 @@ public class LocalController {
      * @param username     - the login name of the user
      * @param profile_name - the name of the profile
      * @param inputs       - the player inputs
+     * @param difficulty   - the difficulty of the game, can be "EASY", "MEDIUM" or "HARD"
      * @return - a json formatted game state
      * 
      * The json has the following attributes:
@@ -465,11 +468,12 @@ public class LocalController {
             @RequestParam(value = "dt", defaultValue = "0") float dt,
             @RequestParam(value = "username", defaultValue = "") String username,
             @RequestParam(value = "profile_name", defaultValue = "") String profile_name,
-            @RequestParam(value = "inputs", defaultValue = "") String inputs) {
+            @RequestParam(value = "inputs", defaultValue = "") String inputs,
+            @RequestParam(value = "difficulty", defaultValue = "MEDIUM") String difficulty) {
         // Check that the game manager exists, if not create a new one
         String key = username + " " + profile_name;
         if (!gameManagers.containsKey(key)) {
-            gameManagers.put(key, new GameManager());
+            gameManagers.put(key, new GameManager(Difficulty.valueOf(difficulty)));
             return gameManagers.get(key).toJson();
         }
 
