@@ -100,31 +100,32 @@ public class DatabaseClient {
      * @return - String error message, is empty if method is successful
      */
     public String loginUser(String username, String password) {
-        // Try with resources making a connection to the MySql database
-        // If not, close the database connection
         try (
-                // Append Database /Users to the end of the url
-                Connection dbConn = DriverManager.getConnection(
-                        url + "/Users", dbUser, dbPass);) {
-            // Here we log in the user
-            // Check if the user exists and the password is correct
+            Connection dbConn = DriverManager.getConnection(url + "/Users", dbUser, dbPass);
+        ) {
+            // Get the stored hash for the username
             PreparedStatement stmt = dbConn.prepareStatement(
-                    "SELECT * FROM Users WHERE user_name = ? AND user_password = ?");
+                    "SELECT user_password FROM Users WHERE user_name = ?");
             stmt.setString(1, username);
-            stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
+    
             if (rs.next()) {
-                return "";
+                String storedHash = rs.getString("user_password");
+                // ✅ Check the plaintext password against the stored hash
+                if (BCrypt.checkpw(password, storedHash)) {
+                    return ""; // Success
+                } else {
+                    return "Username or password is incorrect";
+                }
             }
-
+    
+            return "Username or password is incorrect"; // User not found
+    
         } catch (SQLException e) {
-            System.out.println(
-                    "Could not establish connection to MySQL database.");
+            System.out.println("Could not establish connection to MySQL database.");
             e.printStackTrace();
             return "Error logging in";
         }
-
-        return "Username or password is incorrect";
     }
 
     /**
