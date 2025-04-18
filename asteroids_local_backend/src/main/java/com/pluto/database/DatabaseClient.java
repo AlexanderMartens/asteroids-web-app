@@ -100,10 +100,14 @@ public class DatabaseClient {
      * @return - String error message, is empty if method is successful
      */
     public String loginUser(String username, String password) {
+        // Try with resources making a connection to the MySql database
+        // If not, close the database connection
         try (
+            // Append Database /Users to the end of the url
             Connection dbConn = DriverManager.getConnection(url + "/Users", dbUser, dbPass);
         ) {
-            // Get the stored hash for the username
+            // Here we log in the user
+            // Check if the user exists and the password is correct
             PreparedStatement stmt = dbConn.prepareStatement(
                     "SELECT user_password FROM Users WHERE user_name = ?");
             stmt.setString(1, username);
@@ -111,7 +115,7 @@ public class DatabaseClient {
     
             if (rs.next()) {
                 String storedHash = rs.getString("user_password");
-                // ✅ Check the plaintext password against the stored hash
+                // Check the plaintext password against the stored hash
                 if (BCrypt.checkpw(password, storedHash)) {
                     return ""; // Success
                 } else {
