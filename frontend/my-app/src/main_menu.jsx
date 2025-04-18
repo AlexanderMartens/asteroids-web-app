@@ -5,7 +5,8 @@ import './main_menu.css';
 // Backgroundless png of logo
 import logo from './images/asteroid-logo-bgless.png';
 import React, {useState} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from './auth_context';
 
 // Pascal case for React Components
 import StatIcon from './images/stat-icon.svg?react';
@@ -26,6 +27,14 @@ import profile_icon from './images/profile-icon.png';
  * @returns {JSX.Element} The JSX structure for the main menu.
  */
 function MainMenu() {
+
+    const auth = useAuth();
+    const navigate = useNavigate();
+
+    const handleExit = async () => {
+        auth.logout();
+        navigate('/');
+    }
 
     return (
         // Main container for the menu
@@ -107,9 +116,7 @@ function MainMenu() {
 
                 <div className='exit-set'>
                     {/* Link to exit the menu */}
-                    <Link to='/'>
-                        <ExitIcon className='exit-icon' />
-                    </Link>
+                    <ExitIcon className='exit-icon' onClick={handleExit} />
                     <div className='exit-label'>Exit</div>
                 </div>
 

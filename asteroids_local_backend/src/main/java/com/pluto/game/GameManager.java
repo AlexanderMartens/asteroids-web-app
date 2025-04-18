@@ -2,8 +2,7 @@ package com.pluto.game;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import io.netty.channel.MaxBytesRecvByteBufAllocator;
+import java.util.ListIterator;
 
 /**
  * A class that represents the game manager. It contains all the attributes
@@ -11,15 +10,15 @@ import io.netty.channel.MaxBytesRecvByteBufAllocator;
  * manipulate the objects during the game.
  */
 public class GameManager {
-    
+
     /* The player object */
     private Spaceship player;
 
     /* The list of asteroids */
-    private ArrayList<Asteroid> asteroids;
+    private ArrayList<Enemy> enemies;
 
     /* The list of bullets */
-    private ArrayList<Bullet> bullets;
+    private ArrayList<Bullet> playerBullets;
 
     /* The time in seconds the game has been running */
     private float time;
@@ -33,12 +32,15 @@ public class GameManager {
     /* Whether or not the game is running */
     public boolean is_running;
 
-    /* Width and height of the screen. These are units that can be scaled to fit window */
+    /*
+     * Width and height of the screen. These are units that can be scaled to fit
+     * window
+     */
     private static final int SCREEN_WIDTH = 1000;
     private static final int SCREEN_HEIGHT = 1000;
 
     /* The maximum number of bullets allowed at a time */
-    private static final int MAX_BULLETS = 5;
+    private static final int MAX_BULLETS = 10;
 
     /* The amount of time a bullet lasts on the screen in seconds */
     private static final float BULLET_LIFETIME = 2.0f;
@@ -55,73 +57,80 @@ public class GameManager {
     /* How much score destroying asteroids gives */
     private static final int SCORE_PER_ASTEROID = 10;
 
+    /* How much score destroying aliens gives */
+    private static final int SCORE_PER_ALIEN = 50;
+
     /* How much score for completing a level */
     private static final int SCORE_PER_LEVEL = 100;
 
     /**
-     * Constructor for the GameManager class. Initializes the player, asteroids, and bullets.
+     * Constructor for the GameManager class. Initializes the player, enemies, and
+     * bullets.
      * Spawns the starting asteroids and sets the game to running.
      */
     public GameManager() {
         this.player = new Spaceship();
-        this.asteroids = new ArrayList<Asteroid>();
-        this.bullets = new ArrayList<Bullet>();
+        this.enemies = new ArrayList<Enemy>();
+        this.playerBullets = new ArrayList<Bullet>();
         this.time = 0.0f;
         this.score = 0;
         this.level = 1;
         is_running = true;
-        for (int i = 0; i < STARTING_ASTEROIDS; i++) {
-            spawnAsteroid();
-        }
+        spawnEnemy(EnemyType.COMET);
     }
 
     /**
-     * Updates the game by one frame. It updates the player, asteroids, and bullets.
+     * Updates the game by one frame. It updates the player, enemies, and bullets.
      * Checks for and handles collisions and updates the score and time.
      * 
-     * @param dt - the amount of time in seconds since the last update
+     * @param dt    - the amount of time in seconds since the last update
      * @param input - the player inputs
      */
     public void update(float dt, Spaceship.Input[] input) {
         if (dt == 0) {
             return;
         }
-        // Move objects
-        player.moveObj(dt, input);
 
-        for (Asteroid asteroid : asteroids) {
-            asteroid.moveObj(dt);
+        // Move all objects
+        player.moveObj(dt, input);
+        for (Enemy enemy : enemies) {
+            enemy.moveObj(dt);
+        }
+        for (Bullet bullet : playerBullets) {
+            bullet.moveObj(dt);
         }
 
-        for (Bullet bullet : bullets) {
-            bullet.moveObj(dt);
+        // Handle enemy shooting
+        ListIterator<Enemy> enemyIterator = enemies.listIterator();
+        while (enemyIterator.hasNext()) {
+            Enemy enemy = enemyIterator.next();
+            if (!(enemy instanceof ShooterEnemy))
+                continue;
+            Bullet[] enemyBullets = ((ShooterEnemy) enemy).shootPlayer(player.getPosition());
+            for (Bullet bullet : enemyBullets) {
+                enemyIterator.add(bullet);
+            }
+        }
+
+        // Shoot bullets
+        for (Spaceship.Input i : input) {
+            if (i == Spaceship.Input.SHOOT) {
+                playerShoot();
+            }
         }
 
         // Check for collisions
         checkAndHandleCollisions();
 
-        // Shoot bullets
-        for (Spaceship.Input i : input) {
-            if (i == Spaceship.Input.SHOOT) {
-                shoot();
-            }
-        }
+        // Despawn old bullets
+        despawnBullets();
 
-        // Despawn bullets, uses iterator to avoid concurrent modification exception
-        Iterator<Bullet> iterator = bullets.iterator();
-        while (iterator.hasNext()) {
-            Bullet bullet = iterator.next();
-            if (bullet.getTimeAlive() > BULLET_LIFETIME) {
-                iterator.remove();
-            }
-        }
-
-        // Check if all asteroids are destroyed
-        if (asteroids.size() == 0) {
+        // Check if all enemies are destroyed and if so, handle new level
+        if (enemies.size() == 0) {
             for (int i = 0; i < level + STARTING_ASTEROIDS; i++) {
-                spawnAsteroid();
+                spawnEnemy(EnemyType.ASTEROID);
             }
-            bullets.clear();
+            playerBullets.clear();
             score += SCORE_PER_LEVEL * level;
             level++;
         }
@@ -133,30 +142,60 @@ public class GameManager {
     }
 
     /**
-     * Checks for collisions between the player, asteroids, and bullets.
+     * Despawns old Bullet objects. A Bullet is considered old if its
+     * time alive is greater than BULLET_LIFETIME.
+     */
+    private void despawnBullets() {
+        // Despawn player bullets, uses iterator to avoid concurrent modification
+        // exception
+        Iterator<Bullet> bulletIterator = playerBullets.iterator();
+        while (bulletIterator.hasNext()) {
+            Bullet bullet = bulletIterator.next();
+            if (bullet.getTimeAlive() > BULLET_LIFETIME) {
+                bulletIterator.remove();
+            }
+        }
+
+        // Despawn enemy bullets
+        Iterator<Enemy> enemyIterator = enemies.iterator();
+        while (enemyIterator.hasNext()) {
+            Enemy enemy = enemyIterator.next();
+            if (enemy instanceof Bullet
+                    && ((Bullet) enemy).getTimeAlive() > BULLET_LIFETIME)
+                enemyIterator.remove();
+        }
+    }
+
+    /**
+     * Checks for collisions between the player, enemies, and bullets.
      * If a collision is detected, the appropriate action is taken.
      */
     private void checkAndHandleCollisions() {
         // Check for collisions between bullets and asteroids
         // Uses iterators to avoid concurrent modification exception
-        Iterator<Bullet> bulletIterator = bullets.iterator();
+        Iterator<Bullet> bulletIterator = playerBullets.iterator();
         while (bulletIterator.hasNext()) {
             Bullet bullet = bulletIterator.next();
-            Iterator<Asteroid> asteroidIterator = asteroids.iterator();
-            while (asteroidIterator.hasNext()) {
-                Asteroid asteroid = asteroidIterator.next();
-                if (bullet.collidesWith(asteroid)) {
-                    destroyAsteroid(asteroid);
-                    bulletIterator.remove();
-                    score += SCORE_PER_ASTEROID * level;
-                    break;
+            Iterator<Enemy> enemyIterator = enemies.iterator();
+            while (enemyIterator.hasNext()) {
+                Enemy enemy = enemyIterator.next();
+                if (!bullet.collidesWith(enemy)) {
+                    continue;
                 }
+
+                // Hit enemy
+                enemy.takeDamage(bullet.dealsDamage());
+                if (enemy.getHealth() == 0)
+                    destroyEnemy(enemy);
+
+                bulletIterator.remove();
+                break;
             }
         }
 
         // Check for collisions between player and asteroids
-        for (Asteroid asteroid : asteroids) {
-            if (player.collidesWith(asteroid)) {
+        for (Enemy enemy : enemies) {
+            if (player.collidesWith(enemy)) {
                 player.hit();
                 if (player.getLives() == 0) {
                     gameOver();
@@ -166,12 +205,28 @@ public class GameManager {
     }
 
     /**
-     * Spawns a new asteroid at a random location on the screen.
-     * The asteroid will always spawn at least PROTECTED_DISTANCE units away from the player.
+     * Spawns a new bullet at the player's location. Will not spawn a bullet
+     * if the maximum number of bullets has been reached.
      */
-    private void spawnAsteroid() {
-        // Picks a random location on the screen, checks if it is at least PROTECTED_DISTANCE units away from the player
-        // If not, it will try again up to 1000 times before giving up. The odds of this happening are very very low.
+    private void playerShoot() {
+        if (playerBullets.size() < MAX_BULLETS) {
+            Bullet bullet = player.shootBullet();
+            playerBullets.add(bullet);
+        }
+    }
+
+    /**
+     * Spawns a new asteroid at a random location on the screen.
+     * The asteroid will always spawn at least PROTECTED_DISTANCE units away from
+     * the player.
+     *
+     * @param type - the EnemyType of the enemy to spawn.
+     */
+    private void spawnEnemy(EnemyType type) {
+        // Picks a random location on the screen, checks if it is at least
+        // PROTECTED_DISTANCE units away from the player
+        // If not, it will try again up to 1000 times before giving up. The odds of this
+        // happening are very very low.
         float x = (float) (Math.random() * SCREEN_WIDTH);
         float y = (float) (Math.random() * SCREEN_HEIGHT);
         int maxAttempts = 1000;
@@ -179,56 +234,114 @@ public class GameManager {
         while (attempts < maxAttempts) {
             x = (float) (Math.random() * SCREEN_WIDTH);
             y = (float) (Math.random() * SCREEN_HEIGHT);
-            if (Math.sqrt(Math.pow(x - player.getPosition().x, 2) + Math.pow(y - player.getPosition().y, 2)) > PROTECTED_DISTANCE) {
+            if (Math.sqrt(Math.pow(x - player.getPosition().x, 2)
+                    + Math.pow(y - player.getPosition().y, 2)) > PROTECTED_DISTANCE) {
                 break;
             }
             attempts++;
         }
         float orientation = (float) (Math.random() * 2 * Math.PI);
         float rotVelocity = (float) Math.random();
-        // Math.random() returns a value between 0 and 1, so we multiply by 2 and subtract 1 to get a value between -1 and 1
-        Vector2D<Float> velocity = new Vector2D<Float>(((float) (Math.random() * 2) - 1 ) * MAX_ASTEROID_SPEED, 
-                                                       ((float) (Math.random() * 2) - 1 ) * MAX_ASTEROID_SPEED);
         Vector2D<Float> pos = new Vector2D<Float>(x, y);
-        asteroids.add(new Asteroid(pos, orientation, velocity, Asteroid.AsteroidSize.LARGE, rotVelocity));
+
+        Enemy enemy;
+        if (type == EnemyType.ASTEROID) {
+            // Math.random() returns a value between 0 and 1, so we multiply by 2 and
+            // subtract 1 to get a value between -1 and 1
+            Vector2D<Float> velocity = new Vector2D<Float>(
+                    ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
+                    ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
+            enemy = new Asteroid(
+                    pos, velocity, orientation, Asteroid.AsteroidSize.LARGE, rotVelocity);
+
+        } else if (type == EnemyType.COMET) {
+            // Comets may be twice as fast as asteroids
+            Vector2D<Float> velocity = new Vector2D<Float>(
+                    ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED * 2,
+                    ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED * 2);
+            enemy = new Asteroid(
+                    pos, velocity, orientation, Asteroid.AsteroidSize.COMET, rotVelocity);
+
+        } else if (type == EnemyType.ALIEN) {
+            // Aliens have built in velocity.
+            enemy = new Alien(pos, null);
+        } else {
+            return;
+        }
+
+        enemies.add(enemy);
     }
 
     /**
-     * Spawns a new bullet at the player's location.
-     * Will not spawn a bullet if the maximum number of bullets has been reached.
+     * Destroys an enemy and may spawn additional enemies in its place.
+     *
+     * @param enemy - the Enemy object to be destroyed
      */
-    private void shoot() {
-        if (bullets.size() < MAX_BULLETS) {
-            Vector2D<Float> pos = new Vector2D<Float>(player.getPosition().x, player.getPosition().y);
-            float orientation = player.getOrientation();
-            Bullet bullet = new Bullet(pos, orientation);
-            bullets.add(bullet);
+    private void destroyEnemy(Enemy enemy) {
+        switch (enemy.type()) {
+            case ASTEROID:
+                score += SCORE_PER_ASTEROID * level;
+                destroyAsteroid((Asteroid) enemy);
+                break;
+            case COMET:
+                // Destroyed comet, spawn Alien in its place
+                score += SCORE_PER_ASTEROID;
+                Alien alien = new Alien(enemy.getPosition(), null);
+                enemies.remove(enemy);
+                enemies.add(alien);
+                break;
+            case ALIEN:
+                score += SCORE_PER_ALIEN * level;
+                destroyAlien((Alien) enemy);
+                break;
+            case BULLET:
+                enemies.remove(enemy);
+                break;
+            default:
+                return;
         }
     }
 
     /**
-     * Destroys an asteroid and spawns smaller asteroids in its place.
+     * Destroys an asteroid and may spawn smaller asteroids in its place and
+     * updates the player score.
+     *
+     * @param asteroid - the asteroid object to be destroyed
      */
     private void destroyAsteroid(Asteroid asteroid) {
         Asteroid.AsteroidSize new_size = Asteroid.AsteroidSize.MEDIUM;
         if (asteroid.size == Asteroid.AsteroidSize.MEDIUM) {
             new_size = Asteroid.AsteroidSize.SMALL;
         } else if (asteroid.size == Asteroid.AsteroidSize.SMALL) {
-            asteroids.remove(asteroid);
+            enemies.remove(asteroid);
             return;
         }
+
+        // Spawn children asteroids
         for (int i = 0; i < 2; i++) {
-            // Adds random velocity to the destroyed asteroid's velocity, so smaller asteroids can be faster
-            Vector2D<Float> velocity = new Vector2D<Float>(asteroid.getVelocity().x + ((float) (Math.random() * 2) - 1 ) * MAX_ASTEROID_SPEED,
-                                                           asteroid.getVelocity().y + ((float) (Math.random() * 2) - 1 ) * MAX_ASTEROID_SPEED);
-            
-            asteroids.add(new Asteroid(asteroid.getPosition(), 
-                                       asteroid.getOrientation(), 
-                                       velocity, 
-                                       new_size, 
-                                       (float) Math.random()));
+            // Adds random velocity to the destroyed asteroid's velocity, so smaller
+            // asteroids can be faster
+            Vector2D<Float> velocity = new Vector2D<Float>(
+                    asteroid.getVelocity().x +
+                            ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED,
+                    asteroid.getVelocity().y +
+                            ((float) (Math.random() * 2) - 1) * MAX_ASTEROID_SPEED);
+
+            enemies.add(new Asteroid(asteroid.getPosition(),
+                    velocity,
+                    asteroid.getOrientation(),
+                    new_size,
+                    (float) Math.random()));
         }
-        asteroids.remove(asteroid);
+
+        enemies.remove(asteroid);
+    }
+
+    /**
+     * Destroys an Alien object.
+     */
+    private void destroyAlien(Alien alien) {
+        enemies.remove(alien);
     }
 
     /**
@@ -241,24 +354,27 @@ public class GameManager {
     /**
      * Converts the game state to Json format for the frontend.
      * Returns the game state of the player, asteroids, and bullets.
-     * Also includes the current score, current level, time, and whether the game is running.
+     * Also includes the current score, current level, time, and whether the game is
+     * running.
+     *
+     * @return - a json formatted string representing this GameManager
      */
     public String toJson() {
         StringBuilder json = new StringBuilder();
         json.append("{");
         json.append("\"player\":");
         json.append(player.toJson());
-        json.append(",\"asteroids\":[");
-        for (int i = 0; i < asteroids.size(); i++) {
-            json.append(asteroids.get(i).toJson());
-            if (i < asteroids.size() - 1) {
+        json.append(",\"enemies\":[");
+        for (int i = 0; i < enemies.size(); i++) {
+            json.append(enemies.get(i).toJson());
+            if (i < enemies.size() - 1) {
                 json.append(",");
             }
         }
         json.append("],\"bullets\":[");
-        for (int i = 0; i < bullets.size(); i++) {
-            json.append(bullets.get(i).toJson());
-            if (i < bullets.size() - 1) {
+        for (int i = 0; i < playerBullets.size(); i++) {
+            json.append(playerBullets.get(i).toJson());
+            if (i < playerBullets.size() - 1) {
                 json.append(",");
             }
         }

@@ -1,54 +1,54 @@
 CREATE TABLE IF NOT EXISTS `Users` (
-    `User_id` INT NOT NULL AUTO_INCREMENT,
-    `User_name` VARCHAR(50) NOT NULL UNIQUE,
-    `User_password` VARCHAR(255) NOT NULL,
-    PRIMARY KEY (`User_id`)
+    `user_id` INT NOT NULL AUTO_INCREMENT,
+    `user_name` VARCHAR(50) NOT NULL UNIQUE,
+    `user_password` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`user_id`)
 );
 ALTER TABLE `Users` AUTO_INCREMENT = 10001;
 
-CREATE TABLE IF NOT EXISTS `UserProfiles` (
-    `Profile_id` INT NOT NULL AUTO_INCREMENT,
-    `User_id` INT NOT NULL,
-    `Profile_name` VARCHAR(50) NOT NULL,
-    PRIMARY KEY (`Profile_id`),
-    FOREIGN KEY (`User_id`) REFERENCES `Users`(`User_id`) ON DELETE CASCADE,
-    CONSTRAINT `Unique_Profile_Per_User` UNIQUE (`User_id`, `Profile_name`)
+CREATE TABLE IF NOT EXISTS `Profiles` (
+    `profile_id` INT NOT NULL AUTO_INCREMENT,
+    `user_id` INT NOT NULL,
+    `profile_name` VARCHAR(50) NOT NULL,
+    PRIMARY KEY (`profile_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `Users`(`user_id`) ON DELETE CASCADE,
+    CONSTRAINT `unique_profile_per_user` UNIQUE (`user_id`, `profile_name`)
 );
-ALTER TABLE `UserProfiles` AUTO_INCREMENT = 15001;
+ALTER TABLE `Profiles` AUTO_INCREMENT = 15001;
 
 CREATE TABLE IF NOT EXISTS `Scores` (
-    `Score_id` INT NOT NULL AUTO_INCREMENT,
-    `Profile_id` INT NOT NULL,
-    `Score` INT NOT NULL,
-    `Level_reached` INT NOT NULL,
-    `Duration_seconds` INT NOT NULL,
-    `Time_played` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`Score_id`),
-    FOREIGN KEY (`Profile_id`) REFERENCES `UserProfiles`(`Profile_id`) ON DELETE CASCADE
+    `score_id` INT NOT NULL AUTO_INCREMENT,
+    `profile_id` INT NOT NULL,
+    `score` INT NOT NULL,
+    `level` INT NOT NULL,
+    `duration_seconds` INT NOT NULL,
+    `time_played` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`score_id`),
+    FOREIGN KEY (`profile_id`) REFERENCES `Profiles`(`profile_id`) ON DELETE CASCADE
 );
 ALTER TABLE `Scores` AUTO_INCREMENT = 20001;
 
-CREATE TABLE IF NOT EXISTS `GameSettings` (
-    `Setting_id` INT NOT NULL AUTO_INCREMENT,
-    `Profile_id` INT NOT NULL,
-    `Sound` BOOLEAN DEFAULT TRUE,
-    `Graphics` ENUM('low', 'medium', 'high') DEFAULT 'medium',
-    PRIMARY KEY (`Setting_id`),
-    FOREIGN KEY (`Profile_id`) REFERENCES `UserProfiles`(`Profile_id`) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS `Settings` (
+    `setting_id` INT NOT NULL AUTO_INCREMENT,
+    `profile_id` INT NOT NULL,
+    `sound` BOOLEAN DEFAULT TRUE,
+    `graphics` ENUM('low', 'medium', 'high') DEFAULT 'medium',
+    PRIMARY KEY (`setting_id`),
+    FOREIGN KEY (`profile_id`) REFERENCES `Profiles`(`profile_id`) ON DELETE CASCADE
 );
-ALTER TABLE `GameSettings` AUTO_INCREMENT = 30001;
+ALTER TABLE `Settings` AUTO_INCREMENT = 30001;
 
 CREATE VIEW `Leaderboard` AS 
 SELECT 
-    `Users`.`User_name`, 
-    `UserProfiles`.`Profile_name`,
-    `Scores`.`Score`, 
-    `Scores`.`Level_reached`, 
-    `Scores`.`Duration_seconds`, 
-    `Scores`.`Time_played`
+    `Users`.`user_name`, 
+    `Profiles`.`profile_name`,
+    `Scores`.`score`, 
+    `Scores`.`level`, 
+    `Scores`.`duration_seconds`, 
+    `Scores`.`time_played`
 FROM `Scores`
-JOIN `UserProfiles` ON `Scores`.`Profile_id` = `UserProfiles`.`Profile_id`
-JOIN `Users` ON `UserProfiles`.`User_id` = `Users`.`User_id`
-ORDER BY `Scores`.`Score` DESC 
+JOIN `Profiles` ON `Scores`.`profile_id` = `Profiles`.`profile_id`
+JOIN `Users` ON `Profiles`.`user_id` = `Users`.`user_id`
+ORDER BY `Scores`.`score` DESC 
 LIMIT 100;
 

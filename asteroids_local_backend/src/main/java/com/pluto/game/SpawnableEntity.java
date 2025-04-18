@@ -15,7 +15,7 @@ public abstract class SpawnableEntity {
      */
     private static final int SCREEN_WIDTH = 1000;
     private static final int SCREEN_HEIGHT = 1000;
-    
+
     /*
      * An object's location on the screen. It must be within a predetermined
      * range.
@@ -44,6 +44,18 @@ public abstract class SpawnableEntity {
     private Vector2D<Float> velocity;
 
     /**
+     * Constructor for the SpawnableEntity. Ensures that all derived classes
+     * initialize SpawnableEntity data members.
+     */
+    public SpawnableEntity(Vector2D<Float> position, Vector2D<Float> velocity,
+            float orientation, HitBox[] hitbox) {
+        this.position = position;
+        this.velocity = velocity;
+        this.orientation = orientation;
+        this.hitbox = hitbox;
+    }
+
+    /**
      * This method rotates the spawnable entity by an angle in radians. It
      * updates this object's orientation and hitbox accordingly.
      *
@@ -53,14 +65,16 @@ public abstract class SpawnableEntity {
         // First update the orientation
         setOrientation(radians + getOrientation());
 
+        // holds the local coordinates of a hitbox circle
         float localX;
         float localY;
-        float rotX; // more comments on what these are
+        // holds the rotated coordinates of a hitebox circle
+        float rotX;
         float rotY;
         for (HitBox circle : hitbox) {
             // Convert the circle location to local object coordinates
             localX = circle.position.x - position.x;
-            localY = circle.position.y - position.y; // vector/circle class
+            localY = circle.position.y - position.y;
 
             // Rotate local coordinates by radians
             rotX = (float) (localX * Math.cos(radians) - localY * Math.sin(radians));
@@ -75,15 +89,16 @@ public abstract class SpawnableEntity {
     /**
      * This method checks if this spawnable entity has collided with another
      * spawnable entity.
+     * 
      * @return - true if this object has collided with another object, false
-     * otherwise
+     *         otherwise
      */
     public boolean collidesWith(SpawnableEntity other) {
         for (HitBox circle : hitbox) {
             for (HitBox otherCircle : other.hitbox) {
                 if (Math.pow(circle.position.x - otherCircle.position.x, 2)
-                        + Math.pow(circle.position.y - otherCircle.position.y, 2)
-                        < Math.pow(circle.radius + otherCircle.radius, 2)) {
+                        + Math.pow(circle.position.y - otherCircle.position.y, 2) < Math
+                                .pow(circle.radius + otherCircle.radius, 2)) {
                     return true;
                 }
             }
@@ -118,16 +133,22 @@ public abstract class SpawnableEntity {
             this.position = position;
             return;
         }
-        float dx = position.x - this.position.x;
-        float dy = position.y - this.position.y;
+        
+        // We cannot simply wrap hitboxes around the screen, or they will be
+        // disconnected from the center of the object during rotation. 
+        // We must make them relative to the new position, possibly allowing 
+        // them to be negative.
+        float oldX = this.position.x; 
+        float oldY = this.position.y; 
         this.position = position;
         this.position.x = (this.position.x + SCREEN_WIDTH) % SCREEN_WIDTH;
         this.position.y = (this.position.y + SCREEN_HEIGHT) % SCREEN_HEIGHT;
+        
+        float dx = this.position.x - oldX;
+        float dy = this.position.y - oldY;
         for (HitBox circle : hitbox) {
             circle.position.x += dx;
             circle.position.y += dy;
-            circle.position.x = (circle.position.x + SCREEN_WIDTH) % SCREEN_WIDTH;
-            circle.position.y = (circle.position.y + SCREEN_HEIGHT) % SCREEN_HEIGHT;
         }
     }
 
@@ -143,7 +164,7 @@ public abstract class SpawnableEntity {
     /**
      * This method sets the SpawnableEntity's velocity.
      *
-     * @param velocity - 
+     * @param velocity - the velocity of this spawnable entity
      */
     protected void setVelocity(Vector2D<Float> velocity) {
         this.velocity = velocity;
