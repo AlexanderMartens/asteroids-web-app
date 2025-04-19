@@ -32,6 +32,9 @@ public class GameManager {
     /* Whether or not the game is running */
     public boolean is_running;
 
+    /* The difficulty of the game */
+    private Difficulty difficulty;
+
     /*
      * Width and height of the screen. These are units that can be scaled to fit
      * window
@@ -68,13 +71,14 @@ public class GameManager {
      * bullets.
      * Spawns the starting asteroids and sets the game to running.
      */
-    public GameManager() {
+    public GameManager(Difficulty difficulty) {
         this.player = new Spaceship();
         this.enemies = new ArrayList<Enemy>();
         this.playerBullets = new ArrayList<Bullet>();
         this.time = 0.0f;
         this.score = 0;
         this.level = 1;
+        this.difficulty = difficulty;
         is_running = true;
         spawnEnemy(EnemyType.COMET);
     }
@@ -94,7 +98,7 @@ public class GameManager {
         // Move all objects
         player.moveObj(dt, input);
         for (Enemy enemy : enemies) {
-            enemy.moveObj(dt);
+            enemy.moveObj(dt * difficulty.getEnemySpeedMultiplier());
         }
         for (Bullet bullet : playerBullets) {
             bullet.moveObj(dt);
@@ -131,7 +135,7 @@ public class GameManager {
                 spawnEnemy(EnemyType.ASTEROID);
             }
             playerBullets.clear();
-            score += SCORE_PER_LEVEL * level;
+            score += SCORE_PER_LEVEL * level * difficulty.getScoreMultiplier();
             level++;
         }
 
@@ -184,7 +188,7 @@ public class GameManager {
                 }
 
                 // Hit enemy
-                enemy.takeDamage(bullet.dealsDamage());
+                enemy.takeDamage(bullet.dealsDamage() * difficulty.getBulletDamage());
                 if (enemy.getHealth() == 0)
                     destroyEnemy(enemy);
 
@@ -280,18 +284,18 @@ public class GameManager {
     private void destroyEnemy(Enemy enemy) {
         switch (enemy.type()) {
             case ASTEROID:
-                score += SCORE_PER_ASTEROID * level;
+                score += SCORE_PER_ASTEROID * level * difficulty.getScoreMultiplier();
                 destroyAsteroid((Asteroid) enemy);
                 break;
             case COMET:
                 // Destroyed comet, spawn Alien in its place
-                score += SCORE_PER_ASTEROID;
+                score += SCORE_PER_ASTEROID * level * difficulty.getScoreMultiplier();
                 Alien alien = new Alien(enemy.getPosition(), null);
                 enemies.remove(enemy);
                 enemies.add(alien);
                 break;
             case ALIEN:
-                score += SCORE_PER_ALIEN * level;
+                score += SCORE_PER_ALIEN * level * difficulty.getScoreMultiplier();
                 destroyAlien((Alien) enemy);
                 break;
             case BULLET:

@@ -316,12 +316,14 @@ public class DatabaseClient {
      * 
      * @param username     - username of the user
      * @param profile_name - profile name of the user
+     * @param difficulty   - difficulty of the game
+     *                     Must be one of the following: "EASY", "MEDIUM", "HARD"
      * @param score        - score to upload
      * @param level        - level reached
      * @param duration     - duration of the game
      * @return - Empty string if successful, error message otherwise
      */
-    public String uploadScore(String username, String profile_name, int score, int level, int duration) {
+    public String uploadScore(String username, String profile_name, String difficulty, int score, int level, int duration) {
         try (
                 Connection dbConn = DriverManager.getConnection(
                         url + "/Users", dbUser, dbPass);) {
@@ -339,11 +341,12 @@ public class DatabaseClient {
 
             // Upload the score
             PreparedStatement stmt = dbConn.prepareStatement(
-                    "INSERT INTO Scores (profile_id, score, level, duration_seconds) VALUES (?, ?, ?, ?)");
+                    "INSERT INTO Scores (profile_id, difficulty, score, level, duration_seconds) VALUES (?, ?, ?, ?, ?)");
             stmt.setInt(1, profile_id);
-            stmt.setInt(2, score);
-            stmt.setInt(3, level);
-            stmt.setInt(4, duration);
+            stmt.setString(2, difficulty);
+            stmt.setInt(3, score);
+            stmt.setInt(4, level);
+            stmt.setInt(5, duration);
             stmt.executeUpdate();
 
             return "";
@@ -354,33 +357,50 @@ public class DatabaseClient {
     }
 
     /**
-     * Fetches the top n scores from the database. 
+     * Fetches the top n scores from the database. Filters by difficulty
      * Score must be one of the following: "score", "level", "duration_seconds".
+     * 
      * Caller must close the ResultSet and Statement.
      * 
      * @param n     - number of scores to fetch, must be a positive integer
      * @param score - which score to fetch
+     * @param difficulty - difficulty to filter by
+     *                  Must be one of the following: "EASY", "MEDIUM", "HARD", "ALL"
      * @return - a ResultSet of the top n scores or null if score is invalid or an
      *         error occurred
      */
-    public ResultSet fetchTopScores(int n, String score) {
+    public ResultSet fetchTopScores(int n, String score, String difficulty) {
         if (!score.equals("score") && !score.equals("level") && !score.equals("duration_seconds")) {
             return null;
         }
         if (n <= 0) {
             return null;
         }
+        if (!difficulty.equals("EASY") && !difficulty.equals("MEDIUM") && !difficulty.equals("HARD") && !difficulty.equals("ALL")) {
+            return null;
+        }
 
         try {
             Connection dbConn = DriverManager.getConnection(url + "/Users", dbUser, dbPass);
+            // If difficulty is ALL, do not filter by difficulty
+            String difficultyFilter = "";
+            if (!difficulty.equals("ALL")) {
+                difficultyFilter = "WHERE Scores.difficulty = ?";
+            }
             PreparedStatement stmt = dbConn.prepareStatement(
                     "SELECT * " +
                         "FROM Scores " +
                         "JOIN Profiles ON Scores.profile_id = Profiles.profile_id " +
                         "JOIN Users ON Profiles.user_id = Users.user_id " +
+                        difficultyFilter +
                         "ORDER BY Scores." + score + " DESC " +
                         "LIMIT ?");
-            stmt.setInt(1, n);
+            if (!difficulty.equals("ALL")) {
+                stmt.setString(1, difficulty);
+                stmt.setInt(2, n);
+            } else {
+                stmt.setInt(1, n);
+            }
 
             return stmt.executeQuery();
         } catch (SQLException e) {
@@ -392,7 +412,7 @@ public class DatabaseClient {
     /**
      * Fetches statistics for a profile from the database. Has poor performance
      * if there are a lot of scores in the database and there are many reads.
-     * Should be fine for this project.
+     * Should be fine for this project. Can be filtered by difficulty.
      * 
      * @param username - username of the user
      * @param profile_name - profile name of the user
@@ -403,7 +423,11 @@ public class DatabaseClient {
      *           [2] - highest duration
      *           [3] - number of games played
      */
-    public int[] getStats(String username, String profile_name) {
+    public int[] getStats(String username, String profile_name, String difficulty) {
+        // Check if difficulty is valid
+        if (!difficulty.equals("EASY") && !difficulty.equals("MEDIUM") && !difficulty.equals("HARD") && !difficulty.equals("ALL")) {
+            return null;
+        }
         try (
             Connection dbConn = DriverManager.getConnection(
                 url + "/Users", dbUser, dbPass);) {
@@ -418,6 +442,11 @@ public class DatabaseClient {
             if (profile_id == -1) {
                 return null;
             }
+            // If difficulty is ALL, do not filter by difficulty
+            String difficultyFilter = "";
+            if (!difficulty.equals("ALL")) {
+                difficultyFilter = " AND difficulty = ?";
+            }
 
             // Get the statistics for the profile
             PreparedStatement stmt = dbConn.prepareStatement(
@@ -427,7 +456,14 @@ public class DatabaseClient {
                        "COUNT(*) AS games_played " +
                     "FROM Scores " +
                     "WHERE profile_id = ?"
+                    + difficultyFilter
             );
+            if (!difficulty.equals("ALL")) {
+                stmt.setInt(1, profile_id);
+                stmt.setString(2, difficulty);
+            } else {
+                stmt.setInt(1, profile_id);
+            }
 
             stmt.setInt(1, profile_id);
             ResultSet rs = stmt.executeQuery();
