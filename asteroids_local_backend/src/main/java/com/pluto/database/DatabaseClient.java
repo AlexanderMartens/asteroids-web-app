@@ -1,6 +1,7 @@
 package com.pluto.database;
 
 import java.sql.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 /**
  * This client class contains static methods to interact with the MySQL
@@ -34,6 +35,20 @@ public class DatabaseClient {
     }
 
     /**
+    * Hashes a plaintext password using the BCrypt hashing algorithm.
+    *
+    * This method generates a salted hash of the input password using a
+    * randomly generated salt with the default log rounds.
+    * The result can be safely stored in a database and used for later verification.
+    *
+    * @param password the plaintext password to hash
+    * @return the hashed password as a string
+    */
+    public static String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+
+    /**
      * Method to create a user into the database.
      *
      * @param username - username of the new User
@@ -57,12 +72,15 @@ public class DatabaseClient {
             if (rs.next()) {
                 return "User already exists";
             }
+            
+            // Hash the password before storing it
+            String hashedPassword = hashPassword(password);
 
             // If the user does not exist, create the user
             stmt = dbConn.prepareStatement(
                     "INSERT INTO Users (user_name, user_password) VALUES (?, ?)");
             stmt.setString(1, username);
-            stmt.setString(2, password);
+            stmt.setString(2, hashedPassword);
             stmt.executeUpdate();
             return "";
 
@@ -85,28 +103,33 @@ public class DatabaseClient {
         // Try with resources making a connection to the MySql database
         // If not, close the database connection
         try (
-                // Append Database /Users to the end of the url
-                Connection dbConn = DriverManager.getConnection(
-                        url + "/Users", dbUser, dbPass);) {
+            // Append Database /Users to the end of the url
+            Connection dbConn = DriverManager.getConnection(url + "/Users", dbUser, dbPass);
+        ) {
             // Here we log in the user
             // Check if the user exists and the password is correct
             PreparedStatement stmt = dbConn.prepareStatement(
-                    "SELECT * FROM Users WHERE user_name = ? AND user_password = ?");
+                    "SELECT user_password FROM Users WHERE user_name = ?");
             stmt.setString(1, username);
-            stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
+    
             if (rs.next()) {
-                return "";
+                String storedHash = rs.getString("user_password");
+                // Check the plaintext password against the stored hash
+                if (BCrypt.checkpw(password, storedHash)) {
+                    return ""; // Success
+                } else {
+                    return "Username or password is incorrect";
+                }
             }
-
+    
+            return "Username or password is incorrect"; // User not found
+    
         } catch (SQLException e) {
-            System.out.println(
-                    "Could not establish connection to MySQL database.");
+            System.out.println("Could not establish connection to MySQL database.");
             e.printStackTrace();
             return "Error logging in";
         }
-
-        return "Username or password is incorrect";
     }
 
     /**
