@@ -6,6 +6,7 @@ import asteroid_32 from "./images/asteroid_32x32.png";
 import asteroid_48 from "./images/asteroid_48x48.png";
 import asteroid_64 from "./images/asteroid_64x64.png";
 import comet from "./images/comet_48x48.png";
+import alien from "./images/alien_32x32.png"; 
 // background is in css
 
 import ship from "./images/asteroid-logo-bgless.png";
@@ -21,6 +22,7 @@ const Game = () => {
   const asteroidImg48 = new Image();
   const asteroidImg64 = new Image();
   const cometImg = new Image();
+  const alienImg = new Image();
 
   const shipImg = new Image();
   const invincibleShip = new Image();
@@ -29,6 +31,7 @@ const Game = () => {
   asteroidImg48.src = `${asteroid_48}?v=${Date.now()}`; 
   asteroidImg64.src = `${asteroid_64}?v=${Date.now()}`;
   cometImg.src = `${comet}?v=${Date.now()}`; 
+  alienImg.src = `${alien}?v=${Date.now()}`;
 
   shipImg.src = ship;
   invincibleShip.src = invShip;
@@ -276,6 +279,21 @@ const Game = () => {
             0 - cometSize / 2,
             cometSize,
             cometSize,
+          );
+          context.restore();
+
+        } else if (enemy.type === "ALIEN") {
+          // Draw alien
+          context?.save();
+          context.translate(enemy.position.x, enemy.position.y);
+          context.rotate(enemy.orientation);
+          const alienSize = enemy.hitbox[0].radius * 2; // use hitbox radius for alien
+          context.drawImage(
+            alienImg,
+            0 - alienSize / 2, // center the image
+            0 - alienSize / 2,
+            alienSize,
+            alienSize,
           );
           context.restore();
 
