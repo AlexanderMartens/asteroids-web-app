@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useCallback } from "react";
+import { useAuth } from "./auth_context";
 import asteroid_64 from "./images/asteroid_64x64.png";
 import asteroid_32 from "./images/asteroid_32x32.png";
 import ship from "./images/asteroid-logo-bgless.png";
@@ -17,6 +18,16 @@ const Game = () => {
   asteroidImg64.src = asteroid_64;
   shipImg.src = ship;
   invincibleShip.src = invShip;
+
+  const { user } = useAuth();
+  const scoreUploadedRef = useRef(null);
+  const suppressUploadRef = useRef(false);
+
+  if (scoreUploadedRef.current === null) {
+    const stored = sessionStorage.getItem("scoreUploaded");
+    scoreUploadedRef.current = stored === "true";
+    console.log("Initialized scoreUploadedRef:", scoreUploadedRef.current);
+  }
 
   // Variables for handling shoot inputs per keydown
   const isHoldingShoot = useRef(false);
@@ -71,8 +82,8 @@ const Game = () => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
 
-    let username = "test";
-    let profile_name = "test";
+    const username = user?.username ?? "guest";
+    const profile_name = user?.profile_name ?? "guest";
     let last_time = 0;
     let hitboxes = false;
     let paused = false;
@@ -80,6 +91,15 @@ const Game = () => {
     const handleHitboxChange = () => {
       hitboxes = hitboxCheckboxRef.current.checked;
     };
+
+    const handleBeforeUnload = () => {
+      // Prevent any upload if game is already over and score has been uploaded
+      if (!scoreUploadedRef.current && !document.hidden) {
+        sessionStorage.setItem("scoreUploaded", "false");
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     const animate = async (timestamp) => {
       // If holding shoot key down, trigger a KeyboardEvent
@@ -136,8 +156,8 @@ const Game = () => {
       const data = await response.json();
       if (timestamp % 1000 < 16) console.log(data);
 
-      console.log(timestamp);
-      console.log("Enemies:", data.enemies);
+      // console.log(timestamp);
+      // console.log("Enemies:", data.enemies);
 
       const player = data.player;
       const lives = player?.lives ?? 0;
@@ -189,7 +209,7 @@ const Game = () => {
 
       // Enemies
       for (let enemy of enemies) {
-        console.log("Enemy type:", enemy.type);
+        // console.log("Enemy type:", enemy.type);
 
         // Asteroid sprite depends on the size
         if (enemy.type === "ASTEROID") {
@@ -245,15 +265,15 @@ const Game = () => {
               0,
               2 * Math.PI,
             );
-            console.log(typeof hb.position.x, typeof hb.position.y);
+            // console.log(typeof hb.position.x, typeof hb.position.y);
             context.stroke();
             context.restore();
           });
-          console.log( "enemy pos",
-            enemy.position,
-            "hitbox pos",
-            enemy.hitbox[0].position,
-          );
+          // console.log( "enemy pos",
+          //   enemy.position,
+          //   "hitbox pos",
+          //   enemy.hitbox[0].position,
+          // );
         });
 
         bullets.forEach((bullet) => {
@@ -298,6 +318,35 @@ const Game = () => {
         context.fillStyle = "black";
         context.font = "50px Arial";
         context.fillText("Game Over", 350, 450);
+
+        // upload score if not already uploaded (ensures score is uploaded only once)
+        if (!scoreUploadedRef.current) {
+          const difficulty = "MEDIUM";
+          const uploadUrl =
+            `http://localhost:8080/api/uploadScore?` +
+            `username=${encodeURIComponent(username)}&` +
+            `profile_name=${encodeURIComponent(username)}&` +
+            `difficulty=${encodeURIComponent(difficulty)}&` +
+            `score=${encodeURIComponent(score)}&` +
+            `level=${encodeURIComponent(level)}&` +
+            `duration=${encodeURIComponent(Math.floor(time))}`;
+
+          console.log("Uploading score to:", uploadUrl);
+
+          try {
+            const res = await fetch(uploadUrl);
+            if (res.ok) {
+              console.log("Score uploaded successfully.");
+              sessionStorage.setItem("scoreUploaded", "true");
+              scoreUploadedRef.current = true;
+            } else {
+              console.warn("Upload failed with status:", res.status);
+            }
+          } catch (err) {
+            console.error("Failed to upload score:", err);
+          }
+        }
+
         context.restore();
       }
 
@@ -311,11 +360,20 @@ const Game = () => {
     // Start Button (outside of canvas)
     const startBtn = document.getElementById("startGameButton");
     startBtn?.addEventListener("click", async () => {
+      scoreUploadedRef.current = false;
+      suppressUploadRef.current = true; // prevent upload for a few frames
+      sessionStorage.removeItem("scoreUploaded");
+    
       await fetch(
         `http://localhost:8080/api/newGame?` +
         `username=${encodeURIComponent(username)}&` +
-        `profile_name=${encodeURIComponent(profile_name)}`,
+        `profile_name=${encodeURIComponent(profile_name)}`
       );
+    
+      // Allow upload again after a delay (e.g., 500ms or 2 animation frames)
+      setTimeout(() => {
+        suppressUploadRef.current = false;
+      }, 500);
     });
 
     pauseButtonRef.current.addEventListener("click", () => {
@@ -330,7 +388,9 @@ const Game = () => {
       // Clear inputs after rendering
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
+
   }, []);
 
   return (
