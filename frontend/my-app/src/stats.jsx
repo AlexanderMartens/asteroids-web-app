@@ -48,8 +48,13 @@ function Stats() {
         else {
             let hrRem = sToHr(seconds);
             let minRem = sToMin(hrRem.rem);
-            return hrRem.hr + ':' + form10(minRem.min) + ':' + form10(minRem.rem);
+            return formatLongNumber(hrRem.hr) + ':' + form10(minRem.min) + ':' + form10(minRem.rem);
         }
+    }
+
+    function formatLongNumber(num) {
+        num = num.toString();
+        return num.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
     }
 
     useEffect(() => {
@@ -58,10 +63,10 @@ function Stats() {
             .then((data) => {
                 console.log(`Success: ${data.success}, Error: ${data.error}`)
                 const stats = data.stats;
-                setHighestScore(stats.highest_score);
-                setHighestLevel(stats.highest_level);
+                setHighestScore(formatLongNumber(stats.highest_score));
+                setHighestLevel(formatLongNumber(stats.highest_level));
                 setLongestSurvival(formatTime(stats.longest_duration));
-                setGamesPlayed(stats.total_games);
+                setGamesPlayed(formatLongNumber(stats.total_games));
                 console.log(`Success: ${data.success}, Error: ${data.error}`)
             })
             .catch((err) => {
