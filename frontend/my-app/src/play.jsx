@@ -19,8 +19,15 @@ const Game = () => {
   shipImg.src = ship;
   invincibleShip.src = invShip;
 
-  const scoreUploadedRef = useRef(false);
   const { user } = useAuth();
+
+  const scoreUploadedRef = useRef(null);
+
+  if (scoreUploadedRef.current === null) {
+    const stored = sessionStorage.getItem("scoreUploaded");
+    scoreUploadedRef.current = stored === "true";
+    console.log("Initialized scoreUploadedRef:", scoreUploadedRef.current);
+  }
 
   // Variables for handling shoot inputs per keydown
   const isHoldingShoot = useRef(false);
@@ -72,8 +79,6 @@ const Game = () => {
   }, []);
 
   useEffect(() => {
-    scoreUploadedRef.current = sessionStorage.getItem("scoreUploaded") === "true";
-
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
 
@@ -316,24 +321,27 @@ const Game = () => {
 
         // upload score if not already uploaded (ensures score is uploaded only once)
         if (!scoreUploadedRef.current) {
-          scoreUploadedRef.current = true;
-          sessionStorage.setItem("scoreUploaded", "true");
-        
           const difficulty = "MEDIUM";
           const uploadUrl =
             `http://localhost:8080/api/uploadScore?` +
             `username=${encodeURIComponent(username)}&` +
-            `profile_name=${encodeURIComponent(username)}&` + // passes profile_name as username
+            `profile_name=${encodeURIComponent(username)}&` +
             `difficulty=${encodeURIComponent(difficulty)}&` +
             `score=${encodeURIComponent(score)}&` +
             `level=${encodeURIComponent(level)}&` +
             `duration=${encodeURIComponent(Math.floor(time))}`;
-        
-          // console.log("Uploading score to:", uploadUrl);
-        
+
+          console.log("Uploading score to:", uploadUrl);
+
           try {
-            await fetch(uploadUrl);
-            console.log("Score uploaded successfully.");
+            const res = await fetch(uploadUrl);
+            if (res.ok) {
+              console.log("Score uploaded successfully.");
+              sessionStorage.setItem("scoreUploaded", "true");
+              scoreUploadedRef.current = true;
+            } else {
+              console.warn("Upload failed with status:", res.status);
+            }
           } catch (err) {
             console.error("Failed to upload score:", err);
           }
@@ -376,7 +384,7 @@ const Game = () => {
       document.removeEventListener("keyup", handleKeyUp);
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-    
+
   }, []);
 
   return (
