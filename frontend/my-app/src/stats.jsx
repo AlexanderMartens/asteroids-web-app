@@ -81,6 +81,7 @@ function Stats() {
                     <button className = 'button-2' id='stats-back-button'>{'< '}Back</button>
                 </Link>
             </div>
+            <div id='stats-title'>Stats</div>
             <div className='stats-grid'>
                 <div className='stats-container' id='highest-score-container'>
                     <div className='stats-internal-top'>
