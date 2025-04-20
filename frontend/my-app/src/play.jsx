@@ -361,7 +361,7 @@ const Game = () => {
     const startBtn = document.getElementById("startGameButton");
     startBtn?.addEventListener("click", async () => {
       scoreUploadedRef.current = false;
-      suppressUploadRef.current = true; // ✅ prevent upload for a few frames
+      suppressUploadRef.current = true; // prevent upload for a few frames
       sessionStorage.removeItem("scoreUploaded");
     
       await fetch(
@@ -370,7 +370,7 @@ const Game = () => {
         `profile_name=${encodeURIComponent(profile_name)}`
       );
     
-      // ✅ Allow upload again after a delay (e.g., 500ms or 2 animation frames)
+      // Allow upload again after a delay (e.g., 500ms or 2 animation frames)
       setTimeout(() => {
         suppressUploadRef.current = false;
       }, 500);
