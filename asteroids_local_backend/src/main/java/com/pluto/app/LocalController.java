@@ -286,7 +286,7 @@ public class LocalController {
     @GetMapping("/leaderboard")
     public String getLeaderboard(
             @RequestParam(value = "limit", defaultValue = "10") int limit,
-            @RequestParam(value = "score", defaultValue = "Score") String score,
+            @RequestParam(value = "score", defaultValue = "score") String score,
             @RequestParam(value = "difficulty", defaultValue = "ALL") String difficulty) {
         DatabaseClient dbClient = new DatabaseClient();
         // Fetch top scores ordered by highest Score
