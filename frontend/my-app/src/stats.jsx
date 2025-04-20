@@ -7,6 +7,11 @@ import ClockIcon from './images/clock-icon.svg?react';
 import ControllerIcon from './images/controller-icon.svg?react';
 
 function Stats() {
+
+    const getStats = async () => {
+        
+    }
+
     return (
         <div id='stats-page'>
             <div id='back-container'>
