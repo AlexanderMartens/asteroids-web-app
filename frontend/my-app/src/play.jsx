@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useCallback } from "react";
 import { useAuth } from "./auth_context";
 import "./play.css";
 
-import asteroid_64 from "./images/asteroid_64x64.png";
 import asteroid_32 from "./images/asteroid_32x32.png";
+import asteroid_48 from "./images/asteroid_48x48.png";
+import asteroid_64 from "./images/asteroid_64x64.png";
+
 import ship from "./images/asteroid-logo-bgless.png";
 import invShip from "./images/invincible-ship.png";
 
@@ -12,12 +14,18 @@ const Game = () => {
   const hitboxCheckboxRef = useRef(null);
   const pauseButtonRef = useRef(null);
   const requestRef = useRef(null);
+
   const asteroidImg32 = new Image();
+  const asteroidImg48 = new Image();
   const asteroidImg64 = new Image();
+
   const shipImg = new Image();
   const invincibleShip = new Image();
+
   asteroidImg32.src = asteroid_32;
+  asteroidImg48.src = asteroid_48;
   asteroidImg64.src = asteroid_64;
+
   shipImg.src = ship;
   invincibleShip.src = invShip;
 
@@ -227,8 +235,11 @@ const Game = () => {
           let image;
           let imageSize;
 
-          if (enemy.size === "SMALL" || enemy.size === "MEDIUM") {
+          if (enemy.size === "SMALL") {
             image = asteroidImg32;
+            imageSize = enemy.hitbox[0].radius * 2; // use hitbox radius for small/medium asteroids
+          } else if (enemy.size === "MEDIUM") {
+            image = asteroidImg48;
             imageSize = enemy.hitbox[0].radius * 2; // use hitbox radius for small/medium asteroids
           } else if (enemy.size === "LARGE") {
             image = asteroidImg64;
