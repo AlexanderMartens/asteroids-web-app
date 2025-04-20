@@ -324,7 +324,7 @@ const Game = () => {
 
       if (!is_running) {
         context.save();
-        context.fillStyle = "black";
+        context.fillStyle = "white";
         context.font = "50px Arial";
         context.fillText("Game Over", 350, 450);
 
@@ -424,17 +424,17 @@ const Game = () => {
               width={1000}
               height={1000}
             ></canvas>
-          </div>
-          <div className="infoColumn">
-            <span><strong>Lives:</strong> <span id="livesDisplayValue">0</span></span>
-            <span><strong>Score:</strong> <span id="scoreDisplayValue">0</span></span>
-            <span><strong>Level:</strong> <span id="levelDisplayValue">0</span></span>
-            <span><strong>Time:</strong> <span id="timeDisplayValue">0</span></span>
+            <div className="infoColumn">
+              <span><strong>Lives:</strong> <span id="livesDisplayValue">0</span></span>
+              <span><strong>Score:</strong> <span id="scoreDisplayValue">0</span></span>
+              <span><strong>Level:</strong> <span id="levelDisplayValue">0</span></span>
+              <span><strong>Time:</strong> <span id="timeDisplayValue">0</span></span>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  );  
+  );
 };
 
 export default Game;
