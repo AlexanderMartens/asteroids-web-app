@@ -83,12 +83,18 @@ function Home() {
         const response = await fetch(`http://localhost:8080/api/register?name=${encodeURIComponent(username)}&pass=${encodeURIComponent(password)}`);
         const data = await response.json();
 
+        const profileResponse = await fetch(`http://localhost:8080/api/createProfile?username=${encodeURIComponent(username)}&profile_name=${encodeURIComponent(username)}`)
+        const profileData = await profileResponse.json();
+
         const endTime = performance.now(); // End timer
         setTimeTaken((endTime - startTime).toFixed(2)); // Calculate time in ms
 
         // Log success and error messages
         console.log(`Register clicked. Username: ${encodeURIComponent(username)} Password: ${encodeURIComponent(password)}`);
         console.log(`Success: ${data.success}, Error: ${data.error}`);
+
+        console.log(`Create profile initiated. Profile name: ${encodeURIComponent(username)}`)
+        console.log(`Success: ${profileData.success}, Error: ${profileData.error}`)
 
         setErrorMessage(prev => {
             const message = data.error === "" ? "Registration successful!" : data.error; // Registration success message
