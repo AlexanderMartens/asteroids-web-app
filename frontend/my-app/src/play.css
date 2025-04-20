@@ -1,0 +1,79 @@
+.gameContainer {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  background-color: #111;
+  color: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+.topBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5em 1em;
+  background-color: #222;
+  border-bottom: 2px solid #333;
+}
+
+.topBarCenter {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  flex-wrap: wrap;
+}
+
+.centerContentWrapper {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.canvasWithInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.canvasWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #000;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+canvas {
+  border: 2px solid #888;
+  height: calc(100vh - 100px);  /* 80px = estimated topBar height + padding */
+  width: calc(100vh - 100px);   /* keep square shape */
+  max-width: 1000px;
+  max-height: 1000px;
+  aspect-ratio: 1 / 1;
+}
+
+.infoColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 1em;
+  font-size: 1.2rem;
+  font-family: monospace;
+}
+
+.infoColumn span {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+}
+
+.infoColumn span > span {
+  display: inline-block;
+  min-width: 4ch;
+  text-align: right;
+}

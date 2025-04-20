@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { useAuth } from "./auth_context";
+import "./play.css";
+
 import asteroid_64 from "./images/asteroid_64x64.png";
 import asteroid_32 from "./images/asteroid_32x32.png";
 import ship from "./images/asteroid-logo-bgless.png";
@@ -139,7 +141,7 @@ const Game = () => {
       if (paused) {
         requestRef.current = requestAnimationFrame(animate);
         context.save();
-        context.fillStyle = "black";
+        context.fillStyle = "white";
         context.font = "50px Arial";
         context.fillText("Paused", 350, 350);
         context.restore();
@@ -167,6 +169,13 @@ const Game = () => {
       const is_running = data.is_running;
       const bullets = data.bullets ?? [];
       const enemies = data.enemies ?? [];
+
+      // Update DOM HUD with current values
+      document.getElementById("livesDisplayValue").textContent = lives;
+      document.getElementById("scoreDisplayValue").textContent = score;
+      document.getElementById("levelDisplayValue").textContent = level;
+      document.getElementById("timeDisplayValue").textContent = Math.floor(time);
+
 
       context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -304,14 +313,14 @@ const Game = () => {
       }
 
       // Info Text
-      context.save();
-      context.fillStyle = "black";
-      context.font = "20px Arial";
-      context.fillText(`Lives: ${lives}`, 10, 20);
-      context.fillText(`Score: ${score}`, 10, 40);
-      context.fillText(`Level: ${level}`, 10, 60);
-      context.fillText(`Time: ${time}`, 10, 80);
-      context.restore();
+      // context.save();
+      // context.fillStyle = "white";
+      // context.font = "20px Arial";
+      // context.fillText(`Lives: ${lives}`, 10, 20);
+      // context.fillText(`Score: ${score}`, 10, 40);
+      // context.fillText(`Level: ${level}`, 10, 60);
+      // context.fillText(`Time: ${time}`, 10, 80);
+      // context.restore();
 
       if (!is_running) {
         context.save();
@@ -394,26 +403,38 @@ const Game = () => {
   }, []);
 
   return (
-    <div>
-      <div>
-        <label>
-          Show Hitboxes{" "}
-          <input ref={hitboxCheckboxRef} type="checkbox" id="hitboxes" />
-        </label>
+    <div className="gameContainer">
+      <div className="topBar">
+        <div className="topBarCenter">
+          <label>
+            Show Hitboxes{" "}
+            <input ref={hitboxCheckboxRef} type="checkbox" id="hitboxes" />
+          </label>
+          <button id="startGameButton">Start Game</button>
+          <button ref={pauseButtonRef} id="pauseGameButton">Pause</button>
+        </div>
       </div>
-      <button id="startGameButton">Start Game</button>
-      <button ref={pauseButtonRef} id="pauseGameButton">
-        Pause
-      </button>
-      <canvas
-        ref={canvasRef}
-        id="box1canvas"
-        width={1000}
-        height={1000}
-        style={{ border: "1px solid black", marginTop: "1em" }}
-      ></canvas>
+
+      <div className="centerContentWrapper">
+        <div className="canvasWithInfo">
+          <div className="canvasWrapper">
+            <canvas
+              ref={canvasRef}
+              id="box1canvas"
+              width={1000}
+              height={1000}
+            ></canvas>
+          </div>
+          <div className="infoColumn">
+            <span><strong>Lives:</strong> <span id="livesDisplayValue">0</span></span>
+            <span><strong>Score:</strong> <span id="scoreDisplayValue">0</span></span>
+            <span><strong>Level:</strong> <span id="levelDisplayValue">0</span></span>
+            <span><strong>Time:</strong> <span id="timeDisplayValue">0</span></span>
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  );  
 };
 
 export default Game;
