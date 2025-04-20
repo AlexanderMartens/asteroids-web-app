@@ -21,7 +21,7 @@
 #leaderboards-title {
     margin: 0;
     padding: 0;
-    padding-top: 84px;
+    
     padding-bottom: 14px;
     font-size: 4rem;
 }
@@ -100,4 +100,16 @@
     border-color: #73B6FF;
     color: #73B6FF;
     outline: 4px solid #73B6FF;
+}
+
+#leaderboard-back-wrapper {
+    display: flex;
+    padding-top: 64px;
+    margin-bottom: -48px;
+    width: 200%;
+    max-width: 95vw;
+}
+
+#leaderboard-back {
+
 }
