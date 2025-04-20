@@ -229,17 +229,21 @@ public class GameManager {
      */
     private void startCurrentLevel() {
         // First check if there is level data
-        if (this.level > 50 || levelData == null) {
-            gameOver(); 
+        int numAsteroids;
+        int numComets;
+        int numAliens;
+        if (this.level > 22 || levelData == null) {
+            numAsteroids = this.level;
+            numComets = this.level / 5;
+            numAliens = this.level / 15;
+        } else {
+            String lvl = this.level + "";
+            JSONObject currentLevelJson = this.levelData.getJSONObject(lvl);
+            // Get the number of enemies from the json file
+            numAsteroids = currentLevelJson.getInt("ASTEROID");
+            numComets = currentLevelJson.getInt("COMET");
+            numAliens = currentLevelJson.getInt("ALIEN");
         }
-
-        String lvl = this.level + "";
-        JSONObject currentLevelJson = this.levelData.getJSONObject(lvl);
-        // Get the number of enemies from the json file
-        int numAsteroids = currentLevelJson.getInt("ASTEROID");
-        int numComets = currentLevelJson.getInt("COMET");
-        int numAliens = currentLevelJson.getInt("ALIEN");
-
         for (int i = 0; i < numAsteroids; i++) {
             spawnEnemy(EnemyType.ASTEROID);
         }
