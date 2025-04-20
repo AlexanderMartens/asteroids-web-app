@@ -17,6 +17,41 @@ function Stats() {
     const username = user?.username ?? 'guest';
     const profile_name = username;
 
+    function form10(value){
+        if (value < 10){
+            value = '0' + value;
+        }
+        return value;
+    }
+
+    function sToMin(seconds){
+        let min = Math.floor(seconds / 60);
+        let rem = seconds % 60;
+        return {'min': min, 'rem': rem};
+    }
+
+    function sToHr(seconds) {
+        let hr = Math.floor(seconds / 3600);
+        let rem = seconds % 3600;
+        return {'hr': hr, 'rem': rem};
+    }
+
+    function formatTime(seconds) {
+        seconds = Number(seconds);
+        if (seconds < 60){
+            return '00:' + form10(seconds);
+        }
+        else if (seconds < 3600){
+            let minRem = sToMin(seconds);
+            return form10(minRem.min) + ':' + form10(minRem.rem);
+        }
+        else {
+            let hrRem = sToHr(seconds);
+            let minRem = sToMin(hrRem.rem);
+            return hrRem.hr + ':' + form10(minRem.min) + ':' + form10(minRem.rem);
+        }
+    }
+
     useEffect(() => {
         fetch(`http://localhost:8080/api/getStats?username=${encodeURIComponent(username)}&profile_name=${encodeURIComponent(profile_name)}`)
             .then((response) => response.json())
@@ -25,7 +60,7 @@ function Stats() {
                 const stats = data.stats;
                 setHighestScore(stats.highest_score);
                 setHighestLevel(stats.highest_level);
-                setLongestSurvival(stats.longest_duration);
+                setLongestSurvival(formatTime(stats.longest_duration));
                 setGamesPlayed(stats.total_games);
                 console.log(`Success: ${data.success}, Error: ${data.error}`)
             })
