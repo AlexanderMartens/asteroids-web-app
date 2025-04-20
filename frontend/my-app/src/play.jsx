@@ -12,8 +12,8 @@ import alient_bullet from "./images/alien_bullet_4x4.png";
 import player_bullet from "./images/player_bullet_4x4.png";
 // Background is in css
 
-import ship from "./images/asteroid-logo-bgless.png";
-import invShip from "./images/invincible-ship.png";
+import ship from "./images/player_24x24.png";
+import invShip from "./images/invincible_player_24x24.png";
 
 const Game = () => {
   const canvasRef = useRef(null);
@@ -41,8 +41,8 @@ const Game = () => {
   alienBulletImg.src = `${alient_bullet}?v=${Date.now()}`;
   playerBulletImg.src = `${player_bullet}?v=${Date.now()}`;
 
-  shipImg.src = ship;
-  invincibleShip.src = invShip;
+  shipImg.src = `${ship}?v=${Date.now()}`; 
+  invincibleShip.src = `${invShip}?v=${Date.now()}`; 
 
   const { user } = useAuth();
   const scoreUploadedRef = useRef(null);
