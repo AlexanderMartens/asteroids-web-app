@@ -22,9 +22,9 @@ const Game = () => {
   const shipImg = new Image();
   const invincibleShip = new Image();
 
-  asteroidImg32.src = asteroid_32;
-  asteroidImg48.src = asteroid_48;
-  asteroidImg64.src = asteroid_64;
+  asteroidImg32.src = `${asteroid_32}?v=${Date.now()}`; // Force reload with a unique query string
+  asteroidImg48.src = `${asteroid_48}?v=${Date.now()}`; 
+  asteroidImg64.src = `${asteroid_64}?v=${Date.now()}`;
 
   shipImg.src = ship;
   invincibleShip.src = invShip;
