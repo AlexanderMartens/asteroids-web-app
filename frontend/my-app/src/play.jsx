@@ -19,7 +19,7 @@ const Game = () => {
   shipImg.src = ship;
   invincibleShip.src = invShip;
 
-  let scoreUploaded = false;
+  const scoreUploadedRef = useRef(false);
   const { user } = useAuth();
 
   // Variables for handling shoot inputs per keydown
@@ -72,6 +72,8 @@ const Game = () => {
   }, []);
 
   useEffect(() => {
+    scoreUploadedRef.current = sessionStorage.getItem("scoreUploaded") === "true";
+
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
 
@@ -84,6 +86,15 @@ const Game = () => {
     const handleHitboxChange = () => {
       hitboxes = hitboxCheckboxRef.current.checked;
     };
+
+    const handleBeforeUnload = () => {
+      // Prevent any upload if game is already over and score has been uploaded
+      if (!scoreUploadedRef.current && !document.hidden) {
+        sessionStorage.setItem("scoreUploaded", "false");
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     const animate = async (timestamp) => {
       // If holding shoot key down, trigger a KeyboardEvent
@@ -304,8 +315,9 @@ const Game = () => {
         context.fillText("Game Over", 350, 450);
 
         // upload score if not already uploaded (ensures score is uploaded only once)
-        if (!scoreUploaded) {
-          scoreUploaded = true;
+        if (!scoreUploadedRef.current) {
+          scoreUploadedRef.current = true;
+          sessionStorage.setItem("scoreUploaded", "true");
         
           const difficulty = "MEDIUM";
           const uploadUrl =
@@ -340,7 +352,8 @@ const Game = () => {
     // Start Button (outside of canvas)
     const startBtn = document.getElementById("startGameButton");
     startBtn?.addEventListener("click", async () => {
-      scoreUploaded = false; // ✅ reset flag on new game
+      scoreUploadedRef.current = false; // reset flag on new game
+      sessionStorage.removeItem("scoreUploaded");
     
       await fetch(
         `http://localhost:8080/api/newGame?` +
@@ -361,7 +374,9 @@ const Game = () => {
       // Clear inputs after rendering
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
+    
   }, []);
 
   return (
