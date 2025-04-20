@@ -16,7 +16,7 @@ function Stats() {
         <div id='stats-page'>
             <div id='back-container'>
                 <Link to='/main_menu'>
-                    <button id='stats-back-button'>{'< '}Back</button>
+                    <button className = 'button-2' id='stats-back-button'>{'< '}Back</button>
                 </Link>
             </div>
             <div className='stats-grid'>
