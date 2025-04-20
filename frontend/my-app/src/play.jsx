@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useCallback } from "react";
+import { useAuth } from "./auth_context";
 import asteroid_64 from "./images/asteroid_64x64.png";
 import asteroid_32 from "./images/asteroid_32x32.png";
 import ship from "./images/asteroid-logo-bgless.png";
@@ -17,6 +18,9 @@ const Game = () => {
   asteroidImg64.src = asteroid_64;
   shipImg.src = ship;
   invincibleShip.src = invShip;
+
+  let scoreUploaded = false;
+  const { user } = useAuth();
 
   // Variables for handling shoot inputs per keydown
   const isHoldingShoot = useRef(false);
@@ -71,8 +75,8 @@ const Game = () => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
 
-    let username = "test";
-    let profile_name = "test";
+    const username = user?.username ?? "guest";
+    const profile_name = user?.profile_name ?? "guest";
     let last_time = 0;
     let hitboxes = false;
     let paused = false;
@@ -136,8 +140,8 @@ const Game = () => {
       const data = await response.json();
       if (timestamp % 1000 < 16) console.log(data);
 
-      console.log(timestamp);
-      console.log("Enemies:", data.enemies);
+      // console.log(timestamp);
+      // console.log("Enemies:", data.enemies);
 
       const player = data.player;
       const lives = player?.lives ?? 0;
@@ -189,7 +193,7 @@ const Game = () => {
 
       // Enemies
       for (let enemy of enemies) {
-        console.log("Enemy type:", enemy.type);
+        // console.log("Enemy type:", enemy.type);
 
         // Asteroid sprite depends on the size
         if (enemy.type === "ASTEROID") {
@@ -245,15 +249,15 @@ const Game = () => {
               0,
               2 * Math.PI,
             );
-            console.log(typeof hb.position.x, typeof hb.position.y);
+            // console.log(typeof hb.position.x, typeof hb.position.y);
             context.stroke();
             context.restore();
           });
-          console.log( "enemy pos",
-            enemy.position,
-            "hitbox pos",
-            enemy.hitbox[0].position,
-          );
+          // console.log( "enemy pos",
+          //   enemy.position,
+          //   "hitbox pos",
+          //   enemy.hitbox[0].position,
+          // );
         });
 
         bullets.forEach((bullet) => {
@@ -298,6 +302,31 @@ const Game = () => {
         context.fillStyle = "black";
         context.font = "50px Arial";
         context.fillText("Game Over", 350, 450);
+
+        // upload score if not already uploaded (ensures score is uploaded only once)
+        if (!scoreUploaded) {
+          scoreUploaded = true;
+        
+          const difficulty = "MEDIUM";
+          const uploadUrl =
+            `http://localhost:8080/api/uploadScore?` +
+            `username=${encodeURIComponent(username)}&` +
+            `profile_name=${encodeURIComponent(username)}&` + // passes profile_name as username
+            `difficulty=${encodeURIComponent(difficulty)}&` +
+            `score=${encodeURIComponent(score)}&` +
+            `level=${encodeURIComponent(level)}&` +
+            `duration=${encodeURIComponent(Math.floor(time))}`;
+        
+          // console.log("Uploading score to:", uploadUrl);
+        
+          try {
+            await fetch(uploadUrl);
+            console.log("Score uploaded successfully.");
+          } catch (err) {
+            console.error("Failed to upload score:", err);
+          }
+        }
+
         context.restore();
       }
 
