@@ -334,6 +334,7 @@ const Game = () => {
           console.log("Uploading score to:", uploadUrl);
 
           try {
+<<<<<<< HEAD
             const res = await fetch(uploadUrl);
             if (res.ok) {
               console.log("Score uploaded successfully.");
@@ -341,6 +342,14 @@ const Game = () => {
               scoreUploadedRef.current = true;
             } else {
               console.warn("Upload failed with status:", res.status);
+=======
+            const response = await fetch(uploadUrl);
+            const data = await response.json();
+            if (!data.success) {
+              console.log("Failed to upload score:", data.error);
+            } else {
+              console.log("Score uploaded successfully.");
+>>>>>>> 574e1ddd7d80f057ad4e5d348fdbad25e1050e88
             }
           } catch (err) {
             console.error("Failed to upload score:", err);
