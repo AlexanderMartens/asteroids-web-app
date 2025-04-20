@@ -20,8 +20,8 @@ const Game = () => {
   invincibleShip.src = invShip;
 
   const { user } = useAuth();
-
   const scoreUploadedRef = useRef(null);
+  const suppressUploadRef = useRef(false);
 
   if (scoreUploadedRef.current === null) {
     const stored = sessionStorage.getItem("scoreUploaded");
@@ -360,14 +360,20 @@ const Game = () => {
     // Start Button (outside of canvas)
     const startBtn = document.getElementById("startGameButton");
     startBtn?.addEventListener("click", async () => {
-      scoreUploadedRef.current = false; // reset flag on new game
+      scoreUploadedRef.current = false;
+      suppressUploadRef.current = true; // ✅ prevent upload for a few frames
       sessionStorage.removeItem("scoreUploaded");
     
       await fetch(
         `http://localhost:8080/api/newGame?` +
         `username=${encodeURIComponent(username)}&` +
-        `profile_name=${encodeURIComponent(profile_name)}`,
+        `profile_name=${encodeURIComponent(profile_name)}`
       );
+    
+      // ✅ Allow upload again after a delay (e.g., 500ms or 2 animation frames)
+      setTimeout(() => {
+        suppressUploadRef.current = false;
+      }, 500);
     });
 
     pauseButtonRef.current.addEventListener("click", () => {
