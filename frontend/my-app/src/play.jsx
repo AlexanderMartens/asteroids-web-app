@@ -5,6 +5,7 @@ import "./play.css";
 import asteroid_32 from "./images/asteroid_32x32.png";
 import asteroid_48 from "./images/asteroid_48x48.png";
 import asteroid_64 from "./images/asteroid_64x64.png";
+import comet from "./images/comet_48x48.png";
 // background is in css
 
 import ship from "./images/asteroid-logo-bgless.png";
@@ -19,6 +20,7 @@ const Game = () => {
   const asteroidImg32 = new Image();
   const asteroidImg48 = new Image();
   const asteroidImg64 = new Image();
+  const cometImg = new Image();
 
   const shipImg = new Image();
   const invincibleShip = new Image();
@@ -26,6 +28,7 @@ const Game = () => {
   asteroidImg32.src = `${asteroid_32}?v=${Date.now()}`; // Force reload with a unique query string
   asteroidImg48.src = `${asteroid_48}?v=${Date.now()}`; 
   asteroidImg64.src = `${asteroid_64}?v=${Date.now()}`;
+  cometImg.src = `${comet}?v=${Date.now()}`; 
 
   shipImg.src = ship;
   invincibleShip.src = invShip;
@@ -260,6 +263,22 @@ const Game = () => {
             );
             context.restore();
           }
+
+        } else if (enemy.type === "COMET") {
+          // Draw comet
+          context?.save();
+          context.translate(enemy.position.x, enemy.position.y);
+          context.rotate(enemy.orientation);
+          const cometSize = enemy.hitbox[0].radius * 2; // use hitbox radius for comet
+          context.drawImage(
+            cometImg,
+            0 - cometSize / 2, // center the image
+            0 - cometSize / 2,
+            cometSize,
+            cometSize,
+          );
+          context.restore();
+
         } else {
           // fallback: draw green circle for non-asteroid enemies
           context?.save();
