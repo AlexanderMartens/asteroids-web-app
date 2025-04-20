@@ -2,13 +2,15 @@ import React, { useEffect, useRef, useCallback } from "react";
 import { useAuth } from "./auth_context";
 import "./play.css";
 
+// Load images
 import asteroid_32 from "./images/asteroid_32x32.png";
 import asteroid_48 from "./images/asteroid_48x48.png";
 import asteroid_64 from "./images/asteroid_64x64.png";
 import comet from "./images/comet_48x48.png";
 import alien from "./images/alien_32x32.png"; 
-import alient_bullet from "./images/alien_bullet_4x4.png"; // Not used in this version, but can be used later
-// background is in css
+import alient_bullet from "./images/alien_bullet_4x4.png"; 
+import player_bullet from "./images/player_bullet_4x4.png";
+// Background is in css
 
 import ship from "./images/asteroid-logo-bgless.png";
 import invShip from "./images/invincible-ship.png";
@@ -19,12 +21,14 @@ const Game = () => {
   const pauseButtonRef = useRef(null);
   const requestRef = useRef(null);
 
+  // Images
   const asteroidImg32 = new Image();
   const asteroidImg48 = new Image();
   const asteroidImg64 = new Image();
   const cometImg = new Image();
   const alienImg = new Image();
   const alienBulletImg = new Image();
+  const playerBulletImg = new Image();
 
   const shipImg = new Image();
   const invincibleShip = new Image();
@@ -35,6 +39,7 @@ const Game = () => {
   cometImg.src = `${comet}?v=${Date.now()}`; 
   alienImg.src = `${alien}?v=${Date.now()}`;
   alienBulletImg.src = `${alient_bullet}?v=${Date.now()}`;
+  playerBulletImg.src = `${player_bullet}?v=${Date.now()}`;
 
   shipImg.src = ship;
   invincibleShip.src = invShip;
@@ -226,11 +231,17 @@ const Game = () => {
 
       // Bullets
       bullets.forEach((bullet) => {
-        context.save();
-        context.fillStyle = "blue";
-        context.beginPath();
-        context.arc(bullet.position.x, bullet.position.y, 5, 0, 2 * Math.PI);
-        context.fill();
+        context?.save();
+        context.translate(bullet.position.x, bullet.position.y);
+        context.rotate(bullet.orientation);
+        const bulletSize = bullet.hitbox[0].radius * 2; // use hitbox radius for alien bullet
+        context.drawImage(
+          playerBulletImg,
+          0 - bulletSize / 2, // center the image
+          0 - bulletSize / 2,
+          bulletSize,
+          bulletSize,
+        );
         context.restore();
       });
 
