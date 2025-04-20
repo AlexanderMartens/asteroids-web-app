@@ -332,8 +332,13 @@ const Game = () => {
           // console.log("Uploading score to:", uploadUrl);
         
           try {
-            await fetch(uploadUrl);
-            console.log("Score uploaded successfully.");
+            const response = await fetch(uploadUrl);
+            const data = await response.json();
+            if (!data.success) {
+              console.log("Failed to upload score:", data.error);
+            } else {
+              console.log("Score uploaded successfully.");
+            }
           } catch (err) {
             console.error("Failed to upload score:", err);
           }
