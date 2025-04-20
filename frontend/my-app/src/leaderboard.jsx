@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './leaderboard.css';
 import { Link } from 'react-router-dom';
+import { formatLongNumber } from './utils.js'
 
 function Leaderboard() {
 
@@ -19,6 +20,7 @@ function Leaderboard() {
                 if (tab == 'level'){
                     leader.score = leader.level;
                 }
+                leader.score = formatLongNumber(leader.score);
                 newLeaders.push(leader);
             }
             setLeaders(newLeaders);
