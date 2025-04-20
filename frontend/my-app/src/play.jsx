@@ -340,6 +340,8 @@ const Game = () => {
     // Start Button (outside of canvas)
     const startBtn = document.getElementById("startGameButton");
     startBtn?.addEventListener("click", async () => {
+      scoreUploaded = false; // ✅ reset flag on new game
+    
       await fetch(
         `http://localhost:8080/api/newGame?` +
         `username=${encodeURIComponent(username)}&` +
