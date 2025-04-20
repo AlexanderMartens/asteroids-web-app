@@ -50,9 +50,11 @@ function Leaderboard() {
     return (
         <div id='leaderboards-page'>
             <div id='leaderboards-content'>
-                <Link to='/main_menu' id='leaderboard-back-wrapper'>
-                    <button className='button-2' id='leaderboard-back'>{'< '}Back</button>
-                </Link>
+                <div id='leaderboard-back-wrapper'>
+                    <Link to='/main_menu'>
+                        <button className='button-2' id='leaderboard-back'>{'< '}Back</button>
+                    </Link>
+                </div>
                 <div id='leaderboards-title'>Leaderboards</div>
                 <div className='tabs'>
                     <button className={tab === 'scores' ? 'button-2 active' : 'button-2'} id='scores-button' onClick = {() => {setTab('scores')}}>Score</button>
