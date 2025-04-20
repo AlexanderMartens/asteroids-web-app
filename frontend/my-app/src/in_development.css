@@ -16,7 +16,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 24px;
+    gap: 48px;
     font-size: 1.2rem;
 }
 
@@ -44,6 +44,21 @@
     align-items: center;
     width: 200px;
     height: 200px;
+}
+
+#dev-back-link {
+    
+    align-self: flex-start;
+}
+
+#dev-back-button {
+    font-size: 1rem;
+}
+
+#dev-text {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
 @keyframes orbit {
