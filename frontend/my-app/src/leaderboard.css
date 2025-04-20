@@ -21,7 +21,7 @@
 #leaderboards-title {
     margin: 0;
     padding: 0;
-    padding-top: 84px;
+    
     padding-bottom: 14px;
     font-size: 4rem;
 }
@@ -71,33 +71,51 @@
     background-color: #1F2937;
 }
 
+.leaderboard-item {
+    display: flex;
+}
+
 .favorite-ship {
     width: 40px;
     height: 40px;
-}
-
-.leaderboard-item {
-    display: flex;
 }
 
 .leaderboard-username {
     display: flex;
     align-self: flex-end;
     align-items: center;
+    justify-content: flex-start;
     height: 95%;
     font-size: 1.1rem;
+    width: 60%;
+    padding-left: 16px;
 }
 
 .leaderboard-score {
     display: flex;
     align-self: flex-end;
     align-items: center;
+    justify-content: flex-end;
     height: 95%;
     font-size: 1.1rem;
+    width: 20%;
+    padding-right: 8px;
 }
 
 .button-2.active {
     border-color: #73B6FF;
     color: #73B6FF;
     outline: 4px solid #73B6FF;
+}
+
+#leaderboard-back-wrapper {
+    display: flex;
+    padding-top: 64px;
+    margin-bottom: -48px;
+    width: 200%;
+    max-width: 95vw;
+}
+
+#leaderboard-back {
+
 }

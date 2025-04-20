@@ -1,58 +1,48 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import './leaderboard.css';
+import { Link } from 'react-router-dom';
+import { formatLongNumber } from './utils.js'
 
 function Leaderboard() {
 
-    const [tab, setTab] = useState('scores');
-    let leaders = [];
-    const mockScoreData = [
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': '2234567890223456', 'score': '2 234 567'}, 
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User2', 'score': '654321'},
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '12 345'}, 
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'},
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'}, 
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'}, 
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'}, 
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'},
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'},
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '123456'}
-    ];
+    const [tab, setTab] = useState('score');
+    const [leaders, setLeaders] = useState([]);
+    const [limit, setLimit] = useState(10);
+    const [difficulty, setDifficulty] = useState('ALL');
 
-    const mockLevelData = [
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': '2234567890223456', 'score': '75'}, 
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User2', 'score': '63'},
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '58'}, 
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '49'},
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '48'}, 
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '47'}, 
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '41'}, 
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '39'},
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '38'},
-        {'favorite_ship': '/asteroid-logo-bgless.png', 'user_name': 'User1', 'score': '37'}
-    ];
-
-    function populateLeaders() {
-
-        // Temporary mock data for layout design
-        if (tab === 'scores'){
-            leaders = mockScoreData;
-        }
-        else {
-            leaders = mockLevelData;
-        }
-    }
-
-
-
-    populateLeaders();
+    useEffect(() => {
+        fetch(`http://localhost:8080/api/leaderboard?limit=${limit}&score=${tab}&difficulty=${difficulty}`)
+        .then((response) => response.json())
+        .then((data) => {
+            let newLeaders = [];
+            for (let leader of data.leaderboard){
+                leader.favorite_ship = '/asteroid-logo-bgless.png';
+                if (tab == 'level'){
+                    leader.score = leader.level;
+                }
+                leader.score = formatLongNumber(leader.score);
+                newLeaders.push(leader);
+            }
+            setLeaders(newLeaders);
+            console.log(`Success: ${data.success}, Error: ${data.error}`)
+        })
+        .catch((err) => {
+            console.error('Failed to fetch data: ', err);
+        });
+    }, [tab])
 
     return (
         <div id='leaderboards-page'>
             <div id='leaderboards-content'>
+                <div id='leaderboard-back-wrapper'>
+                    <Link to='/main_menu'>
+                        <button className='button-2' id='leaderboard-back'>{'< '}Back</button>
+                    </Link>
+                </div>
                 <div id='leaderboards-title'>Leaderboards</div>
                 <div className='tabs'>
-                    <button className={tab === 'scores' ? 'button-2 active' : 'button-2'} id='scores-button' onClick = {() => {setTab('scores')}}>Score</button>
-                    <button className={tab === 'levels' ? 'button-2 active' : 'button-2'} id='levels-button' onClick = {() => {setTab('levels')}}>Level</button>
+                    <button className={tab === 'score' ? 'button-2 active' : 'button-2'} id='scores-button' onClick = {() => {setTab('score')}}>Score</button>
+                    <button className={tab === 'level' ? 'button-2 active' : 'button-2'} id='levels-button' onClick = {() => {setTab('level')}}>Level</button>
                 </div>
                 <div id='leaderboard-container'>
                     <div id='leaderboard-stack'>
@@ -61,7 +51,7 @@ function Leaderboard() {
                                 <div className='rank'>{index+1}</div>
                                 <div className='player' key={index}>
                                     <img src={data.favorite_ship} alt='ship' className='favorite-ship'/>
-                                    <div className='leaderboard-username'>{data.user_name}</div>
+                                    <div className='leaderboard-username'>{data.user}</div>
                                     <div className='leaderboard-score'>{data.score}</div>
                                 </div>
                             </div>

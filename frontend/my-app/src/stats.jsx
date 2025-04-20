@@ -6,6 +6,7 @@ import StarIcon from './images/star-icon.svg?react';
 import ClockIcon from './images/clock-icon.svg?react';
 import ControllerIcon from './images/controller-icon.svg?react';
 import { useAuth } from './auth_context';
+import { form10, sToMin, sToHr, formatTime, formatLongNumber } from './utils.js'
 
 function Stats() {
 
@@ -16,46 +17,6 @@ function Stats() {
     const [gamesPlayed, setGamesPlayed] = useState('0');
     const username = user?.username ?? 'guest';
     const profile_name = username;
-
-    function form10(value){
-        if (value < 10){
-            value = '0' + value;
-        }
-        return value;
-    }
-
-    function sToMin(seconds){
-        let min = Math.floor(seconds / 60);
-        let rem = seconds % 60;
-        return {'min': min, 'rem': rem};
-    }
-
-    function sToHr(seconds) {
-        let hr = Math.floor(seconds / 3600);
-        let rem = seconds % 3600;
-        return {'hr': hr, 'rem': rem};
-    }
-
-    function formatTime(seconds) {
-        seconds = Number(seconds);
-        if (seconds < 60){
-            return '00:' + form10(seconds);
-        }
-        else if (seconds < 3600){
-            let minRem = sToMin(seconds);
-            return form10(minRem.min) + ':' + form10(minRem.rem);
-        }
-        else {
-            let hrRem = sToHr(seconds);
-            let minRem = sToMin(hrRem.rem);
-            return formatLongNumber(hrRem.hr) + ':' + form10(minRem.min) + ':' + form10(minRem.rem);
-        }
-    }
-
-    function formatLongNumber(num) {
-        num = num.toString();
-        return num.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    }
 
     useEffect(() => {
         fetch(`http://localhost:8080/api/getStats?username=${encodeURIComponent(username)}&profile_name=${encodeURIComponent(profile_name)}`)
