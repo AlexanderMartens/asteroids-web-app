@@ -56,12 +56,21 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #000;
   padding: 1rem;
   box-sizing: border-box;
+
+
+  /* Background image styles */
+  background-image: url("./images/flame_pixelated_x18.png"); /* Change based on resolution */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  
 }
 
 canvas {
+  background-color: transparent;
   border: 2px solid #888;
   width: min(100vmin, calc(100vh - 100px));
   height: min(100vmin, calc(100vh - 100px));

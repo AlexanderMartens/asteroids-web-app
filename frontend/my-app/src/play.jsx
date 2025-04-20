@@ -5,6 +5,7 @@ import "./play.css";
 import asteroid_32 from "./images/asteroid_32x32.png";
 import asteroid_48 from "./images/asteroid_48x48.png";
 import asteroid_64 from "./images/asteroid_64x64.png";
+// background is in css
 
 import ship from "./images/asteroid-logo-bgless.png";
 import invShip from "./images/invincible-ship.png";
@@ -435,12 +436,13 @@ const Game = () => {
               width={1000}
               height={1000}
             ></canvas>
-            <div className="infoColumn">
-              <span><strong>Lives:</strong> <span id="livesDisplayValue">0</span></span>
-              <span><strong>Score:</strong> <span id="scoreDisplayValue">0</span></span>
-              <span><strong>Level:</strong> <span id="levelDisplayValue">0</span></span>
-              <span><strong>Time:</strong> <span id="timeDisplayValue">0</span></span>
-            </div>
+          </div>
+
+          <div className="infoColumn">
+            <span><strong>Lives:</strong> <span id="livesDisplayValue">0</span></span>
+            <span><strong>Score:</strong> <span id="scoreDisplayValue">0</span></span>
+            <span><strong>Level:</strong> <span id="levelDisplayValue">0</span></span>
+            <span><strong>Time:</strong> <span id="timeDisplayValue">0</span></span>
           </div>
         </div>
       </div>
