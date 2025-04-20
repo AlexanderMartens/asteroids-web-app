@@ -7,6 +7,7 @@ import asteroid_48 from "./images/asteroid_48x48.png";
 import asteroid_64 from "./images/asteroid_64x64.png";
 import comet from "./images/comet_48x48.png";
 import alien from "./images/alien_32x32.png"; 
+import alient_bullet from "./images/alien_bullet_4x4.png"; // Not used in this version, but can be used later
 // background is in css
 
 import ship from "./images/asteroid-logo-bgless.png";
@@ -23,6 +24,7 @@ const Game = () => {
   const asteroidImg64 = new Image();
   const cometImg = new Image();
   const alienImg = new Image();
+  const alienBulletImg = new Image();
 
   const shipImg = new Image();
   const invincibleShip = new Image();
@@ -32,6 +34,7 @@ const Game = () => {
   asteroidImg64.src = `${asteroid_64}?v=${Date.now()}`;
   cometImg.src = `${comet}?v=${Date.now()}`; 
   alienImg.src = `${alien}?v=${Date.now()}`;
+  alienBulletImg.src = `${alient_bullet}?v=${Date.now()}`;
 
   shipImg.src = ship;
   invincibleShip.src = invShip;
@@ -297,6 +300,20 @@ const Game = () => {
           );
           context.restore();
 
+        } else if (enemy.type === "BULLET") {
+          // Draw alien bullet
+          context?.save();
+          context.translate(enemy.position.x, enemy.position.y);
+          context.rotate(enemy.orientation);
+          const bulletSize = enemy.hitbox[0].radius * 2; // use hitbox radius for alien bullet
+          context.drawImage(
+            alienBulletImg,
+            0 - bulletSize / 2, // center the image
+            0 - bulletSize / 2,
+            bulletSize,
+            bulletSize,
+          );
+          context.restore();
         } else {
           // fallback: draw green circle for non-asteroid enemies
           context?.save();
