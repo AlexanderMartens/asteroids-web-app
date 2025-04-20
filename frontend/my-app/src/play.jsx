@@ -1,23 +1,48 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { useAuth } from "./auth_context";
-import asteroid_64 from "./images/asteroid_64x64.png";
+import "./play.css";
+
+// Load images
 import asteroid_32 from "./images/asteroid_32x32.png";
-import ship from "./images/asteroid-logo-bgless.png";
-import invShip from "./images/invincible-ship.png";
+import asteroid_48 from "./images/asteroid_48x48.png";
+import asteroid_64 from "./images/asteroid_64x64.png";
+import comet from "./images/comet_48x48.png";
+import alien from "./images/alien_32x32.png"; 
+import alient_bullet from "./images/alien_bullet_4x4.png"; 
+import player_bullet from "./images/player_bullet_4x4.png";
+// Background is in css
+
+import ship from "./images/player_24x24.png";
+import invShip from "./images/invincible_player_24x24.png";
 
 const Game = () => {
   const canvasRef = useRef(null);
   const hitboxCheckboxRef = useRef(null);
   const pauseButtonRef = useRef(null);
   const requestRef = useRef(null);
+
+  // Images
   const asteroidImg32 = new Image();
+  const asteroidImg48 = new Image();
   const asteroidImg64 = new Image();
+  const cometImg = new Image();
+  const alienImg = new Image();
+  const alienBulletImg = new Image();
+  const playerBulletImg = new Image();
+
   const shipImg = new Image();
   const invincibleShip = new Image();
-  asteroidImg32.src = asteroid_32;
-  asteroidImg64.src = asteroid_64;
-  shipImg.src = ship;
-  invincibleShip.src = invShip;
+
+  asteroidImg32.src = `${asteroid_32}?v=${Date.now()}`; // Force reload with a unique query string
+  asteroidImg48.src = `${asteroid_48}?v=${Date.now()}`; 
+  asteroidImg64.src = `${asteroid_64}?v=${Date.now()}`;
+  cometImg.src = `${comet}?v=${Date.now()}`; 
+  alienImg.src = `${alien}?v=${Date.now()}`;
+  alienBulletImg.src = `${alient_bullet}?v=${Date.now()}`;
+  playerBulletImg.src = `${player_bullet}?v=${Date.now()}`;
+
+  shipImg.src = `${ship}?v=${Date.now()}`; 
+  invincibleShip.src = `${invShip}?v=${Date.now()}`; 
 
   const { user } = useAuth();
   const scoreUploadedRef = useRef(null);
@@ -139,7 +164,7 @@ const Game = () => {
       if (paused) {
         requestRef.current = requestAnimationFrame(animate);
         context.save();
-        context.fillStyle = "black";
+        context.fillStyle = "white";
         context.font = "50px Arial";
         context.fillText("Paused", 350, 350);
         context.restore();
@@ -167,6 +192,13 @@ const Game = () => {
       const is_running = data.is_running;
       const bullets = data.bullets ?? [];
       const enemies = data.enemies ?? [];
+
+      // Update DOM HUD with current values
+      document.getElementById("livesDisplayValue").textContent = lives;
+      document.getElementById("scoreDisplayValue").textContent = score;
+      document.getElementById("levelDisplayValue").textContent = level;
+      document.getElementById("timeDisplayValue").textContent = Math.floor(time);
+
 
       context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -199,11 +231,17 @@ const Game = () => {
 
       // Bullets
       bullets.forEach((bullet) => {
-        context.save();
-        context.fillStyle = "blue";
-        context.beginPath();
-        context.arc(bullet.position.x, bullet.position.y, 5, 0, 2 * Math.PI);
-        context.fill();
+        context?.save();
+        context.translate(bullet.position.x, bullet.position.y);
+        context.rotate(bullet.orientation);
+        const bulletSize = bullet.hitbox[0].radius * 2; // use hitbox radius for alien bullet
+        context.drawImage(
+          playerBulletImg,
+          0 - bulletSize / 2, // center the image
+          0 - bulletSize / 2,
+          bulletSize,
+          bulletSize,
+        );
         context.restore();
       });
 
@@ -218,8 +256,11 @@ const Game = () => {
           let image;
           let imageSize;
 
-          if (enemy.size === "SMALL" || enemy.size === "MEDIUM") {
+          if (enemy.size === "SMALL") {
             image = asteroidImg32;
+            imageSize = enemy.hitbox[0].radius * 2; // use hitbox radius for small/medium asteroids
+          } else if (enemy.size === "MEDIUM") {
+            image = asteroidImg48;
             imageSize = enemy.hitbox[0].radius * 2; // use hitbox radius for small/medium asteroids
           } else if (enemy.size === "LARGE") {
             image = asteroidImg64;
@@ -239,6 +280,51 @@ const Game = () => {
             );
             context.restore();
           }
+
+        } else if (enemy.type === "COMET") {
+          // Draw comet
+          context?.save();
+          context.translate(enemy.position.x, enemy.position.y);
+          context.rotate(enemy.orientation);
+          const cometSize = enemy.hitbox[0].radius * 2; // use hitbox radius for comet
+          context.drawImage(
+            cometImg,
+            0 - cometSize / 2, // center the image
+            0 - cometSize / 2,
+            cometSize,
+            cometSize,
+          );
+          context.restore();
+
+        } else if (enemy.type === "ALIEN") {
+          // Draw alien
+          context?.save();
+          context.translate(enemy.position.x, enemy.position.y);
+          context.rotate(enemy.orientation);
+          const alienSize = enemy.hitbox[0].radius * 2; // use hitbox radius for alien
+          context.drawImage(
+            alienImg,
+            0 - alienSize / 2, // center the image
+            0 - alienSize / 2,
+            alienSize,
+            alienSize,
+          );
+          context.restore();
+
+        } else if (enemy.type === "BULLET") {
+          // Draw alien bullet
+          context?.save();
+          context.translate(enemy.position.x, enemy.position.y);
+          context.rotate(enemy.orientation);
+          const bulletSize = enemy.hitbox[0].radius * 2; // use hitbox radius for alien bullet
+          context.drawImage(
+            alienBulletImg,
+            0 - bulletSize / 2, // center the image
+            0 - bulletSize / 2,
+            bulletSize,
+            bulletSize,
+          );
+          context.restore();
         } else {
           // fallback: draw green circle for non-asteroid enemies
           context?.save();
@@ -304,18 +390,18 @@ const Game = () => {
       }
 
       // Info Text
-      context.save();
-      context.fillStyle = "black";
-      context.font = "20px Arial";
-      context.fillText(`Lives: ${lives}`, 10, 20);
-      context.fillText(`Score: ${score}`, 10, 40);
-      context.fillText(`Level: ${level}`, 10, 60);
-      context.fillText(`Time: ${time}`, 10, 80);
-      context.restore();
+      // context.save();
+      // context.fillStyle = "white";
+      // context.font = "20px Arial";
+      // context.fillText(`Lives: ${lives}`, 10, 20);
+      // context.fillText(`Score: ${score}`, 10, 40);
+      // context.fillText(`Level: ${level}`, 10, 60);
+      // context.fillText(`Time: ${time}`, 10, 80);
+      // context.restore();
 
       if (!is_running) {
         context.save();
-        context.fillStyle = "black";
+        context.fillStyle = "white";
         context.font = "50px Arial";
         context.fillText("Game Over", 350, 450);
 
@@ -394,24 +480,37 @@ const Game = () => {
   }, []);
 
   return (
-    <div>
-      <div>
-        <label>
-          Show Hitboxes{" "}
-          <input ref={hitboxCheckboxRef} type="checkbox" id="hitboxes" />
-        </label>
+    <div className="gameContainer">
+      <div className="topBar">
+        <div className="topBarCenter">
+          <label>
+            Show Hitboxes{" "}
+            <input ref={hitboxCheckboxRef} type="checkbox" id="hitboxes" />
+          </label>
+          <button id="startGameButton">Start Game</button>
+          <button ref={pauseButtonRef} id="pauseGameButton">Pause</button>
+        </div>
       </div>
-      <button id="startGameButton">Start Game</button>
-      <button ref={pauseButtonRef} id="pauseGameButton">
-        Pause
-      </button>
-      <canvas
-        ref={canvasRef}
-        id="box1canvas"
-        width={1000}
-        height={1000}
-        style={{ border: "1px solid black", marginTop: "1em" }}
-      ></canvas>
+
+      <div className="centerContentWrapper">
+        <div className="canvasWithInfo">
+          <div className="canvasWrapper">
+            <canvas
+              ref={canvasRef}
+              id="box1canvas"
+              width={1000}
+              height={1000}
+            ></canvas>
+          </div>
+
+          <div className="infoColumn">
+            <span><strong>Lives:</strong> <span id="livesDisplayValue">0</span></span>
+            <span><strong>Score:</strong> <span id="scoreDisplayValue">0</span></span>
+            <span><strong>Level:</strong> <span id="levelDisplayValue">0</span></span>
+            <span><strong>Time:</strong> <span id="timeDisplayValue">0</span></span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
