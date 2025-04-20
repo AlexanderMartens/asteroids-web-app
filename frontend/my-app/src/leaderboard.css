@@ -71,29 +71,35 @@
     background-color: #1F2937;
 }
 
+.leaderboard-item {
+    display: flex;
+}
+
 .favorite-ship {
     width: 40px;
     height: 40px;
-}
-
-.leaderboard-item {
-    display: flex;
 }
 
 .leaderboard-username {
     display: flex;
     align-self: flex-end;
     align-items: center;
+    justify-content: flex-start;
     height: 95%;
     font-size: 1.1rem;
+    width: 60%;
+    padding-left: 16px;
 }
 
 .leaderboard-score {
     display: flex;
     align-self: flex-end;
     align-items: center;
+    justify-content: flex-end;
     height: 95%;
     font-size: 1.1rem;
+    width: 20%;
+    padding-right: 8px;
 }
 
 .button-2.active {
