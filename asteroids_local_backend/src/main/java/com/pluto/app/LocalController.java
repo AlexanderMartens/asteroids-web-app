@@ -288,6 +288,7 @@ public class LocalController {
             @RequestParam(value = "limit", defaultValue = "10") int limit,
             @RequestParam(value = "score", defaultValue = "score") String score,
             @RequestParam(value = "difficulty", defaultValue = "ALL") String difficulty) {
+        score = score.toLowerCase();
         DatabaseClient dbClient = new DatabaseClient();
         // Fetch top scores ordered by highest Score
         ResultSet rs = dbClient.fetchTopScores(limit, score, difficulty); 
