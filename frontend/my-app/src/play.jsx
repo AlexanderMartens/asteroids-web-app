@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { useAuth } from "./auth_context";
+import { Link } from "react-router-dom"
 import "./play.css";
 
 // Load images
@@ -165,7 +166,8 @@ const Game = () => {
         requestRef.current = requestAnimationFrame(animate);
         context.save();
         context.fillStyle = "white";
-        context.font = "50px Arial";
+        await document.fonts.ready;
+        context.font = "50px FuturyLight";
         context.fillText("Paused", 350, 350);
         context.restore();
         return;
@@ -402,7 +404,8 @@ const Game = () => {
       if (!is_running) {
         context.save();
         context.fillStyle = "white";
-        context.font = "50px Arial";
+        await document.fonts.ready;
+        context.font = "50px FuturyLight";
         context.fillText("Game Over", 350, 450);
 
         // upload score if not already uploaded (ensures score is uploaded only once)
@@ -482,6 +485,11 @@ const Game = () => {
   return (
     <div className="gameContainer">
       <div className="topBar">
+        <div className="topBarLeft">
+        <Link to='/main_menu'>
+          <button>{'< '}Back</button>
+        </Link>
+        </div>
         <div className="topBarCenter">
           <label>
             Show Hitboxes{" "}
@@ -490,6 +498,7 @@ const Game = () => {
           <button id="startGameButton">Start Game</button>
           <button ref={pauseButtonRef} id="pauseGameButton">Pause</button>
         </div>
+        <div className="topBarRight"></div>
       </div>
 
       <div className="centerContentWrapper">
