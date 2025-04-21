@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import org.springframework.web.bind.annotation.*;
 import com.pluto.database.DatabaseClient;
-
+import com.pluto.game.Difficulty;
 import com.pluto.game.GameManager;
 import com.pluto.game.Spaceship;
 
@@ -265,7 +265,8 @@ public class LocalController {
     * Handles requests related to the leaderboard.
     * This method fetches the top scores from the database view `Leaderboard`
     * and returns them in JSON format. The scores can be sorted by 'score', 'level', 
-    * or 'duration_secodns'.
+    * or 'duration_secodns'. The scores can be filtered by difficulty. The difficulty
+    * can be "EASY", "MEDIUM", "HARD" or "ALL". The default is "ALL".
     *
     * @param limit The number of top scores to fetch (default is 10).
     * @return A JSON-formatted string containing the top scores or an error message.
@@ -285,10 +286,15 @@ public class LocalController {
     @GetMapping("/leaderboard")
     public String getLeaderboard(
             @RequestParam(value = "limit", defaultValue = "10") int limit,
-            @RequestParam(value = "score", defaultValue = "Score") String score) {
+            @RequestParam(value = "score", defaultValue = "score") String score,
+            @RequestParam(value = "difficulty", defaultValue = "ALL") String difficulty) {
+        score = score.toLowerCase();
         DatabaseClient dbClient = new DatabaseClient();
         // Fetch top scores ordered by highest Score
-        ResultSet rs = dbClient.fetchTopScores(limit, score); 
+        ResultSet rs = dbClient.fetchTopScores(limit, score, difficulty); 
+        if (rs == null) {
+            return generateResponse(false, "Failed to fetch leaderboard");
+        }
         StringBuilder jsonResult = new StringBuilder("{\"leaderboard\":[");
 
         try {
@@ -321,6 +327,7 @@ public class LocalController {
     *
     * @param username The username of the player.
     * @param profile_name The profile name of the player.
+    * @param difficulty The difficulty of the game. Cen be "EASY", "MEDIUM", or "HARD".
     * @param score The score achieved in the game.
     * @param level The level reached in the game.
     * @param duration The duration of the game session in seconds.
@@ -334,11 +341,15 @@ public class LocalController {
     public String uploadScore(
             @RequestParam("username") String username,
             @RequestParam("profile_name") String profile_name,
+            @RequestParam(value = "difficulty", defaultValue = "MEDIUM") String difficulty,
             @RequestParam("score") int score,
             @RequestParam("level") int level,
             @RequestParam("duration") int duration) {
+        if (!(difficulty.equals("EASY") || difficulty.equals("MEDIUM") || difficulty.equals("HARD"))) {
+            return generateResponse(false, "Invalid difficulty");
+        }
         DatabaseClient dbClient = new DatabaseClient();
-        String error = dbClient.uploadScore(username, profile_name, score, level, duration);
+        String error = dbClient.uploadScore(username, profile_name, difficulty, score, level, duration);
 
         if (error.equals("")) {
             return generateResponse(true);
@@ -350,7 +361,7 @@ public class LocalController {
     /**
      * Handles requests for getting profile statistics.
      * This method retrieves the statistics for a given username and profile
-     * from the database.
+     * from the database. Can be filtered by difficulty.
      * 
      * @param username The username of the player.
      * @param profile_name The profile name of the player.
@@ -368,9 +379,10 @@ public class LocalController {
     @GetMapping("/getStats")
     public String getStats(
             @RequestParam("username") String username,
-            @RequestParam("profile_name") String profile_name) {
+            @RequestParam("profile_name") String profile_name,
+            @RequestParam(value = "difficulty", defaultValue = "ALL") String difficulty) {
         DatabaseClient dbClient = new DatabaseClient();
-        int[] stats = dbClient.getStats(username, profile_name);
+        int[] stats = dbClient.getStats(username, profile_name, difficulty);
         if (stats == null) {
             return generateResponse(false, "Failed to fetch profile statistics");
         }
@@ -389,6 +401,7 @@ public class LocalController {
      * 
      * @param username     - the login name of the user
      * @param profile_name - the name of the profile
+     * @param difficulty  - the difficulty of the game, can be "EASY", "MEDIUM" or "HARD"
      * @return - a json formatted confirmation or error of the new game request
      * The json has the following attributes:
      * success - boolean
@@ -398,12 +411,13 @@ public class LocalController {
     @GetMapping("/newGame")
     public String newGame(
             @RequestParam(value = "username", defaultValue = "") String username,
-            @RequestParam(value = "profile_name", defaultValue = "") String profile_name) {
+            @RequestParam(value = "profile_name", defaultValue = "") String profile_name,
+            @RequestParam(value = "difficulty", defaultValue = "MEDIUM") String difficulty) {
         String key = username + " " + profile_name;
         if (gameManagers.containsKey(key)) {
             gameManagers.remove(key);
         }
-        gameManagers.put(key, new GameManager());
+        gameManagers.put(key, new GameManager(Difficulty.valueOf(difficulty)));
         return generateResponse(true);
     }
 
@@ -417,6 +431,7 @@ public class LocalController {
      * @param username     - the login name of the user
      * @param profile_name - the name of the profile
      * @param inputs       - the player inputs
+     * @param difficulty   - the difficulty of the game, can be "EASY", "MEDIUM" or "HARD"
      * @return - a json formatted game state
      * 
      * The json has the following attributes:
@@ -465,11 +480,12 @@ public class LocalController {
             @RequestParam(value = "dt", defaultValue = "0") float dt,
             @RequestParam(value = "username", defaultValue = "") String username,
             @RequestParam(value = "profile_name", defaultValue = "") String profile_name,
-            @RequestParam(value = "inputs", defaultValue = "") String inputs) {
+            @RequestParam(value = "inputs", defaultValue = "") String inputs,
+            @RequestParam(value = "difficulty", defaultValue = "MEDIUM") String difficulty) {
         // Check that the game manager exists, if not create a new one
         String key = username + " " + profile_name;
         if (!gameManagers.containsKey(key)) {
-            gameManagers.put(key, new GameManager());
+            gameManagers.put(key, new GameManager(Difficulty.valueOf(difficulty)));
             return gameManagers.get(key).toJson();
         }
 
@@ -489,8 +505,8 @@ public class LocalController {
         Spaceship.Input[] input = new Spaceship.Input[inputStrings.length];
         for (int i = 0; i < inputStrings.length; i++) {
             input[i] = Spaceship.Input.valueOf(inputStrings[i]);
-            System.out.println("input");
-            System.out.println(input[i].toString()); 
+            //System.out.println("input");
+            //System.out.println(input[i].toString()); 
         }
         gameManager.update(dt, input);
 

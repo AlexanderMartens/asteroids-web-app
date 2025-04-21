@@ -32,7 +32,8 @@ startButton.addEventListener("click", async function () {
     const response = await fetch(
         `http://localhost:8080/api/newGame?` +
         `username=${encodeURIComponent(username)}&` +
-        `profile_name=${encodeURIComponent(profile_name)}`
+        `profile_name=${encodeURIComponent(profile_name)}&` +
+        `difficulty=HARD` // change this to test different difficulties
     );
 });
 
@@ -100,7 +101,8 @@ async function animate(timestamp) {
         `http://localhost:8080/api/updateGame?dt=${encodeURIComponent(dt)}&` +
         `username=${encodeURIComponent(username)}&` +
         `profile_name=${encodeURIComponent(profile_name)}&` +
-        `inputs=${encodeURIComponent(input)}`
+        `inputs=${encodeURIComponent(input)}&` +
+        'difficulty=HARD'
     );
     const data = await response.json();
     if (timestamp % 1000 < 16) {
