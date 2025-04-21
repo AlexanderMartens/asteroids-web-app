@@ -83,7 +83,7 @@ function Home() {
         const response = await fetch(`http://cs506x07.cs.wisc.edu:5000/api/register?name=${encodeURIComponent(username)}&pass=${encodeURIComponent(password)}`);
         const data = await response.json();
 
-        const profileResponse = await fetch(`http://localhost:8080/api/createProfile?username=${encodeURIComponent(username)}&profile_name=${encodeURIComponent(username)}`)
+        const profileResponse = await fetch(`http://cs506x07.cs.wisc.edu:5000/api/createProfile?username=${encodeURIComponent(username)}&profile_name=${encodeURIComponent(username)}`)
         const profileData = await profileResponse.json();
 
         const endTime = performance.now(); // End timer

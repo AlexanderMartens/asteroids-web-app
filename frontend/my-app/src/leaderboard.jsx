@@ -11,7 +11,7 @@ function Leaderboard() {
     const [difficulty, setDifficulty] = useState('ALL');
 
     useEffect(() => {
-        fetch(`http://localhost:8080/api/leaderboard?limit=${limit}&score=${tab}&difficulty=${difficulty}`)
+        fetch(`http://cs506x07.cs.wisc.edu:5000/api/leaderboard?limit=${limit}&score=${tab}&difficulty=${difficulty}`)
         .then((response) => response.json())
         .then((data) => {
             let newLeaders = [];

@@ -172,7 +172,7 @@ const Game = () => {
       }
 
       const response = await fetch(
-        `http://localhost:8080/api/updateGame?dt=${encodeURIComponent(dt)}&` +
+        `http://cs506x07.cs.wisc.edu:5000/api/updateGame?dt=${encodeURIComponent(dt)}&` +
         `username=${encodeURIComponent(username)}&` +
         `profile_name=${encodeURIComponent(profile_name)}&` +
         `inputs=${encodeURIComponent(Array.from(inputRef.current).join(","))}`,
@@ -409,7 +409,7 @@ const Game = () => {
         if (!scoreUploadedRef.current) {
           const difficulty = "MEDIUM";
           const uploadUrl =
-            `http://localhost:8080/api/uploadScore?` +
+            `http://cs506x07.cs.wisc.edu:5000/api/uploadScore?` +
             `username=${encodeURIComponent(username)}&` +
             `profile_name=${encodeURIComponent(username)}&` +
             `difficulty=${encodeURIComponent(difficulty)}&` +
@@ -451,7 +451,7 @@ const Game = () => {
       sessionStorage.removeItem("scoreUploaded");
     
       await fetch(
-        `http://localhost:8080/api/newGame?` +
+        `http://cs506x07.cs.wisc.edu:5000/api/newGame?` +
         `username=${encodeURIComponent(username)}&` +
         `profile_name=${encodeURIComponent(profile_name)}`
       );
