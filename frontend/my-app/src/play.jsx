@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { useAuth } from "./auth_context";
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 import "./play.css";
 
 // Load images
@@ -8,8 +8,8 @@ import asteroid_32 from "./images/asteroid_32x32.png";
 import asteroid_48 from "./images/asteroid_48x48.png";
 import asteroid_64 from "./images/asteroid_64x64.png";
 import comet from "./images/comet_48x48.png";
-import alien from "./images/alien_32x32.png"; 
-import alient_bullet from "./images/alien_bullet_4x4.png"; 
+import alien from "./images/alien_32x32.png";
+import alient_bullet from "./images/alien_bullet_4x4.png";
 import player_bullet from "./images/player_bullet_4x4.png";
 // Background is in css
 
@@ -35,15 +35,15 @@ const Game = () => {
   const invincibleShip = new Image();
 
   asteroidImg32.src = `${asteroid_32}?v=${Date.now()}`; // Force reload with a unique query string
-  asteroidImg48.src = `${asteroid_48}?v=${Date.now()}`; 
+  asteroidImg48.src = `${asteroid_48}?v=${Date.now()}`;
   asteroidImg64.src = `${asteroid_64}?v=${Date.now()}`;
-  cometImg.src = `${comet}?v=${Date.now()}`; 
+  cometImg.src = `${comet}?v=${Date.now()}`;
   alienImg.src = `${alien}?v=${Date.now()}`;
   alienBulletImg.src = `${alient_bullet}?v=${Date.now()}`;
   playerBulletImg.src = `${player_bullet}?v=${Date.now()}`;
 
-  shipImg.src = `${ship}?v=${Date.now()}`; 
-  invincibleShip.src = `${invShip}?v=${Date.now()}`; 
+  shipImg.src = `${ship}?v=${Date.now()}`;
+  invincibleShip.src = `${invShip}?v=${Date.now()}`;
 
   const { user } = useAuth();
   const scoreUploadedRef = useRef(null);
@@ -74,7 +74,10 @@ const Game = () => {
     // Process shoot input
     // If we are not holding shoot, then shoot. If we are holding shoot, then
     // check timer to see if we can shoot again.
-    if ((event.key === "s" || event.code === "Space") && (!isHoldingShoot.current || dt > 200)) {
+    if (
+      (event.key === "s" || event.code === "Space") &&
+      (!isHoldingShoot.current || dt > 200)
+    ) {
       timeLastShot.current = currTime;
       if (!lock.current) {
         // Handle shoot for current frame
@@ -110,7 +113,7 @@ const Game = () => {
 
     const username = user?.username ?? "guest";
     const profile_name = user?.profile_name ?? "guest";
-    let last_time = 0;
+    let last_time = document.timeline.currentTime;
     let hitboxes = false;
     let paused = false;
 
@@ -183,9 +186,6 @@ const Game = () => {
       const data = await response.json();
       if (timestamp % 1000 < 16) console.log(data);
 
-      // console.log(timestamp);
-      // console.log("Enemies:", data.enemies);
-
       const player = data.player;
       const lives = player?.lives ?? 0;
       const score = data.score ?? 0;
@@ -199,8 +199,8 @@ const Game = () => {
       document.getElementById("livesDisplayValue").textContent = lives;
       document.getElementById("scoreDisplayValue").textContent = score;
       document.getElementById("levelDisplayValue").textContent = level;
-      document.getElementById("timeDisplayValue").textContent = Math.floor(time);
-
+      document.getElementById("timeDisplayValue").textContent =
+        Math.floor(time);
 
       context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -249,8 +249,6 @@ const Game = () => {
 
       // Enemies
       for (let enemy of enemies) {
-        // console.log("Enemy type:", enemy.type);
-
         // Asteroid sprite depends on the size
         if (enemy.type === "ASTEROID") {
           const { x, y } = enemy.position;
@@ -282,7 +280,6 @@ const Game = () => {
             );
             context.restore();
           }
-
         } else if (enemy.type === "COMET") {
           // Draw comet
           context?.save();
@@ -297,7 +294,6 @@ const Game = () => {
             cometSize,
           );
           context.restore();
-
         } else if (enemy.type === "ALIEN") {
           // Draw alien
           context?.save();
@@ -312,7 +308,6 @@ const Game = () => {
             alienSize,
           );
           context.restore();
-
         } else if (enemy.type === "BULLET") {
           // Draw alien bullet
           context?.save();
@@ -353,15 +348,9 @@ const Game = () => {
               0,
               2 * Math.PI,
             );
-            // console.log(typeof hb.position.x, typeof hb.position.y);
             context.stroke();
             context.restore();
           });
-          // console.log( "enemy pos",
-          //   enemy.position,
-          //   "hitbox pos",
-          //   enemy.hitbox[0].position,
-          // );
         });
 
         bullets.forEach((bullet) => {
@@ -452,13 +441,13 @@ const Game = () => {
       scoreUploadedRef.current = false;
       suppressUploadRef.current = true; // prevent upload for a few frames
       sessionStorage.removeItem("scoreUploaded");
-    
+
       await fetch(
         `http://localhost:8080/api/newGame?` +
         `username=${encodeURIComponent(username)}&` +
-        `profile_name=${encodeURIComponent(profile_name)}`
+        `profile_name=${encodeURIComponent(profile_name)}`,
       );
-    
+
       // Allow upload again after a delay (e.g., 500ms or 2 animation frames)
       setTimeout(() => {
         suppressUploadRef.current = false;
@@ -479,16 +468,15 @@ const Game = () => {
       document.removeEventListener("keyup", handleKeyUp);
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-
   }, []);
 
   return (
     <div className="gameContainer">
       <div className="topBar">
         <div className="topBarLeft">
-        <Link to='/main_menu'>
-          <button>{'< '}Back</button>
-        </Link>
+          <Link to="/main_menu">
+            <button>{"< "}Back</button>
+          </Link>
         </div>
         <div className="topBarCenter">
           <label>
@@ -496,7 +484,9 @@ const Game = () => {
             <input ref={hitboxCheckboxRef} type="checkbox" id="hitboxes" />
           </label>
           <button id="startGameButton">Start Game</button>
-          <button ref={pauseButtonRef} id="pauseGameButton">Pause</button>
+          <button ref={pauseButtonRef} id="pauseGameButton">
+            Pause
+          </button>
         </div>
         <div className="topBarRight"></div>
       </div>
@@ -513,10 +503,18 @@ const Game = () => {
           </div>
 
           <div className="infoColumn">
-            <span><strong>Lives:</strong> <span id="livesDisplayValue">0</span></span>
-            <span><strong>Score:</strong> <span id="scoreDisplayValue">0</span></span>
-            <span><strong>Level:</strong> <span id="levelDisplayValue">0</span></span>
-            <span><strong>Time:</strong> <span id="timeDisplayValue">0</span></span>
+            <span>
+              <strong>Lives:</strong> <span id="livesDisplayValue">0</span>
+            </span>
+            <span>
+              <strong>Score:</strong> <span id="scoreDisplayValue">0</span>
+            </span>
+            <span>
+              <strong>Level:</strong> <span id="levelDisplayValue">0</span>
+            </span>
+            <span>
+              <strong>Time:</strong> <span id="timeDisplayValue">0</span>
+            </span>
           </div>
         </div>
       </div>
