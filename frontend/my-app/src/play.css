@@ -10,6 +10,15 @@
   overflow: hidden;
 }
 
+@font-face {
+  font-family: 'FuturyLight';
+  src: url('/fonts/FuturyLight.ttf') format('truetype');
+}
+
+body {
+  font-family: 'FuturyLight';
+}
+
 /* ====== TOP BAR ====== */
 
 .topBar {
@@ -21,15 +30,6 @@
   padding-right: 160px;
   background-color: #222;
   border-bottom: 2px solid #333;
-}
-
-@font-face {
-  font-family: 'FuturyLight';
-  src: url('/fonts/FuturyLight.ttf') format('truetype');
-}
-
-body {
-  font-family: 'FuturyLight';
 }
 
 .topBarCenter {
