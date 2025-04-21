@@ -408,16 +408,30 @@ public class DatabaseClient {
             // If difficulty is ALL, do not filter by difficulty
             String difficultyFilter = "";
             if (!difficulty.equals("ALL")) {
-                difficultyFilter = "WHERE Scores.difficulty = ?";
+                difficultyFilter = "WHERE s.difficulty = ?";
             }
+            // Gets the top n scores for distict users
             PreparedStatement stmt = dbConn.prepareStatement(
-                    "SELECT * " +
-                        "FROM Scores " +
-                        "JOIN Profiles ON Scores.profile_id = Profiles.profile_id " +
-                        "JOIN Users ON Profiles.user_id = Users.user_id " +
+                    "WITH RankedScores AS (" +
+                        "SELECT " + 
+                            "u.user_name, " +
+                            "p.profile_name, " +
+                            "s.score_id, " +
+                            "s.score, " +
+                            "s.level, " +
+                            "s.duration_seconds, " +
+                            "s.time_played, " +
+                            "ROW_NUMBER() OVER (PARTITION BY u.user_id ORDER BY s." + score + " DESC, s.score_id) AS rn " +
+                        "FROM Scores s " +
+                        "JOIN Profiles p ON s.profile_id = p.profile_id " +
+                        "JOIN Users u ON p.user_id = u.user_id " +
                         difficultyFilter +
-                        "ORDER BY Scores." + score + " DESC " +
-                        "LIMIT ?");
+                    ") " +
+                    "SELECT * " +
+                    "FROM RankedScores " +
+                    "WHERE rn = 1 " +
+                    "ORDER BY " + score +  " DESC " +
+                    "LIMIT ?;");
             if (!difficulty.equals("ALL")) {
                 stmt.setString(1, difficulty);
                 stmt.setInt(2, n);
