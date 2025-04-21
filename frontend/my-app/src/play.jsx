@@ -73,7 +73,7 @@ const Game = () => {
     // Process shoot input
     // If we are not holding shoot, then shoot. If we are holding shoot, then
     // check timer to see if we can shoot again.
-    if (event.key === "s" && (!isHoldingShoot.current || dt > 200)) {
+    if ((event.key === "s" || event.code === "Space") && (!isHoldingShoot.current || dt > 200)) {
       timeLastShot.current = currTime;
       if (!lock.current) {
         // Handle shoot for current frame
@@ -98,7 +98,7 @@ const Game = () => {
     if (event.key === "w") inputRef.current.delete("UP");
     if (event.key === "a") inputRef.current.delete("LEFT");
     if (event.key === "d") inputRef.current.delete("RIGHT");
-    if (event.key === "s") {
+    if (event.key === "s" || event.code === "Space") {
       isHoldingShoot.current = false;
     }
   }, []);
