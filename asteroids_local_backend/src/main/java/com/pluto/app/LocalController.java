@@ -44,6 +44,12 @@ public class LocalController {
      */
     private HashMap<String, GameManager> gameManagers = new HashMap<String, GameManager>();
 
+    /*
+     * Stores uploadScore history for a given GameManager (where GameManager)
+     * is represented by a string of the username and profile name.
+     */
+    private HashMap<String, Boolean> uploadedGameScore = new HashMap<String, Boolean>();
+
     /**
      * This method handles user login requests on localhost:8080/api/login.
      * Response messages are sent in a json format.
@@ -348,8 +354,25 @@ public class LocalController {
         if (!(difficulty.equals("EASY") || difficulty.equals("MEDIUM") || difficulty.equals("HARD"))) {
             return generateResponse(false, "Invalid difficulty");
         }
+
+        String key = username + " " + profile_name;
+        System.out.println("did we upload?");
+        System.out.println(key);
+        System.out.println(uploadedGameScore.get(key).booleanValue());
+        if (!(uploadedGameScore.containsKey(key))) {
+           return generateResponse(false, "No game associated with score");
+        }
+        if (uploadedGameScore.get(key).booleanValue()) {
+            return generateResponse(false, "Score has been uploaded already");
+        } else {
+            uploadedGameScore.put(key, Boolean.valueOf(true));
+        }
+        
+        
         DatabaseClient dbClient = new DatabaseClient();
         String error = dbClient.uploadScore(username, profile_name, difficulty, score, level, duration);
+
+        System.out.println(key);
 
         if (error.equals("")) {
             return generateResponse(true);
@@ -414,10 +437,15 @@ public class LocalController {
             @RequestParam(value = "profile_name", defaultValue = "") String profile_name,
             @RequestParam(value = "difficulty", defaultValue = "MEDIUM") String difficulty) {
         String key = username + " " + profile_name;
+        System.out.println(key);
         if (gameManagers.containsKey(key)) {
             gameManagers.remove(key);
         }
+        if (uploadedGameScore.containsKey(key)) {
+            uploadedGameScore.remove(key);
+        }
         gameManagers.put(key, new GameManager(Difficulty.valueOf(difficulty)));
+        uploadedGameScore.put(key, Boolean.valueOf(false));
         return generateResponse(true);
     }
 
@@ -505,8 +533,6 @@ public class LocalController {
         Spaceship.Input[] input = new Spaceship.Input[inputStrings.length];
         for (int i = 0; i < inputStrings.length; i++) {
             input[i] = Spaceship.Input.valueOf(inputStrings[i]);
-            //System.out.println("input");
-            //System.out.println(input[i].toString()); 
         }
         gameManager.update(dt, input);
 

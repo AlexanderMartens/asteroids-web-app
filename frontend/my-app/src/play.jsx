@@ -46,14 +46,7 @@ const Game = () => {
   invincibleShip.src = `${invShip}?v=${Date.now()}`;
 
   const { user } = useAuth();
-  const scoreUploadedRef = useRef(null);
-  const suppressUploadRef = useRef(false);
-
-  if (scoreUploadedRef.current === null) {
-    const stored = sessionStorage.getItem("scoreUploaded");
-    scoreUploadedRef.current = stored === "true";
-    console.log("Initialized scoreUploadedRef:", scoreUploadedRef.current);
-  }
+  const scoreUploadedRef = useRef(false);
 
   // Variables for handling shoot inputs per keydown
   const isHoldingShoot = useRef(false);
@@ -112,7 +105,7 @@ const Game = () => {
     const context = canvas.getContext("2d");
 
     const username = user?.username ?? "guest";
-    const profile_name = user?.profile_name ?? "guest";
+    const profile_name = user?.profile_name ?? username;
     let last_time = document.timeline.currentTime;
     let hitboxes = false;
     let paused = false;
@@ -122,14 +115,17 @@ const Game = () => {
     };
 
     const handleBeforeUnload = () => {
-      // Prevent any upload if game is already over and score has been uploaded
-      if (!scoreUploadedRef.current && !document.hidden) {
-        sessionStorage.setItem("scoreUploaded", "false");
-      }
+      // // Prevent any upload if game is already over and score has been uploaded
+      // if (!scoreUploadedRef.current && !document.hidden) {
+      //   sessionStorage.setItem("scoreUploaded", "false");
+      // }
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
 
+    /**
+     * Is called to animate a frame of the game using requestAnimationFrame.
+     */
     const animate = async (timestamp) => {
       // If holding shoot key down, trigger a KeyboardEvent
       // Fixes the problem that if another key is pressed while holding shoot
@@ -178,13 +174,13 @@ const Game = () => {
 
       const response = await fetch(
         `http://localhost:8080/api/updateGame?dt=${encodeURIComponent(dt)}&` +
-        `username=${encodeURIComponent(username)}&` +
-        `profile_name=${encodeURIComponent(profile_name)}&` +
-        `inputs=${encodeURIComponent(Array.from(inputRef.current).join(","))}`,
+          `username=${encodeURIComponent(username)}&` +
+          `profile_name=${encodeURIComponent(profile_name)}&` +
+          `inputs=${encodeURIComponent(Array.from(inputRef.current).join(","))}`,
       );
 
       const data = await response.json();
-      if (timestamp % 1000 < 16) console.log(data);
+      // if (timestamp % 1000 < 16) console.log(data);
 
       const player = data.player;
       const lives = player?.lives ?? 0;
@@ -380,16 +376,6 @@ const Game = () => {
         });
       }
 
-      // Info Text
-      // context.save();
-      // context.fillStyle = "white";
-      // context.font = "20px Arial";
-      // context.fillText(`Lives: ${lives}`, 10, 20);
-      // context.fillText(`Score: ${score}`, 10, 40);
-      // context.fillText(`Level: ${level}`, 10, 60);
-      // context.fillText(`Time: ${time}`, 10, 80);
-      // context.restore();
-
       if (!is_running) {
         context.save();
         context.fillStyle = "white";
@@ -403,7 +389,7 @@ const Game = () => {
           const uploadUrl =
             `http://localhost:8080/api/uploadScore?` +
             `username=${encodeURIComponent(username)}&` +
-            `profile_name=${encodeURIComponent(username)}&` +
+            `profile_name=${encodeURIComponent(profile_name)}&` +
             `difficulty=${encodeURIComponent(difficulty)}&` +
             `score=${encodeURIComponent(score)}&` +
             `level=${encodeURIComponent(level)}&` +
@@ -415,7 +401,7 @@ const Game = () => {
             const res = await fetch(uploadUrl);
             if (res.ok) {
               console.log("Score uploaded successfully.");
-              sessionStorage.setItem("scoreUploaded", "true");
+              console.log(res.ok);
               scoreUploadedRef.current = true;
             } else {
               console.warn("Upload failed with status:", res.status);
@@ -439,19 +425,15 @@ const Game = () => {
     const startBtn = document.getElementById("startGameButton");
     startBtn?.addEventListener("click", async () => {
       scoreUploadedRef.current = false;
-      suppressUploadRef.current = true; // prevent upload for a few frames
-      sessionStorage.removeItem("scoreUploaded");
 
       await fetch(
         `http://localhost:8080/api/newGame?` +
-        `username=${encodeURIComponent(username)}&` +
-        `profile_name=${encodeURIComponent(profile_name)}`,
+          `username=${encodeURIComponent(username)}&` +
+          `profile_name=${encodeURIComponent(profile_name)}`,
       );
 
-      // Allow upload again after a delay (e.g., 500ms or 2 animation frames)
-      setTimeout(() => {
-        suppressUploadRef.current = false;
-      }, 500);
+      paused = false;
+      pauseButtonRef.current.innerText = paused ? "Resume" : "Pause";
     });
 
     pauseButtonRef.current.addEventListener("click", () => {
