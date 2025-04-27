@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { useAuth } from "./auth_context";
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 import "./play.css";
 
 // Load images
@@ -8,8 +8,8 @@ import asteroid_32 from "./images/asteroid_32x32.png";
 import asteroid_48 from "./images/asteroid_48x48.png";
 import asteroid_64 from "./images/asteroid_64x64.png";
 import comet from "./images/comet_48x48.png";
-import alien from "./images/alien_32x32.png"; 
-import alient_bullet from "./images/alien_bullet_4x4.png"; 
+import alien from "./images/alien_32x32.png";
+import alient_bullet from "./images/alien_bullet_4x4.png";
 import player_bullet from "./images/player_bullet_4x4.png";
 // Background is in css
 
@@ -35,25 +35,21 @@ const Game = () => {
   const invincibleShip = new Image();
 
   asteroidImg32.src = `${asteroid_32}?v=${Date.now()}`; // Force reload with a unique query string
-  asteroidImg48.src = `${asteroid_48}?v=${Date.now()}`; 
+  asteroidImg48.src = `${asteroid_48}?v=${Date.now()}`;
   asteroidImg64.src = `${asteroid_64}?v=${Date.now()}`;
-  cometImg.src = `${comet}?v=${Date.now()}`; 
+  cometImg.src = `${comet}?v=${Date.now()}`;
   alienImg.src = `${alien}?v=${Date.now()}`;
   alienBulletImg.src = `${alient_bullet}?v=${Date.now()}`;
   playerBulletImg.src = `${player_bullet}?v=${Date.now()}`;
 
-  shipImg.src = `${ship}?v=${Date.now()}`; 
-  invincibleShip.src = `${invShip}?v=${Date.now()}`; 
+  shipImg.src = `${ship}?v=${Date.now()}`;
+  invincibleShip.src = `${invShip}?v=${Date.now()}`;
 
   const { user } = useAuth();
-  const scoreUploadedRef = useRef(null);
-  const suppressUploadRef = useRef(false);
 
-  if (scoreUploadedRef.current === null) {
-    const stored = sessionStorage.getItem("scoreUploaded");
-    scoreUploadedRef.current = stored === "true";
-    console.log("Initialized scoreUploadedRef:", scoreUploadedRef.current);
-  }
+  // Variables for handling score uploads
+  const scoreUploadedRef = useRef(false);
+  const isNewGameRef = useRef(false);
 
   // Variables for handling shoot inputs per keydown
   const isHoldingShoot = useRef(false);
@@ -74,7 +70,10 @@ const Game = () => {
     // Process shoot input
     // If we are not holding shoot, then shoot. If we are holding shoot, then
     // check timer to see if we can shoot again.
-    if ((event.key === "s" || event.code === "Space") && (!isHoldingShoot.current || dt > 200)) {
+    if (
+      (event.key === "s" || event.code === "Space") &&
+      (!isHoldingShoot.current || dt > 200)
+    ) {
       timeLastShot.current = currTime;
       if (!lock.current) {
         // Handle shoot for current frame
@@ -109,25 +108,28 @@ const Game = () => {
     const context = canvas.getContext("2d");
 
     const username = user?.username ?? "guest";
-    const profile_name = user?.profile_name ?? "guest";
-    let last_time = 0;
+    const profile_name = user?.profile_name ?? username;
+    let last_time = document.timeline.currentTime;
     let hitboxes = false;
     let paused = false;
 
-    const handleHitboxChange = () => {
+    const handleHitboxChange = (event) => {
+      event.target.blur();
       hitboxes = hitboxCheckboxRef.current.checked;
     };
 
-    const handleBeforeUnload = () => {
-      // Prevent any upload if game is already over and score has been uploaded
-      if (!scoreUploadedRef.current && !document.hidden) {
-        sessionStorage.setItem("scoreUploaded", "false");
-      }
-    };
+    const handleBeforeUnload = () => { };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
 
+    /**
+     * Is called to animate a frame of the game using requestAnimationFrame.
+     */
     const animate = async (timestamp) => {
+      // Set isNewGame to false, allowing us to upload a score for this game
+      // when the game is over
+      isNewGameRef.current = false;
+
       // If holding shoot key down, trigger a KeyboardEvent
       // Fixes the problem that if another key is pressed while holding shoot
       // Then the event listener no longer triggers shoot events
@@ -181,10 +183,7 @@ const Game = () => {
       );
 
       const data = await response.json();
-      if (timestamp % 1000 < 16) console.log(data);
-
-      // console.log(timestamp);
-      // console.log("Enemies:", data.enemies);
+      // if (timestamp % 1000 < 16) console.log(data);
 
       const player = data.player;
       const lives = player?.lives ?? 0;
@@ -199,8 +198,8 @@ const Game = () => {
       document.getElementById("livesDisplayValue").textContent = lives;
       document.getElementById("scoreDisplayValue").textContent = score;
       document.getElementById("levelDisplayValue").textContent = level;
-      document.getElementById("timeDisplayValue").textContent = Math.floor(time);
-
+      document.getElementById("timeDisplayValue").textContent =
+        Math.floor(time);
 
       context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -249,8 +248,6 @@ const Game = () => {
 
       // Enemies
       for (let enemy of enemies) {
-        // console.log("Enemy type:", enemy.type);
-
         // Asteroid sprite depends on the size
         if (enemy.type === "ASTEROID") {
           const { x, y } = enemy.position;
@@ -282,7 +279,6 @@ const Game = () => {
             );
             context.restore();
           }
-
         } else if (enemy.type === "COMET") {
           // Draw comet
           context?.save();
@@ -297,7 +293,6 @@ const Game = () => {
             cometSize,
           );
           context.restore();
-
         } else if (enemy.type === "ALIEN") {
           // Draw alien
           context?.save();
@@ -312,7 +307,6 @@ const Game = () => {
             alienSize,
           );
           context.restore();
-
         } else if (enemy.type === "BULLET") {
           // Draw alien bullet
           context?.save();
@@ -353,15 +347,9 @@ const Game = () => {
               0,
               2 * Math.PI,
             );
-            // console.log(typeof hb.position.x, typeof hb.position.y);
             context.stroke();
             context.restore();
           });
-          // console.log( "enemy pos",
-          //   enemy.position,
-          //   "hitbox pos",
-          //   enemy.hitbox[0].position,
-          // );
         });
 
         bullets.forEach((bullet) => {
@@ -391,17 +379,7 @@ const Game = () => {
         });
       }
 
-      // Info Text
-      // context.save();
-      // context.fillStyle = "white";
-      // context.font = "20px Arial";
-      // context.fillText(`Lives: ${lives}`, 10, 20);
-      // context.fillText(`Score: ${score}`, 10, 40);
-      // context.fillText(`Level: ${level}`, 10, 60);
-      // context.fillText(`Time: ${time}`, 10, 80);
-      // context.restore();
-
-      if (!is_running) {
+      if (!is_running && !isNewGameRef.current) {
         context.save();
         context.fillStyle = "white";
         await document.fonts.ready;
@@ -414,7 +392,7 @@ const Game = () => {
           const uploadUrl =
             `http://localhost:8080/api/uploadScore?` +
             `username=${encodeURIComponent(username)}&` +
-            `profile_name=${encodeURIComponent(username)}&` +
+            `profile_name=${encodeURIComponent(profile_name)}&` +
             `difficulty=${encodeURIComponent(difficulty)}&` +
             `score=${encodeURIComponent(score)}&` +
             `level=${encodeURIComponent(level)}&` +
@@ -426,7 +404,7 @@ const Game = () => {
             const res = await fetch(uploadUrl);
             if (res.ok) {
               console.log("Score uploaded successfully.");
-              sessionStorage.setItem("scoreUploaded", "true");
+              console.log(res.ok);
               scoreUploadedRef.current = true;
             } else {
               console.warn("Upload failed with status:", res.status);
@@ -447,25 +425,28 @@ const Game = () => {
     hitboxCheckboxRef.current.addEventListener("change", handleHitboxChange);
 
     // Start Button (outside of canvas)
+    // Starts a new game
     const startBtn = document.getElementById("startGameButton");
-    startBtn?.addEventListener("click", async () => {
+    startBtn?.addEventListener("click", async (event) => {
+      // deselect button
+      event.target.blur();
+
       scoreUploadedRef.current = false;
-      suppressUploadRef.current = true; // prevent upload for a few frames
-      sessionStorage.removeItem("scoreUploaded");
-    
+      isNewGameRef.current = true;
+
       await fetch(
         `http://localhost:8080/api/newGame?` +
         `username=${encodeURIComponent(username)}&` +
-        `profile_name=${encodeURIComponent(profile_name)}`
+        `profile_name=${encodeURIComponent(profile_name)}`,
       );
-    
-      // Allow upload again after a delay (e.g., 500ms or 2 animation frames)
-      setTimeout(() => {
-        suppressUploadRef.current = false;
-      }, 500);
+
+      paused = false;
+      pauseButtonRef.current.innerText = paused ? "Resume" : "Pause";
     });
 
-    pauseButtonRef.current.addEventListener("click", () => {
+    pauseButtonRef.current.addEventListener("click", (event) => {
+      // deselect button
+      event.target.blur();
       paused = !paused;
       pauseButtonRef.current.innerText = paused ? "Resume" : "Pause";
     });
@@ -479,16 +460,15 @@ const Game = () => {
       document.removeEventListener("keyup", handleKeyUp);
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-
   }, []);
 
   return (
     <div className="gameContainer">
       <div className="topBar">
         <div className="topBarLeft">
-        <Link to='/main_menu'>
-          <button>{'< '}Back</button>
-        </Link>
+          <Link to="/main_menu">
+            <button>{"< "}Back</button>
+          </Link>
         </div>
         <div className="topBarCenter">
           <label>
@@ -496,7 +476,9 @@ const Game = () => {
             <input ref={hitboxCheckboxRef} type="checkbox" id="hitboxes" />
           </label>
           <button id="startGameButton">Start Game</button>
-          <button ref={pauseButtonRef} id="pauseGameButton">Pause</button>
+          <button ref={pauseButtonRef} id="pauseGameButton">
+            Pause
+          </button>
         </div>
         <div className="topBarRight"></div>
       </div>
@@ -513,10 +495,18 @@ const Game = () => {
           </div>
 
           <div className="infoColumn">
-            <span><strong>Lives:</strong> <span id="livesDisplayValue">0</span></span>
-            <span><strong>Score:</strong> <span id="scoreDisplayValue">0</span></span>
-            <span><strong>Level:</strong> <span id="levelDisplayValue">0</span></span>
-            <span><strong>Time:</strong> <span id="timeDisplayValue">0</span></span>
+            <span>
+              <strong>Lives:</strong> <span id="livesDisplayValue">0</span>
+            </span>
+            <span>
+              <strong>Score:</strong> <span id="scoreDisplayValue">0</span>
+            </span>
+            <span>
+              <strong>Level:</strong> <span id="levelDisplayValue">0</span>
+            </span>
+            <span>
+              <strong>Time:</strong> <span id="timeDisplayValue">0</span>
+            </span>
           </div>
         </div>
       </div>
