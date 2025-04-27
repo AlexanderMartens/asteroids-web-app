@@ -113,12 +113,12 @@ const Game = () => {
     let hitboxes = false;
     let paused = false;
 
-    const handleHitboxChange = () => {
+    const handleHitboxChange = (event) => {
+      event.target.blur();
       hitboxes = hitboxCheckboxRef.current.checked;
     };
 
-    const handleBeforeUnload = () => {
-    };
+    const handleBeforeUnload = () => { };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
 
@@ -129,7 +129,7 @@ const Game = () => {
       // Set isNewGame to false, allowing us to upload a score for this game
       // when the game is over
       isNewGameRef.current = false;
-        
+
       // If holding shoot key down, trigger a KeyboardEvent
       // Fixes the problem that if another key is pressed while holding shoot
       // Then the event listener no longer triggers shoot events
@@ -177,9 +177,9 @@ const Game = () => {
 
       const response = await fetch(
         `http://localhost:8080/api/updateGame?dt=${encodeURIComponent(dt)}&` +
-          `username=${encodeURIComponent(username)}&` +
-          `profile_name=${encodeURIComponent(profile_name)}&` +
-          `inputs=${encodeURIComponent(Array.from(inputRef.current).join(","))}`,
+        `username=${encodeURIComponent(username)}&` +
+        `profile_name=${encodeURIComponent(profile_name)}&` +
+        `inputs=${encodeURIComponent(Array.from(inputRef.current).join(","))}`,
       );
 
       const data = await response.json();
@@ -427,21 +427,26 @@ const Game = () => {
     // Start Button (outside of canvas)
     // Starts a new game
     const startBtn = document.getElementById("startGameButton");
-    startBtn?.addEventListener("click", async () => {
+    startBtn?.addEventListener("click", async (event) => {
+      // deselect button
+      event.target.blur();
+
       scoreUploadedRef.current = false;
       isNewGameRef.current = true;
 
       await fetch(
         `http://localhost:8080/api/newGame?` +
-          `username=${encodeURIComponent(username)}&` +
-          `profile_name=${encodeURIComponent(profile_name)}`,
+        `username=${encodeURIComponent(username)}&` +
+        `profile_name=${encodeURIComponent(profile_name)}`,
       );
 
       paused = false;
       pauseButtonRef.current.innerText = paused ? "Resume" : "Pause";
     });
 
-    pauseButtonRef.current.addEventListener("click", () => {
+    pauseButtonRef.current.addEventListener("click", (event) => {
+      // deselect button
+      event.target.blur();
       paused = !paused;
       pauseButtonRef.current.innerText = paused ? "Resume" : "Pause";
     });
