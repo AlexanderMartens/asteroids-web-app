@@ -356,9 +356,6 @@ public class LocalController {
         }
 
         String key = username + " " + profile_name;
-        System.out.println("did we upload?");
-        System.out.println(key);
-        System.out.println(uploadedGameScore.get(key).booleanValue());
         if (!(uploadedGameScore.containsKey(key))) {
            return generateResponse(false, "No game associated with score");
         }
@@ -368,11 +365,8 @@ public class LocalController {
             uploadedGameScore.put(key, Boolean.valueOf(true));
         }
         
-        
         DatabaseClient dbClient = new DatabaseClient();
         String error = dbClient.uploadScore(username, profile_name, difficulty, score, level, duration);
-
-        System.out.println(key);
 
         if (error.equals("")) {
             return generateResponse(true);
@@ -437,7 +431,6 @@ public class LocalController {
             @RequestParam(value = "profile_name", defaultValue = "") String profile_name,
             @RequestParam(value = "difficulty", defaultValue = "MEDIUM") String difficulty) {
         String key = username + " " + profile_name;
-        System.out.println(key);
         if (gameManagers.containsKey(key)) {
             gameManagers.remove(key);
         }

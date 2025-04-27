@@ -46,7 +46,10 @@ const Game = () => {
   invincibleShip.src = `${invShip}?v=${Date.now()}`;
 
   const { user } = useAuth();
+
+  // Variables for handling score uploads
   const scoreUploadedRef = useRef(false);
+  const isNewGameRef = useRef(false);
 
   // Variables for handling shoot inputs per keydown
   const isHoldingShoot = useRef(false);
@@ -115,10 +118,6 @@ const Game = () => {
     };
 
     const handleBeforeUnload = () => {
-      // // Prevent any upload if game is already over and score has been uploaded
-      // if (!scoreUploadedRef.current && !document.hidden) {
-      //   sessionStorage.setItem("scoreUploaded", "false");
-      // }
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -127,6 +126,10 @@ const Game = () => {
      * Is called to animate a frame of the game using requestAnimationFrame.
      */
     const animate = async (timestamp) => {
+      // Set isNewGame to false, allowing us to upload a score for this game
+      // when the game is over
+      isNewGameRef.current = false;
+        
       // If holding shoot key down, trigger a KeyboardEvent
       // Fixes the problem that if another key is pressed while holding shoot
       // Then the event listener no longer triggers shoot events
@@ -376,7 +379,7 @@ const Game = () => {
         });
       }
 
-      if (!is_running) {
+      if (!is_running && !isNewGameRef.current) {
         context.save();
         context.fillStyle = "white";
         await document.fonts.ready;
@@ -422,9 +425,11 @@ const Game = () => {
     hitboxCheckboxRef.current.addEventListener("change", handleHitboxChange);
 
     // Start Button (outside of canvas)
+    // Starts a new game
     const startBtn = document.getElementById("startGameButton");
     startBtn?.addEventListener("click", async () => {
       scoreUploadedRef.current = false;
+      isNewGameRef.current = true;
 
       await fetch(
         `http://localhost:8080/api/newGame?` +
