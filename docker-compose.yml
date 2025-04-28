@@ -23,7 +23,7 @@ services:
       PMA_USER: root
       PMA_PASSWORD: password
     ports:
-      - "3000:80"
+      - "3333:80"
     networks:
       - pluto_network
   local_backend:
