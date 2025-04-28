@@ -15,7 +15,7 @@ function Leaderboard() {
 
     // Fetch leaderboard data whenever the tab changes
     useEffect(() => {
-        fetch(`http://localhost:8080/api/leaderboard?limit=${limit}&score=${tab}&difficulty=${difficulty}`)
+        fetch(`http://cs506x07.cs.wisc.edu:5000/api/leaderboard?limit=${limit}&score=${tab}&difficulty=${difficulty}`)
         .then((response) => response.json())
         .then((data) => {
             let newLeaders = [];
