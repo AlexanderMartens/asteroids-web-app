@@ -467,6 +467,13 @@ public class GameManager {
                 json.append(",");
             }
         }
+        json.append("],\"powerups\":[");
+        for (int i = 0; i < powerups.size(); i++) {
+            json.append(powerups.get(i).toJson());
+            if (i < powerups.size() - 1) {
+                json.append(",");
+            }
+        }
         json.append("],\"score\":");
         json.append(score);
         json.append(",\"level\":");
