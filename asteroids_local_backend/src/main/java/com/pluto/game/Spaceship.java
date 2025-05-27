@@ -174,7 +174,7 @@ public class Spaceship extends SpawnableEntity {
     public void applyPowerup(Powerup.PowerupType powerupType) {
         switch (powerupType) {
             case MULTISHOT:
-                multishotTimer = 10.0f; // Multishot lasts for 10 seconds
+                multishotTimer = 5.0f; // Multishot lasts for 5 seconds
                 break;
             case SHIELD:
                 hasShield = true;

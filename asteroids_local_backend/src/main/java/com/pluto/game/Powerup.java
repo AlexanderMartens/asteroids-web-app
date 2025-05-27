@@ -25,7 +25,7 @@ public class Powerup extends SpawnableEntity {
     public Powerup(Vector2D<Float> position, PowerupType powerupType) {
             super(position, new Vector2D<>(0f, 0f), 0, null);
             this.hitbox = new HitBox[] {
-                new HitBox(this.getPosition().x, this.getPosition().y, 15.0f)
+                new HitBox(this.getPosition().x, this.getPosition().y, 25.0f)
             };
             this.POWERUP_TYPE = powerupType;
         }
