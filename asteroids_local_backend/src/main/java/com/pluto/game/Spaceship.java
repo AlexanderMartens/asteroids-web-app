@@ -26,11 +26,23 @@ public class Spaceship extends SpawnableEntity {
     /* The bullet damage this spaceship deals */
     private static final int BULLET_DAMAGE = 1;
 
+    /* The maximum number of lives the player can have */
+    public static final int MAX_LIVES = 5;
+
+    /* Angle of bullets shot with mutlishot */
+    private static final float MULTISHOT_ANGLE = (float) Math.toRadians(15); // 15 degrees
+
     /* Number of lives the player has */
     private int lives;
 
     /* Timer of invicibility when hit, 0 if not invincible */
     private float invincibleTimer = 0.0f;
+
+    /* Timer of mutlishot powerup, 0 when not activated */
+    private float multishotTimer = 0.0f;
+
+    /* Whether or not the player has a sheild */
+    private boolean hasShield = false;
 
     /**
      * Constructor for the Spaceship class. Player spawns at the center of the
@@ -90,6 +102,10 @@ public class Spaceship extends SpawnableEntity {
         if (invincibleTimer < 0) {
             invincibleTimer = 0;
         }
+        multishotTimer -= dt;
+        if (multishotTimer < 0) {
+            multishotTimer = 0;
+        }
     }
 
     /**
@@ -109,6 +125,10 @@ public class Spaceship extends SpawnableEntity {
         if (invincibleTimer > 0) {
             return;
         }
+        if (hasShield) {
+            hasShield = false; // Shield absorbs the hit
+            return;
+        }
         lives--;
         if (lives != 0) {
             invincibleTimer = 3.0f;
@@ -120,12 +140,50 @@ public class Spaceship extends SpawnableEntity {
      *
      * @return - A bullet object the player has shot.
      */
-    public Bullet shootBullet() {
+    public Bullet[] shootBullet() {
+        if (multishotTimer > 0) {
+            // If multishot is active, shoot two bullets at an angle
+            Vector2D<Float> pos = new Vector2D<Float>(getPosition().x, getPosition().y);
+            float orientation = getOrientation();
+            Bullet bullet1 = new Bullet(pos, orientation - MULTISHOT_ANGLE, BULLET_DAMAGE);
+            Bullet bullet2 = new Bullet(pos, orientation + MULTISHOT_ANGLE, BULLET_DAMAGE);
+            Bullet bullet3 = new Bullet(pos, orientation, BULLET_DAMAGE);
+            return new Bullet[] { bullet1, bullet2, bullet3 };
+        }
         Vector2D<Float> pos = new Vector2D<Float>(getPosition().x, getPosition().y);
         float orientation = getOrientation();
-        Bullet bullet = new Bullet(pos, orientation, BULLET_DAMAGE);
+        Bullet[] bullet = new Bullet[] {new Bullet(pos, orientation, BULLET_DAMAGE)};
 
         return bullet;
+    }
+
+    /**
+     * Getter for multishot
+     * @param powerupType
+     */
+    public boolean hasMultishot() {
+        return multishotTimer > 0;
+    }
+
+    /**
+     * Applies a powerup to the player. The effect of the powerup
+     * depends on the type of powerup.
+     * @param powerupType
+     */
+    public void applyPowerup(Powerup.PowerupType powerupType) {
+        switch (powerupType) {
+            case MULTISHOT:
+                // Implement multishot logic here
+                break;
+            case SHIELD:
+                hasShield = true;
+                break;
+            case EXTRA_LIFE:
+                if (lives < MAX_LIVES) {
+                    lives++;
+                }
+                break;
+        }
     }
 
     /**
@@ -154,6 +212,8 @@ public class Spaceship extends SpawnableEntity {
         json.append(this.lives);
         json.append(", \"is_invincible\": ");
         json.append(this.invincibleTimer > 0);
+        json.append(", \"has_shield\": ");
+        json.append(this.hasShield);
         json.append("}");
         return json.toString();
     }

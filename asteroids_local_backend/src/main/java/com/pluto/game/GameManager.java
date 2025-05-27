@@ -26,6 +26,9 @@ public class GameManager {
     /* The list of bullets */
     private ArrayList<Bullet> playerBullets;
 
+    /* The list of powerups */
+    private ArrayList<Powerup> powerups;
+
     /* The time in seconds the game has been running */
     private float time;
 
@@ -53,6 +56,12 @@ public class GameManager {
 
     /* The maximum number of bullets allowed at a time */
     private static final int MAX_BULLETS = 10;
+
+    /* The maximum number of powerups allowed at a time */
+    private static final int MAX_POWERUPS = 3;
+
+    /* Chance that a powerup spawns when destroying a small asteroid */
+    private static final float POWERUP_SPAWN_CHANCE = 0.1f;
 
     /* The amount of time a bullet lasts on the screen in seconds */
     private static final float BULLET_LIFETIME = 2.0f;
@@ -85,6 +94,7 @@ public class GameManager {
         this.player = new Spaceship();
         this.enemies = new ArrayList<Enemy>();
         this.playerBullets = new ArrayList<Bullet>();
+        this.powerups = new ArrayList<Powerup>();
         this.time = 0.0f;
         this.score = 0;
         this.level = 1;
@@ -215,6 +225,16 @@ public class GameManager {
                 }
             }
         }
+
+        // Check for collisions between player and powerups
+        Iterator<Powerup> powerupIterator = powerups.iterator();
+        while (powerupIterator.hasNext()) {
+            Powerup powerup = powerupIterator.next();
+            if (player.collidesWith(powerup)) {
+                player.applyPowerup(powerup.POWERUP_TYPE);
+                powerupIterator.remove();
+            }
+        }
     }
 
     /**
@@ -222,9 +242,14 @@ public class GameManager {
      * if the maximum number of bullets has been reached.
      */
     private void playerShoot() {
-        if (playerBullets.size() < MAX_BULLETS) {
-            Bullet bullet = player.shootBullet();
-            playerBullets.add(bullet);
+        int maxBullets = player.hasMultishot() ? 3 : 1;
+        if (playerBullets.size() < MAX_BULLETS * maxBullets) {
+            Bullet[] bullets = player.shootBullet();
+            for (Bullet bullet : bullets) {
+                if (bullet != null) {
+                    playerBullets.add(bullet);
+                }
+            }
         }
     }
 
@@ -358,6 +383,12 @@ public class GameManager {
             new_size = Asteroid.AsteroidSize.SMALL;
         } else if (asteroid.size == Asteroid.AsteroidSize.SMALL) {
             enemies.remove(asteroid);
+            // Have a chance to spawn a powerup
+            if (Math.random() < POWERUP_SPAWN_CHANCE && powerups.size() < MAX_POWERUPS) {
+                Powerup.PowerupType powerupType = Powerup.PowerupType.values()[(int) (Math.random() * Powerup.PowerupType.values().length)];
+                Vector2D<Float> position = asteroid.getPosition();
+                powerups.add(new Powerup(position, powerupType));
+            }
             return;
         }
 
