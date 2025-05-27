@@ -31,7 +31,7 @@ public class DatabaseClient {
      * Default constructor for the DatabaseClient.
      */
     public DatabaseClient() {
-        this("jdbc:mysql://project_07-user_database-1:3306", "root", "password");
+        this("jdbc:mysql://asteroids-web-app-user_database-1:3306", "root", "password");
     }
 
     /**
