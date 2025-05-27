@@ -417,6 +417,11 @@ public class GameManager {
      */
     private void destroyAlien(Alien alien) {
         enemies.remove(alien);
+        if (Math.random() < POWERUP_SPAWN_CHANCE && powerups.size() < MAX_POWERUPS) {
+                Powerup.PowerupType powerupType = Powerup.PowerupType.values()[(int) (Math.random() * Powerup.PowerupType.values().length)];
+                Vector2D<Float> position = alien.getPosition();
+                powerups.add(new Powerup(position, powerupType));
+            }
     }
 
     /**

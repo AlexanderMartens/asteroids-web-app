@@ -127,6 +127,7 @@ public class Spaceship extends SpawnableEntity {
         }
         if (hasShield) {
             hasShield = false; // Shield absorbs the hit
+            invincibleTimer = 1.0f; // Invincibility for 1 second after shield hit
             return;
         }
         lives--;
@@ -173,7 +174,7 @@ public class Spaceship extends SpawnableEntity {
     public void applyPowerup(Powerup.PowerupType powerupType) {
         switch (powerupType) {
             case MULTISHOT:
-                // Implement multishot logic here
+                multishotTimer = 10.0f; // Multishot lasts for 10 seconds
                 break;
             case SHIELD:
                 hasShield = true;
