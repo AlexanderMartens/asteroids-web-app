@@ -501,7 +501,7 @@ public class LocalController {
      *         x - float
      *         y - float
      *      radius - float
-     *   powerup_type - string, type of powerup ("MULTISHOT", "SHIELD", "EXTRA_LIFE")
+     *   type - string, type of powerup ("MULTISHOT", "SHIELD", "EXTRA_LIFE")
      * score - int
      * level - int
      * time - float

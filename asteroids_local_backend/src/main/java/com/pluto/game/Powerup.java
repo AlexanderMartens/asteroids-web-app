@@ -49,7 +49,7 @@ public class Powerup extends SpawnableEntity {
             }
         }
         json.append("],");
-        json.append("\"powerup_type\":\"").append(POWERUP_TYPE.toString()).append("\"");
+        json.append("\"type\":\"").append(POWERUP_TYPE.toString()).append("\"");
         json.append("}");
         return json.toString();
     }
