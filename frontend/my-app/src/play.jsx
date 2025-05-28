@@ -24,6 +24,7 @@ import extra_life from "./images/extra_life_24x24.png";
 const Game = () => {
   const canvasRef = useRef(null);
   const hitboxCheckboxRef = useRef(null);
+  const sfxCheckboxRef = useRef(null);
   const pauseButtonRef = useRef(null);
   const requestRef = useRef(null);
 
@@ -136,11 +137,17 @@ const Game = () => {
     const profile_name = user?.profile_name ?? username;
     let last_time = document.timeline.currentTime;
     let hitboxes = false;
+    let sfx = true;
     let paused = false;
 
     const handleHitboxChange = (event) => {
       event.target.blur();
       hitboxes = hitboxCheckboxRef.current.checked;
+    };
+
+    const handleSfxChange = (event) => {
+      event.target.blur();
+      sfx = sfxCheckboxRef.current.checked;
     };
 
     const handleBeforeUnload = () => { };
@@ -462,16 +469,17 @@ const Game = () => {
       }
 
       // Play sounds from the sounds array
-      sounds.forEach((sound) => {
-        const audio = loadSound(sound);
-        audio.currentTime = 0; // rewind to start
-        audio.play().catch((e) => {
-          // Optionally handle autoplay restrictions or errors
-          console.error("Sound play error:", e);
+      if (sfx) {
+        sounds.forEach((sound) => {
+          const audio = loadSound(sound);
+          audio.currentTime = 0; // rewind to start
+          audio.play().catch((e) => {
+            // Optionally handle autoplay restrictions or errors
+            console.error("Sound play error:", e);
+          });
         });
-      });
-
-
+      }
+      
       if (!is_running && !isNewGameRef.current) {
         context.save();
         context.fillStyle = "white";
@@ -516,6 +524,7 @@ const Game = () => {
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
     hitboxCheckboxRef.current.addEventListener("change", handleHitboxChange);
+    sfxCheckboxRef.current.addEventListener("change", handleSfxChange);
 
     // Start Button (outside of canvas)
     // Starts a new game
@@ -572,6 +581,10 @@ const Game = () => {
           <button ref={pauseButtonRef} id="pauseGameButton">
             Pause
           </button>
+          <label>
+            SFX{" "}
+            <input ref={sfxCheckboxRef} type="checkbox" id="sfx" defaultChecked />
+          </label>
         </div>
         <div className="topBarRight"></div>
       </div>
