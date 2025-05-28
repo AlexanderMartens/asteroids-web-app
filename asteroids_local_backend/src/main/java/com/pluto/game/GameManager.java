@@ -299,6 +299,7 @@ public class GameManager {
         }
         for (int i = 0; i < numAliens; i++) {
             spawnEnemy(EnemyType.ALIEN);
+            sounds.add(Sound.COMET_DEATH);
         }
         sounds.add(Sound.LEVEL_UP);
     }
