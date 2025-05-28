@@ -233,8 +233,9 @@ public class GameManager {
         // Check for collisions between player and asteroids
         for (Enemy enemy : enemies) {
             if (player.collidesWith(enemy)) {
-                player.hit();
-                sounds.add(Sound.PLAYER_HIT);
+                if (player.hit()) {
+                    sounds.add(Sound.PLAYER_HIT);
+                }
                 if (player.getLives() == 0) {
                     gameOver();
                 }

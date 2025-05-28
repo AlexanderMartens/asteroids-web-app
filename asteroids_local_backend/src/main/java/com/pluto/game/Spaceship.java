@@ -120,20 +120,23 @@ public class Spaceship extends SpawnableEntity {
     /**
      * Call when player gets hit by an asteroid. Decreases number of lives
      * by 1 and updates the player's position to the center of the screen.
+     * @return - true if the player has been hit, false if invincible or shielded
      */
-    public void hit() {
+    public boolean hit() {
         if (invincibleTimer > 0) {
-            return;
+            return false;
         }
         if (hasShield) {
             hasShield = false; // Shield absorbs the hit
             invincibleTimer = 1.0f; // Invincibility for 1 second after shield hit
-            return;
+            return false;
         }
         lives--;
         if (lives != 0) {
             invincibleTimer = 3.0f;
+            return true;
         }
+        return false;
     }
 
     /**
