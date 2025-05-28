@@ -15,6 +15,11 @@ import player_bullet from "./images/player_bullet_4x4.png";
 
 import ship from "./images/player_24x24.png";
 import invShip from "./images/invincible_player_24x24.png";
+import player_shield from "./images/player_shield_32x32.png";
+
+import multishot from "./images/multishot_24x24.png";
+import shield from "./images/shield_24x24.png";
+import extra_life from "./images/extra_life_24x24.png";
 
 const Game = () => {
   const canvasRef = useRef(null);
@@ -33,6 +38,11 @@ const Game = () => {
 
   const shipImg = new Image();
   const invincibleShip = new Image();
+  const playerShieldImg = new Image();
+  
+  const multishotImg = new Image();
+  const shieldImg = new Image();
+  const extraLifeImg = new Image();
 
   asteroidImg32.src = `${asteroid_32}?v=${Date.now()}`; // Force reload with a unique query string
   asteroidImg48.src = `${asteroid_48}?v=${Date.now()}`;
@@ -44,6 +54,11 @@ const Game = () => {
 
   shipImg.src = `${ship}?v=${Date.now()}`;
   invincibleShip.src = `${invShip}?v=${Date.now()}`;
+  playerShieldImg.src = `${player_shield}?v=${Date.now()}`;
+
+  multishotImg.src = `${multishot}?v=${Date.now()}`;
+  shieldImg.src = `${shield}?v=${Date.now()}`;
+  extraLifeImg.src = `${extra_life}?v=${Date.now()}`;
 
   const { user } = useAuth();
 
@@ -193,6 +208,7 @@ const Game = () => {
       const is_running = data.is_running;
       const bullets = data.bullets ?? [];
       const enemies = data.enemies ?? [];
+      const powerups = data.powerups ?? [];
 
       // Update DOM HUD with current values
       document.getElementById("livesDisplayValue").textContent = lives;
@@ -226,6 +242,16 @@ const Game = () => {
             shipSize,
           );
         }
+        if (player.has_shield) {
+          const shieldSize = 80.0;
+          context.drawImage(
+            playerShieldImg,
+            -shieldSize / 2,
+            -shieldSize / 2,
+            shieldSize,
+            shieldSize,
+          );
+        }
 
         context.restore();
       }
@@ -243,6 +269,40 @@ const Game = () => {
           bulletSize,
           bulletSize,
         );
+        context.restore();
+      });
+
+      // Powerups
+      powerups.forEach((powerup) => {
+        context?.save();
+        context.translate(powerup.position.x, powerup.position.y);
+        context.rotate(powerup.orientation);
+        const powerupSize = powerup.hitbox[0].radius * 2; // use hitbox radius for powerup
+        if (powerup.type === "MULTISHOT") {
+          context.drawImage(
+            multishotImg,
+            0 - powerupSize / 2, // center the image
+            0 - powerupSize / 2,
+            powerupSize,
+            powerupSize,
+          );
+        } else if (powerup.type === "SHIELD") {
+          context.drawImage(
+            shieldImg,
+            0 - powerupSize / 2, // center the image
+            0 - powerupSize / 2,
+            powerupSize,
+            powerupSize,
+          );
+        } else if (powerup.type === "EXTRA_LIFE") {
+          context.drawImage(
+            extraLifeImg,
+            0 - powerupSize / 2, // center the image
+            0 - powerupSize / 2,
+            powerupSize,
+            powerupSize,
+          );
+        }
         context.restore();
       });
 
@@ -376,6 +436,17 @@ const Game = () => {
           context.arc(hb.position.x, hb.position.y, hb.radius, 0, 2 * Math.PI);
           context.stroke();
           context.restore();
+        });
+
+        powerups.forEach((powerup) => {
+          powerup.hitbox?.forEach((hb) => {
+            context.save();
+            context.strokeStyle = "rgba(255, 0, 0, 0.5)";
+            context.beginPath();
+            context.arc(hb.position.x, hb.position.y, hb.radius, 0, 2 * Math.PI);
+            context.stroke();
+            context.restore();
+          });
         });
       }
 

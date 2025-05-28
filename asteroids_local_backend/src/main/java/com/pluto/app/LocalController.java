@@ -468,6 +468,7 @@ public class LocalController {
      *       radius - float
      *    lives - int
      *    is_invincible - boolean
+     *    has_shield - boolean
      * enemies - array of enemies
      *    type - string, type of enemy ("ASTEROID", "COMET", "ALIEN", "BULLET")
      *    position - Vector2D
@@ -490,6 +491,17 @@ public class LocalController {
      *          x - float
      *          y - float
      *       radius - float
+     * powerups - list of powerups
+     *   position - Vector2D
+     *      x - float
+     *      y - float
+     *   orientation - float
+     *   hitbox - list of hitboxes
+     *      position - Vector2D
+     *         x - float
+     *         y - float
+     *      radius - float
+     *   type - string, type of powerup ("MULTISHOT", "SHIELD", "EXTRA_LIFE")
      * score - int
      * level - int
      * time - float

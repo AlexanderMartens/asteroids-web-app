@@ -91,8 +91,11 @@ public abstract class Enemy extends SpawnableEntity {
         json.append(", \"orientation\": ");
         json.append(this.getOrientation());
         json.append(", \"hitbox\": [");
-        for (int i = 0; i < this.hitbox.length; i++) {
-            json.append(this.hitbox[i].toJson());
+        for (int i = 0; i < hitbox.length; i++) {
+            json.append(hitbox[i].toJson());
+            if (i < hitbox.length - 1) {
+                json.append(",");
+            }
         }
         json.append("]");
         json.append("}");
