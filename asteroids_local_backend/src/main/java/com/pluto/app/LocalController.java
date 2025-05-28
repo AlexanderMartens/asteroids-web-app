@@ -502,6 +502,7 @@ public class LocalController {
      *         y - float
      *      radius - float
      *   type - string, type of powerup ("MULTISHOT", "SHIELD", "EXTRA_LIFE")
+     * sounds - list of string sound effects as file names
      * score - int
      * level - int
      * time - float

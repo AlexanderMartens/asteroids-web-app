@@ -29,6 +29,9 @@ public class GameManager {
     /* The list of powerups */
     private ArrayList<Powerup> powerups;
 
+    /* The list of sounds to be played this frame */
+    private ArrayList<Sound> sounds;
+
     /* The time in seconds the game has been running */
     private float time;
 
@@ -95,6 +98,7 @@ public class GameManager {
         this.enemies = new ArrayList<Enemy>();
         this.playerBullets = new ArrayList<Bullet>();
         this.powerups = new ArrayList<Powerup>();
+        this.sounds = new ArrayList<Sound>();
         this.time = 0.0f;
         this.score = 0;
         this.level = 1;
@@ -112,6 +116,8 @@ public class GameManager {
      * @param input - the player inputs
      */
     public void update(float dt, Spaceship.Input[] input) {
+        // Clear sounds for this frame
+        sounds = new ArrayList<Sound>();
         if (dt == 0) {
             return;
         }
@@ -134,6 +140,7 @@ public class GameManager {
             Bullet[] enemyBullets = ((ShooterEnemy) enemy).shootPlayer(player.getPosition());
             for (Bullet bullet : enemyBullets) {
                 enemyIterator.add(bullet);
+                sounds.add(Sound.SHOOT);
             }
         }
 
@@ -208,9 +215,16 @@ public class GameManager {
 
                 // Hit enemy
                 enemy.takeDamage(bullet.dealsDamage() * difficulty.getBulletDamage());
-                if (enemy.getHealth() == 0)
+                sounds.add(Sound.ENEMY_HIT);
+                if (enemy.getHealth() == 0) {
+                    // Enemy is destroyed, play sound and destroy it
                     destroyEnemy(enemy);
-
+                    if (enemy.type() == EnemyType.COMET) {
+                        sounds.add(Sound.COMET_DEATH);
+                    } else {
+                        sounds.add(Sound.ENEMY_DEATH);
+                    }
+                }
                 bulletIterator.remove();
                 break;
             }
@@ -220,6 +234,7 @@ public class GameManager {
         for (Enemy enemy : enemies) {
             if (player.collidesWith(enemy)) {
                 player.hit();
+                sounds.add(Sound.PLAYER_HIT);
                 if (player.getLives() == 0) {
                     gameOver();
                 }
@@ -233,6 +248,7 @@ public class GameManager {
             if (player.collidesWith(powerup)) {
                 player.applyPowerup(powerup.POWERUP_TYPE);
                 powerupIterator.remove();
+                sounds.add(Sound.POWERUP_COLLECT);
             }
         }
     }
@@ -248,6 +264,7 @@ public class GameManager {
             for (Bullet bullet : bullets) {
                 if (bullet != null) {
                     playerBullets.add(bullet);
+                    sounds.add(Sound.SHOOT);
                 }
             }
         }
@@ -282,6 +299,7 @@ public class GameManager {
         for (int i = 0; i < numAliens; i++) {
             spawnEnemy(EnemyType.ALIEN);
         }
+        sounds.add(Sound.LEVEL_UP);
     }
 
     /**
@@ -476,6 +494,13 @@ public class GameManager {
         for (int i = 0; i < powerups.size(); i++) {
             json.append(powerups.get(i).toJson());
             if (i < powerups.size() - 1) {
+                json.append(",");
+            }
+        }
+        json.append("],\"sounds\":[");
+        for (int i = 0; i < sounds.size(); i++) {
+            json.append("\"").append(sounds.get(i).getFileName()).append("\"");
+            if (i < sounds.size() - 1) {
                 json.append(",");
             }
         }
