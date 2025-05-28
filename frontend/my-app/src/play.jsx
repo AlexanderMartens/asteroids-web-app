@@ -60,6 +60,16 @@ const Game = () => {
   shieldImg.src = `${shield}?v=${Date.now()}`;
   extraLifeImg.src = `${extra_life}?v=${Date.now()}`;
 
+  // Load sounds
+  const soundCache = {};
+  const loadSound = (filename) => {
+    if (!soundCache[filename]) {
+      soundCache[filename] = new Audio(`/sounds/${filename}`);
+    }
+    return soundCache[filename];
+  };
+
+
   const { user } = useAuth();
 
   // Variables for handling score uploads
@@ -209,6 +219,7 @@ const Game = () => {
       const bullets = data.bullets ?? [];
       const enemies = data.enemies ?? [];
       const powerups = data.powerups ?? [];
+      const sounds = data.sounds ?? [];
 
       // Update DOM HUD with current values
       document.getElementById("livesDisplayValue").textContent = lives;
@@ -449,6 +460,17 @@ const Game = () => {
           });
         });
       }
+
+      // Play sounds from the sounds array
+      sounds.forEach((sound) => {
+        const audio = loadSound(sound);
+        audio.currentTime = 0; // rewind to start
+        audio.play().catch((e) => {
+          // Optionally handle autoplay restrictions or errors
+          console.error("Sound play error:", e);
+        });
+      });
+
 
       if (!is_running && !isNewGameRef.current) {
         context.save();
